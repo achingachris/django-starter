@@ -1,0 +1,8 @@
+{% extends 'error_base.html' %}
+{% load i18n %}
+{% block error_details %}
+  <h1 class="text-3xl font-bold mb-2">{% translate "Shucks. That was a bad request." %}</h1>
+  <h2 class="text-xl mb-1">
+    {% translate "Please try again, and if you continue to get this message, contact support." %}
+  </h2>
+{% endblock %}

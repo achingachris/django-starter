@@ -1,0 +1,29 @@
+{
+  "name": "chrisdevcode",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "vite build",
+    "dev": "vite",
+    "dev-watch": "vite",
+    "type-check": "tsc --noEmit",
+    "type-check-watch": "npm run type-check -- --watch"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.2"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^7.2.0",
+    "@tailwindcss/typography": "^0.5.19",
+    "@tailwindcss/vite": "^4.2.2",
+    "alpinejs": "^3.15.11",
+    "chart.js": "^4.5.1",
+    "daisyui": "^5.5.19",
+    "htmx.org": "^2.0.8",
+    "js-cookie": "^3.0.5",
+    "tailwindcss": "^4.2.2"
+  }
+}

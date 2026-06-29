@@ -1,0 +1,29 @@
+{% extends 'account/email/email_template_base.html' %}
+{% load i18n %}
+{% block message_body %}
+{% block message_body_start %}{% endblock %}
+{% if code %}
+  <p>
+    {% blocktranslate trimmed with site_name=current_site.name %}
+      Your sign-in code for {{ site_name }} is listed below.
+      Please enter it in your open browser window.
+    {% endblocktranslate %}
+  </p>
+  <p style="font-weight: bold; font-family: monospace;">{{ code }}</p>
+{% else %}
+<p>
+  {% blocktranslate trimmed with site_name=current_site.name %}
+    Please click the confirmation link below to activate your {{ site_name }} account.
+  {% endblocktranslate %}
+</p>
+{% endif %}
+{% endblock %}
+{% block cta %}
+{# only show the cta if not using the code-based confirmation #}
+{% if not code %}
+  {{ block.super }}
+{% endif %}
+{% endblock %}
+{# these blocks will not be rendered if code is set, because the parent template block is not rendered #}
+{% block cta_link %}{{ activate_url }}{% endblock %}
+{% block cta_text %}{% translate "Confirm Email Address" %}{% endblock %}

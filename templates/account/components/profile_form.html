@@ -1,0 +1,32 @@
+{% load i18n %}
+{% load form_tags %}
+<div class="flex flex-col space-y-4 lg:flex-row lg:space-x-4 lg:space-y-0">
+  <div id="profile-picture" class="basis-1/4 grow-0 shrink-0">
+    <div class="text-center">
+      <img class="avatar" src="{{ user.avatar_url }}">
+      <div id='profile-upload-holder'>
+        <label for="profile-upload" >
+          <a id="profile-upload-label" class="btn btn-ghost">
+            {% translate "Change Picture" %}
+          </a>
+        </label>
+        <input id="profile-upload" type="file" accept="image/*"/>
+      </div>
+    </div>
+  </div>
+  <div class="flex-1">
+    <h2 class="text-xl mb-1">{% translate "My Details" %}</h2>
+    <form method="post">
+      {% csrf_token %}
+      {% render_text_input form.email %}
+      {% if user.emailaddress_set.count > 1 %}
+        <div class="text-sm text-base-content/70"><a href="{% url "account_email" %}" class="link">{%  translate "Manage email addresses" %}</a></div>
+      {% endif %}
+      {% render_text_input form.first_name %}
+      {% render_text_input form.last_name %}
+      <div class="mt-2">
+        <input class="btn btn-primary" type="submit" value="{% translate "Save" %}">
+      </div>
+    </form>
+  </div>
+</div>

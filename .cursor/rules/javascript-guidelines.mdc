@@ -1,0 +1,28 @@
+---
+description: Guidelines for working with JavaScript
+globs: *.js, *.jsx, *.ts, *.tsx
+alwaysApply: false
+---
+## JavaScript Code Guidelines
+
+### Code Style
+
+- Use ES6+ syntax for JavaScript code.
+- Use 2 spaces for indentation in JavaScript, JSX, and HTML files.
+- Use single quotes for JavaScript strings.
+- End statements with semicolons.
+- Use camelCase for variable and function names.
+- Use PascalCase for component names (React).
+- Use explicit type annotations in TypeScript files.
+- Use ES6 import/export syntax for module management.
+
+### Preferred Practices
+- When using HTMX, follow progressive enhancement patterns.
+- Use Alpine.js for client-side interactivity that doesn't require server interaction.
+- Avoid inline `<script>` tags wherever posisble.
+- Validate user input on both client and server side.
+- Handle errors explicitly in promise chains and async functions.
+
+### Build System
+
+- Code is bundled using vite and served with `django-vite`.

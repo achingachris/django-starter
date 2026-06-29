@@ -1,0 +1,28 @@
+{% extends "web/base.html" %}
+{% load i18n %}
+{% block top_nav %}
+  {% include 'web/components/top_nav_app.html' %}
+{% endblock %}
+{% block body %}
+  {% block notifications %}
+  {% endblock %}
+  <div id="htmx-error" class="alert alert-error alert-soft flex justify-between rounded-none! hidden" role="alert">
+    <span>{% translate "An error occurred while loading the content. Please try again." %}</span>
+    <button class="btn btn-sm btn-ghost" onclick="this.parentElement.classList.add('hidden')">
+      <i class="fa fa-times"></i>
+    </button>
+  </div>
+  <section class="section" hx-on::response-error="document.getElementById('htmx-error').classList.remove('hidden')">
+    <div class="container flex flex-row">
+      <div class="w-64 hidden lg:flex lg:sticky lg:top-21 lg:self-start">
+        {% block sidebar-nav %}
+          {% include "web/components/app_nav.html" %}
+        {% endblock %}
+      </div>
+      <div class="w-full min-w-0">
+        {% block app %}
+        {% endblock %}
+      </div>
+    </div>
+  </section>
+{% endblock %}

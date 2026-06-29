@@ -1,0 +1,5 @@
+{% extends 'account/email/email_confirmation_message.html' %}
+{% load i18n %}
+{% block message_body_start %}
+  <p>{% translate "Welcome!" %}</p>
+{% endblock %}

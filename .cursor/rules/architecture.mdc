@@ -1,0 +1,21 @@
+---
+description: Overall project architecture
+globs:
+alwaysApply: true
+---
+## Architecture
+
+- This is a Django project built on Python 3.14.
+- User authentication uses `django-allauth`.
+- The front end is mostly standard Django views and templates.
+- HTMX and Alpine.js are used to provide single-page-app user experience with Django templates.
+  HTMX is used for interactions which require accessing the backend, and Alpine.js is used for
+  browser-only interactions.
+- JavaScript files are kept in the `/assets/` folder and built by vite.
+  JavaScript code is typically loaded via the static files framework inside Django templates using `django-vite`.
+- APIs use Django Rest Framework, and JavaScript code that interacts with APIs uses an
+  auto-generated OpenAPI-schema-baesd client.
+- The front end uses Tailwind (Version 4) and DaisyUI.
+- The main database is Postgres.
+- Celery is used for background jobs and scheduled tasks.
+- Redis is used as the default cache, and the message broker for Celery (if enabled).

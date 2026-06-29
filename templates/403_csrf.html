@@ -1,0 +1,10 @@
+{% extends 'error_base.html' %}
+{% load i18n %}
+{% block error_details %}
+  <h1 class="text-3xl font-bold mb-2">{% translate "Your session has expired." %}</h1>
+  <h2 class="text-xl mb-1">
+    {% blocktranslate trimmed %}
+      Please go back, refresh the page, and try again. If this keeps happening, contact support.
+    {% endblocktranslate %}
+  </h2>
+{% endblock %}

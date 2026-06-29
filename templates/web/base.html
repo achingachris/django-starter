@@ -1,0 +1,71 @@
+{% load static %}
+{% load django_vite %}
+{% load meta_tags %}
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="utf-8">
+    <!--IE compatibility-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--Mobile friendly-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--CSRF cookie name, read by front-end JS (see assets/javascript/csrf.js)-->
+    <meta name="csrf-cookie-name" content="{{ csrf_cookie_name }}">
+{% block meta %}
+{% if project_meta %}
+  {% with project_meta|get_title:page_title as title %}
+  {% with project_meta|get_description:page_description as description %}
+  {% with project_meta|get_image_url:page_image as image %}
+      <title>{% block page_title %}{{ title }}{% endblock %}</title>
+      <meta name="description" content="{{ description }}">
+      <meta name="keywords" content="{{ project_meta.KEYWORDS }}">
+      <!-- Twitter Card data -->
+      <meta name="twitter:card" content="summary_large_image">
+      <meta name="twitter:title" content="{{ title }}">
+      <meta name="twitter:description" content="{{ description }}">
+      <meta name="twitter:image" content="{{ image }}">
+      <!-- Open Graph data -->
+      <meta property="og:title" content="{{ title }}" />
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="{{ page_url }}" />
+      <meta property="og:image" content="{{ image }}" />
+      <meta property="og:description" content="{{ description }}" />
+      <meta property="og:site_name" content="{{ project_meta.NAME }}" />
+      <link rel="canonical" href="{% if page_canonical_url %}{{ page_canonical_url }}{% else %}{{ page_url }}{% endif %}">
+  {% endwith %}
+  {% endwith %}
+  {% endwith %}
+{% endif %}
+{% endblock meta %}
+{% include 'web/components/favicon.html' %}
+    <link rel="stylesheet" href="{% vite_asset_url 'assets/styles/site-base.css' %}">
+    <link rel="stylesheet" href="{% vite_asset_url 'assets/styles/site-tailwind.css' %}">
+
+    {% if GOOGLE_ANALYTICS_ID %}
+        {% include 'web/components/google_analytics.html' %}
+    {% endif %}
+    {% vite_asset 'assets/javascript/site.js' %}
+    {% vite_hmr_client %}
+    <script>__cssFramework = 'tailwind';</script>
+    {% block page_head %}
+    {% endblock %}
+</head>
+<body class="bg-base-100" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+{% block body_wrapper %}
+{% block top_nav %}
+  {% include 'web/components/top_nav.html' %}
+{% endblock %}
+{% block messages %}
+  {% include 'web/components/messages.html' %}
+{% endblock messages %}
+{% block body %}
+{% endblock body %}
+{% block footer %}
+  {% include 'web/components/footer.html' %}
+{% endblock footer %}
+{% endblock body_wrapper %}
+  {% include 'web/components/messages-js.html' %}
+{% block page_js %}
+{% endblock page_js %}
+</body>
+</html>

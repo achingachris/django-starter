@@ -1,0 +1,12 @@
+.section {
+  @apply m-4;
+}
+
+.help {
+  /* forms */
+  @apply text-xs text-gray-700 dark:text-gray-300;
+}
+
+.app-card {
+  @apply lg:shadow-md p-4 mb-2 mt-2 lg:mt-0 lg:p-8;
+}

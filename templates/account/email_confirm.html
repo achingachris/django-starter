@@ -1,0 +1,42 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% load account %}
+{% block content %}
+<h1 class="text-3xl font-bold mb-2">{% translate "Confirm E-mail Address" %}</h1>
+{% if confirmation %}
+{% user_display confirmation.email_address.user as user_display %}
+<p class="prose max-w-none lg:prose-lg">
+    {% blocktranslate trimmed with confirmation.email_address.email as email %}
+    Please confirm that <a href="mailto:{{ email }}">{{ email }}</a>
+    is an e-mail address for user {{ user_display }}.
+    {% endblocktranslate %}
+</p>
+<form id="email-confirm-form" method="post" action="{% url 'account_confirm_email' confirmation.key %}">
+  {% csrf_token %}
+  <div class="mt-2">
+    <button id="email-confirm-button" class="btn btn-primary" type="submit"
+            data-loading-text="{% translate 'Confirming' %}">
+      {% translate 'Confirm' %}
+    </button>
+  </div>
+</form>
+<script>
+  // Auto-submit so real users keep the one-click UX, but link prefetchers
+  // (email security scanners) that don't run JS won't consume the token.
+  document.addEventListener("DOMContentLoaded", () => {
+    const button = document.getElementById("email-confirm-button");
+    button.disabled = true;
+    button.innerHTML = '<span class="loading loading-spinner loading-sm align-middle"></span> ' + button.dataset.loadingText;
+    document.getElementById("email-confirm-form").submit();
+  });
+</script>
+{% else %}
+{% url 'account_email' as email_url %}
+<p class="prose max-w-none lg:prose-lg">
+    {% blocktranslate trimmed %}
+    This e-mail confirmation link expired or is invalid.
+    Please <a href="{{ email_url }}">issue a new e-mail confirmation request</a>.
+    {% endblocktranslate %}
+</p>
+{% endif %}
+{% endblock %}

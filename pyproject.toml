@@ -1,0 +1,100 @@
+[tool.ruff]
+# Exclude a variety of commonly ignored directories.
+extend-exclude = [
+    ".direnv",
+    ".git",
+    ".ruff_cache",
+    "node_modules",
+    "migrations",
+]
+line-length = 120
+indent-width = 4
+target-version = "py314"
+
+[tool.ruff.lint]
+fixable = [
+    "ALL",
+]
+unfixable = []
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.mypy]
+python_version = "3.14"
+plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
+
+# Third-party libraries without type stubs - explicitly list each to suppress import-untyped
+[[tool.mypy.overrides]]
+module = [
+    "allauth.*",
+    "celery.*",
+    "celery_progress.*",
+    "django_celery_beat.*",
+    "environ.*",
+    "kombu.*",
+    "mailchimp3.*",
+]
+ignore_missing_imports = true
+
+# Django admin files have known issues with decorators and type annotations
+# Disable specific error codes that are problematic
+[[tool.mypy.overrides]]
+module = [
+    "apps.*.admin",
+]
+disable_error_code = ["attr-defined", "assignment"]
+
+[tool.django-stubs]
+django_settings_module = "chrisdevcode.settings"
+
+[tool.setuptools]
+py-modules = []
+
+[project]
+name = "chrisdevcode"
+version = "0.1.0"
+description = "my django template"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "Django>=6.0",
+    "celery",
+    "celery-progress",
+    "celery[redis]",
+    "django-allauth[socialaccount]>=65.13.0",
+    "django-anymail[mailgun]", # email services
+    "django-celery-beat",
+    "django-environ",
+    "django-htmx",
+    "django-vite>=3.1.0",
+    "django-waffle",
+    "djangorestframework",
+    "drf-spectacular",
+    "psycopg",
+    "redis",
+]
+
+[dependency-groups]
+dev = [
+    "django-browser-reload",
+    "django-debug-toolbar",
+    "django-watchfiles",
+    "pre-commit",
+    "ruff>=0.15.6",
+    "pegasus-cli>=0.15",
+    "psycopg[binary]",
+    "mypy>=1.18.2",
+    "django-stubs>=5.0.0",
+    "djangorestframework-stubs>=3.15.0",
+    "types-python-dateutil>=2.9.0.20251108",
+    "types-requests>=2.32.4",
+]
+prod = [
+    "gunicorn",
+    "psycopg[c]",
+]

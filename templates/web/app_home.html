@@ -1,0 +1,27 @@
+{% extends "web/app/app_base.html" %}
+{% load i18n %}
+{% load static %}
+{% block app %}
+<section class="app-card">
+    <div class="flex flex-col space-y-4 lg:flex-row lg:space-x-4 lg:space-y-0 lg:flex-row-reverse items-center">
+        <div class="basis-1/3 grow-0 shrink-0">
+            <img class="img-fluid" src="{% static 'images/web/rocket-laptop.svg' %}" alt="{% translate "Fly Away!" %}">
+        </div>
+        <div class="flex-1">
+            <h1 class="text-3xl font-bold mb-2">{% translate "You're Signed In!" %}</h1>
+            <h2 class="text-xl mb-1">
+                {% translate "This is your application's logged in home page." %}
+            </h2>
+            <p>
+                Now go make something great!
+            </p>
+        </div>
+    </div>
+</section>
+<section class="app-card">
+    <div class="prose max-w-none lg:prose-lg">
+        <p>To add more to this page you can make new sections like this one.</p>
+        <p>Tip: the source of this page can be found at <code>templates/web/app_home.html</code></p>
+    </div>
+</section>
+{% endblock %}

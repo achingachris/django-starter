@@ -1,0 +1,85 @@
+{% extends "web/app/app_base.html" %}
+{% load static %}
+{% load django_vite %}
+{% block app %}
+<section class="app-card">
+  {% include 'account/components/profile_form.html' %}
+</section>
+{% endblock %}
+{% block page_js %}
+{% vite_asset 'assets/javascript/app.js' %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const App = SiteJS.app;
+    const uploadUrl = '{% url "users:upload_profile_image" %}';
+    document.getElementById("profile-upload").onchange = function() {
+      let files = document.getElementById("profile-upload").files;
+      let file = files[0];
+      if (file) {
+        updatePreview(file);
+        uploadImage(file);
+      }
+    };
+    function updatePreview(file) {
+      // https://stackoverflow.com/a/4459419/8207
+      let reader = new FileReader();
+      reader.onload = function (e) {
+        let avatars = document.getElementsByClassName('avatar');
+        for (let i = 0; i < avatars.length; i++) {
+          avatars[i].setAttribute('src', e.target.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function uploadImage(file) {
+      // update UI
+      let uploadlabel = document.getElementById("profile-upload-label")
+      uploadlabel.innerHTML = '<span class="w-6 h-6 inline-flex justify-center items-center"><i class="fa fa-refresh"></i></span><span>Uploading...</span>';
+      uploadlabel.classList.add('is-active');
+      function showError(message) {
+        uploadlabel.innerHTML = '<span title="' + message + '" ><span class="w-6 h-6 inline-flex justify-center items-center"><i class="fa fa-times"></i></span><span>Upload failed!</span></span>';
+        uploadlabel.classList.remove('is-active');
+        uploadlabel.classList.add('text-error');
+      }
+      function genericError(status) {
+        if (status === 403) {
+          return 'Your session looks invalid or has expired. Please refresh the page and try again.';
+        }
+        return 'Something went wrong uploading your image. Please try again.';
+      }
+      // upload to server
+      let formData = new FormData();
+      formData.append("avatar", file);
+      formData.append('csrfmiddlewaretoken', App.getCsrfToken());
+      fetch(uploadUrl, {method: "POST", body: formData, credentials: 'same-origin'}).then(
+        function (response) {
+          if (response.redirected) {
+            // an unauthenticated POST is redirected to the login page (200); don't render it
+            showError(genericError(403));
+            return;
+          }
+          if (response.ok) {
+            response.text().then(function (text) {
+              // update UI
+              uploadlabel.innerHTML = '<span class="w-6 h-6 inline-flex justify-center items-center"><i class="fa fa-check"></i></span><span>' + text + '</span>';
+              uploadlabel.classList.remove('is-active');
+              uploadlabel.classList.add('text-success');
+            });
+          } else {
+            // the server returns JSON validation errors, but a 403/500 is an HTML page that
+            // won't parse - fall back to a generic, status-aware message rather than hanging.
+            response.json().then(function (errorResponse) {
+              showError(errorResponse.errors || genericError(response.status));
+            }).catch(function () {
+              showError(genericError(response.status));
+            });
+          }
+        }
+      ).catch(function () {
+        showError(genericError());
+      });
+    }
+  });
+</script>
+{% endblock %}

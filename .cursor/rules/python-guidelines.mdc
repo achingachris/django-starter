@@ -1,0 +1,36 @@
+---
+description: Guidelines for working with Python code
+globs: *.py
+alwaysApply: false
+---
+## Python Code Guidelines
+
+### Code Style
+
+- Follow PEP 8 with 120 character line limit.
+- Use double quotes for Python strings (ruff enforced).
+- Sort imports with isort (via ruff).
+- Try to use type hints in new code. However, strict type-checking is not enforced and you can leave them out if it's burdensome.
+  There is no need to add type hints to existing code if it does not already use them.
+
+### Python 3.14 syntax notes
+
+- **Unparenthesized `except` with multiple exception types is valid** (PEP 758, Python 3.14+).
+  `except ValueError, TypeError:` is equivalent to `except (ValueError, TypeError):` — it is **not**
+  Python 2 syntax and will **not** raise a `SyntaxError`. Parentheses are still required when using
+  `as` (e.g. `except (ValueError, TypeError) as e:`). Do not "fix" unparenthesized forms unless an
+  `as` clause is being added.
+
+### Preferred Practices
+
+- Use Django signals sparingly and document them well.
+- Always use the Django ORM if possible. Use best practices like lazily evaluating querysets
+  and selecting or prefetching related objects when necessary.
+- Use function-based views by default, unless using a framework that relies on class-based views (e.g. Django Rest Framework).
+- Always validate user input server-side.
+- Handle errors explicitly, avoid silent failures.
+
+#### Django models
+
+- All Django models should extend `apps.utils.models.BaseModel` (which adds `created_at` and `updated_at` fields).
+- The project's user model is `apps.users.models.CustomUser` and should be imported directly.

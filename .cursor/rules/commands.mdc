@@ -1,0 +1,94 @@
+---
+description: Running commands to build, run, test and lint the project.
+globs:
+alwaysApply: false
+---
+## Commands you can run
+
+The following commands can be used for various tools and workflows.
+A `Makefile` is provided to help centralize commands:
+
+```bash
+make  # List available commands
+```
+
+### First-time Setup
+
+```bash
+make init
+```
+
+### Starting the Application
+
+```bash
+make start     # Run in foreground with logs
+make start-bg  # Run in background
+```
+
+Access the app at http://localhost:8000
+
+### Stopping Services
+
+```bash
+make stop
+```
+
+## Common Commands
+
+### Development
+
+```bash
+make ssh              # SSH into web container
+make shell            # Open Python / Django shell
+make dbshell          # Open PostgreSQL shell
+make manage ARGS='command'  # Run any Django management command
+```
+
+### Database
+
+```bash
+make migrations       # Create new migrations
+make migrate          # Apply migrations
+```
+
+### Testing
+
+```bash
+make test                              # Run all tests
+make test ARGS='apps.module.tests.test_file'  # Run specific test
+make test ARGS='path.to.test --keepdb'        # Run with options
+```
+
+### Python Code Quality
+
+```bash
+make ruff-format      # Format code
+make ruff-lint        # Lint and auto-fix
+make ruff             # Run both format and lint
+```
+### Python
+
+```bash
+make uv add '<package>'         # Add a new package
+make requirements               # Rebuild and restart containers after updating packages
+make uv run '<command> <args>'  # Run a Python command
+```
+
+### Frontend
+
+```bash
+make npm-install      # Install npm packages
+make npm-install package-name  # Install specific package
+make npm-uninstall package-name  # Uninstall package
+make npm-dev          # Run the Vite development server
+make npm-build        # Build for production
+make npm-type-check   # Run TypeScript type checking
+```
+
+Note: Vite runs automatically with hot-reload when using `make start`.
+
+### Code generation
+
+```bash
+make uv run 'pegasus startapp <app_name> <Model1> <Model2Name>'  # Start a new Django app (models are optional)
+```

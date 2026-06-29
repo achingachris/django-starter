@@ -1,0 +1,16 @@
+{% extends 'account/email/email_template_base.html' %}
+{% load i18n %}
+{% block message_body %}
+  <p>
+    {% blocktranslate trimmed with site_name=current_site.name %}
+      Your sign-in code for {{ site_name }} is listed below. Please enter it in your open browser window.
+    {% endblocktranslate %}
+  </p>
+  <p style="font-weight: bold">{{ code }}</p>
+  <p>
+    {% blocktranslate trimmed %}
+      This mail can be safely ignored if you did not initiate this action.
+    {% endblocktranslate %}
+  </p>
+{% endblock %}
+{% block cta %}{% endblock %}

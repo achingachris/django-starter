@@ -1,0 +1,18 @@
+---
+description: Guidelines for working with Django templates and HTML files
+globs: *.html
+alwaysApply: false
+---
+## Django Template Coding Guidelines for HTML files
+
+- Indent templates with two spaces.
+- Use standard Django template syntax.
+- For multi-line comments, use `{% comment %}...{% endcomment %}`. The `{# ... #}` syntax is single-line only and does NOT work across multiple lines — never write `{# first line\n   second line #}`.
+- JavaScript and CSS files built with vite should be included with the `{% vite_asset %}` template tag provided by `django-vite` (must have `{% load django_vite %}` at the top of the template)
+- Any react components also need `{% vite_react_refresh %}` for Vite + React's HMR functionality, from the same `django_vite` template library)
+- Use the Django `{% static %}` tag for loading images and external JavaScript / CSS files not managed by vite.
+- Prefer using alpine.js for page-level JavaScript, and avoid inline `<script>` tags where possible.
+- Break re-usable template components into separate templates with `{% include %}` statements.
+  These normally go into a `components` folder.
+- Use DaisyUI styling markup for available components. When not available, fall back to standard TailwindCSS classes.
+- Stick with the DaisyUI color palette whenever possible.

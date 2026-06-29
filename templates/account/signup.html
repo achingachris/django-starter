@@ -1,0 +1,44 @@
+{% extends "web/base.html" %}
+{% load i18n %}
+{% load static %}
+{% load form_tags %}
+{% block page_head %}
+{% if turnstile_key %}
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+{% endif %}
+{% endblock %}
+{% block body %}
+  <div class="flex justify-center my-8 ">
+    <div class="w-96 px-4 py-4">
+      <div>
+        <h2 class="mt-6 text-center text-2xl font-bold text-gray-900 dark:text-gray-100">
+          Sign up
+        </h2>
+        <form class="mt-6 space-y-6" method="post">
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+          {% render_field form.email %}
+          {% render_field form.password1 %}
+          {% if form.password2 %}
+            {% render_field form.password2 %}
+          {% endif %}
+          {% render_field form.terms_agreement %}
+          <div class="relative overflow-hidden">
+            {% render_field form.phone_number_x %}
+          </div>
+          {% if turnstile_key %}
+          <div class="cf-turnstile" data-sitekey="{{ turnstile_key }}" data-response-field-name="turnstile_token"></div>
+          {{ form.turnstile_token.errors }}
+          {% endif %}
+          <input class="btn btn-primary btn-block" type="submit" value="{% translate "Sign Up" %}">
+        </form>
+        <div class="text-sm mt-4">
+          {% translate "Already have account?" %}
+          <a href="{% url 'account_login' %}" class="font-medium pg-link">
+            {% translate "Go to sign in." %}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

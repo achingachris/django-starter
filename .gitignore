@@ -1,0 +1,34 @@
+.idea
+.vscode
+*.code-workspace
+*.pyc
+*~
+.venv
+/.vite/
+venv
+db.sqlite3
+.sass-cache/
+celerybeat-schedule
+chrisdevcode/localsettings.py
+chrisdevcode/local.py
+static_root/
+node_modules/
+# ai assistants
+.playwright-mcp/
+.claude/settings.local.json
+openapitools.json
+# transient OpenAPI schema written by `make generate-api-client`
+schema.yaml
+media/
+docs/_build
+_dist/
+.env
+.env.production
+.DS_Store
+.direnv
+.envrc
+# compiled static files are built in dev/deploy
+static/assets/
+static/css/
+static/js/
+static/.vite/

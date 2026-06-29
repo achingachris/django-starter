@@ -1,0 +1,26 @@
+{% extends "web/app/app_base.html" %}
+{% load static %}
+{% load i18n %}
+{% block app %}
+<section class="app-card">
+  <h1 class="text-3xl font-bold mb-2">Sign out</h1>
+  <p class="text-xl mb-1">{% translate 'Are you sure you want to sign out?' %}</p>
+  <form method="post" action="{% url 'account_logout' %}">
+    {% csrf_token %}
+    {% if redirect_field_value %}
+    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+    {% endif %}
+    <div class="field is-grouped">
+      <div class="control">
+        <input class="btn btn-primary" type="submit" value="{% translate 'Sign Out' %}">
+        <a class="btn btn-outline" href="{% url 'web:home' %}">
+          <span class="w-6 h-6 inline-flex justify-center items-center">
+            <i class="fa fa-home"></i>
+          </span>
+          <span>{% translate "Home" %}</span>
+        </a>
+      </div>
+    </div>
+  </form>
+</section>
+{% endblock %}

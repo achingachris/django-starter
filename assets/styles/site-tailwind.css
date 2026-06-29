@@ -1,0 +1,40 @@
+@import 'tailwindcss';
+
+/*
+   add custom components using imports, as described here:
+   https://tailwindcss.com/docs/using-with-preprocessors#build-time-imports
+*/
+@import './app/tailwind/app-components.css';
+@import './pegasus/tailwind.css';
+
+@config "../../tailwind.config.js";
+
+
+@plugin "@tailwindcss/typography";
+@plugin "daisyui";
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
+
+/* set pegasus css variables to DaisyUI default colors: https://daisyui.com/docs/colors/ */
+
+:root {
+  --primary: var(--color-primary);
+  --danger: var(--color-error);
+  --success: var(--color-success);
+}

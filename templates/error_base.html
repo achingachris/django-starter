@@ -1,0 +1,17 @@
+{% extends "web/base.html" %}
+{% load static %}
+{% block body %}
+<section class="section mt-7">
+  <div class="container">
+    <div class="flex flex-col space-y-4 lg:flex-row lg:space-x-4 lg:space-y-0 lg:flex-row-reverse items-center">
+      <div class="flex-1">
+        <img class="img-fluid" src="{% static 'images/undraw/undraw_alert.svg' %}" alt="Uh-Oh">
+      </div>
+      <div class="flex-1">
+        {% block error_details %}
+        {% endblock %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock%}
