@@ -36,7 +36,7 @@ Big font size, horizontally centered
 Rotating words in a sentence, different colors for each word
 ```html
 <span>
-  Providing AI Agents for 
+  Providing AI Agents for
   <span class="text-rotate">
     <span>
       <span class="bg-teal-400 text-teal-800 px-2">Designers</span>
