@@ -1,12 +1,9 @@
 {% load i18n %}
-<footer class="mt-10 mb-4">
-  <div class="text-center text-gray-700 dark:text-gray-500">
-    <p>{{project_meta.NAME}} &mdash; {% translate "Copyright" %} <span id="copyright-year">2024</span></p>
-    <small>
-      {% blocktranslate trimmed %}🦄 Built with <a class="link" href="https://www.saaspegasus.com/" target="_blank">SaaS Pegasus</a>{% endblocktranslate %}
-    </small>
+<footer class="p-6 mt-16 border-t footer footer-center border-base-300 text-base-content/60">
+  <div x-data>
+    <p>{{ project_meta.NAME }} &mdash; {% translate "Copyright" %} <span x-text="new Date().getFullYear()">2024</span></p>
+    <p class="text-sm">
+      {% blocktranslate trimmed %}adapted from 🦄 Built with <a class="link link-hover" href="https://www.saaspegasus.com/" target="_blank">SaaS Pegasus</a> by chris achinga{% endblocktranslate %}
+    </p>
   </div>
 </footer>
-<script>
-    document.getElementById('copyright-year').innerText = (new Date()).getFullYear();
-</script>

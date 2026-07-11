@@ -50,7 +50,7 @@ module = [
 disable_error_code = ["attr-defined", "assignment"]
 
 [tool.django-stubs]
-django_settings_module = "chrisdevcode.settings"
+django_settings_module = "config.settings.dev"
 
 [tool.setuptools]
 py-modules = []
@@ -97,4 +97,5 @@ dev = [
 prod = [
     "gunicorn",
     "psycopg[c]",
+    "whitenoise>=6.12.0",
 ]

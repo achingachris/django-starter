@@ -1,10 +1,23 @@
 .git
+.gitignore
 media
 static_root
 node_modules
 npm-debug.log
-**/.env
+# Never bake local env / secrets into the image
+.env
+.env.*
+!.env.example
+!.env.prod.example
 venv
 .venv
 .direnv
 .pytest_cache
+.ruff_cache
+.mypy_cache
+**/__pycache__
+*.py[cod]
+# Local SQLite dev database
+db.sqlite3
+# Generated at build/runtime
+schema.yaml

@@ -1,89 +1,87 @@
+# Production stack: Postgres + Redis + gunicorn web + Celery worker/beat.
+#
+# Configure secrets in .env.prod (copy from .env.prod.example). The web and celery
+# services share a single production image built from ./Dockerfile and run with
+# DJANGO_SETTINGS_MODULE=config.settings.prod (DEBUG=False, WhiteNoise static, security headers).
 services:
   db:
     image: postgres:17
-    # persist data beyond lifetime of container
+    # POSTGRES_DB / POSTGRES_USER / POSTGRES_PASSWORD are read from .env.prod.
+    env_file:
+      - ./.env.prod
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-    environment:
-      - POSTGRES_DB=chrisdevcode
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-    ports:
-      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     healthcheck:
       test: pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}
-      interval: 2s
+      interval: 5s
       retries: 10
+    restart: unless-stopped
+
   redis:
-    image: redis
+    image: redis:7
     # persistent storage
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
-    ports:
-      - "127.0.0.1:${REDIS_PORT:-6379}:6379"
     healthcheck:
-      test: bash -c 'exec 6<>/dev/tcp/redis/6379'
-      interval: 2s
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
       retries: 10
+    restart: unless-stopped
+
   web:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
       args:
         MY_UID: ${MY_UID:-1000}
         MY_GID: ${MY_GID:-1000}
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/code
+    image: django-template:latest
+    # Apply migrations and gather static files, then serve via gunicorn.
+    command: >
+      bash -c "python manage.py migrate --noinput &&
+               python manage.py collectstatic --noinput &&
+               exec gunicorn config.wsgi:application
+                 --bind 0.0.0.0:8000
+                 --workers $${GUNICORN_WORKERS:-3}
+                 --access-logfile - --error-logfile -"
+    env_file:
+      - ./.env.prod
     ports:
       - "8000:8000"
-    environment:
-      PYTHONUNBUFFERED: '1'
-      PYTHONDONTWRITEBYTECODE: '1'
-    env_file:
-      - ./.env
-    restart: unless-stopped
+    volumes:
+      - media_files:/code/media
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_healthy
-  vite:
-    build:
-      context: .
-      dockerfile: Dockerfile.vite
-      args:
-        MY_UID: ${MY_UID:-1000}
-        MY_GID: ${MY_GID:-1000}
-    command: npm run dev -- --host
-    volumes:
-      - .:/code
-      - /code/node_modules
-    ports:
-      - "5173:5173"
     restart: unless-stopped
+
   celery:
+    # Same production image as `web` (shared build cache / tag).
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
       args:
         MY_UID: ${MY_UID:-1000}
         MY_GID: ${MY_GID:-1000}
-    command: celery -A chrisdevcode worker -l INFO --beat --pool=solo
-    volumes:
-      - .:/code
-    environment:
-      PYTHONUNBUFFERED: '1'
-      PYTHONDONTWRITEBYTECODE: '1'
+    image: django-template:latest
+    command: celery -A config worker --beat -l INFO
     env_file:
-      - ./.env
+      - ./.env.prod
+    volumes:
+      - media_files:/code/media
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_healthy
+      web:
+        condition: service_started
+    restart: unless-stopped
 
 volumes:
   postgres_data:
   redis_data:
+  media_files:

@@ -23,6 +23,7 @@ media/
 docs/_build
 _dist/
 .env
+.env.prod
 .env.production
 .DS_Store
 .direnv

@@ -203,7 +203,7 @@ To exercise the real worker locally, run a Redis instance, set `REDIS_URL` in `.
 ```bash
 make celery
 # or directly:
-uv run celery -A chrisdevcode worker -l INFO --beat --pool=solo
+uv run celery -A config worker -l INFO --beat --pool=solo
 ```
 
 > The `solo` pool is fine for development but **not** for production.
@@ -257,7 +257,7 @@ Configuration is read from environment variables (via `.env` locally). `make ini
 | Variable | Default | Purpose |
 |----------|---------|---------|
 | `SECRET_KEY` | insecure dev key | Django secret key. **Set a strong value in production.** |
-| `DEBUG` | `True` | Debug mode. **Must be `False` in production** (or use `settings_production`). |
+| `DEBUG` | `True` | Debug mode. **Must be `False` in production** (or use `config.settings.prod`). |
 | `ALLOWED_HOSTS` | `*` | Comma-separated allowed hosts. Restrict in production. |
 | `DATABASE_URL` | *(unset → SQLite)* | Postgres connection string in production. |
 | `REDIS_URL` | *(unset → `redis://localhost:6379/0`)* | Cache + Celery broker. Required in production. |
@@ -274,22 +274,40 @@ Configuration is read from environment variables (via `.env` locally). `make ini
 
 > Never commit `.env` — it's git-ignored. See `.env.example` for the full, annotated list.
 
-**Settings modules:**
+**Settings modules:** live in the `config/settings/` package.
 
-- `chrisdevcode.settings` — the default, used everywhere unless overridden. `DEBUG` defaults to `True`.
-- `chrisdevcode.settings_production` — imports everything from `settings`, then forces `DEBUG=False`
+- `config.settings.base` — shared settings imported by both environment modules. Not selected directly.
+- `config.settings.dev` — the default, used everywhere unless overridden. `DEBUG` defaults to `True`.
+- `config.settings.prod` — imports everything from `base`, then forces `DEBUG=False`
   and enables the security hardening (SSL redirect, secure cookies, HSTS scaffolding, etc.). Select it
-  in production via `DJANGO_SETTINGS_MODULE=chrisdevcode.settings_production`.
+  in production via `DJANGO_SETTINGS_MODULE=config.settings.prod`.
 
 ---
 
 ## Production
 
-Docker Compose runs the full containerized stack — **Postgres, Redis, web, Vite, and a Celery worker
-(with beat)**. The relevant `make` targets are prefixed with `prod-`:
+Docker Compose runs a production-ready stack — **Postgres, Redis, a gunicorn web server, and a
+Celery worker (with beat)**. The web and Celery services share one image built from `Dockerfile`
+(a multi-stage build that compiles the front-end assets with Vite, then installs the production
+Python dependencies) and run with `DJANGO_SETTINGS_MODULE=config.settings.prod`.
+
+**Requirements:** [Docker](https://www.docker.com/get-started) and
+[Docker Compose](https://docs.docker.com/compose/install).
+
+### 1. Configure secrets
 
 ```bash
-make prod-build                    # build the docker images
+make setup-env-prod    # copies .env.prod.example -> .env.prod (git-ignored)
+```
+
+Edit `.env.prod` and set real values — at minimum `SECRET_KEY`, `ALLOWED_HOSTS`,
+`POSTGRES_PASSWORD` / `DATABASE_URL`, and `REDIS_URL`. `DEBUG=False` is required (see the notes in
+the file). For real email, configure `EMAIL_BACKEND` and its credentials (e.g. Mailgun via Anymail).
+
+### 2. Build and run
+
+```bash
+make prod-build                    # build the production image
 make prod-start                    # start the stack (foreground)
 make prod-start-bg                 # start the stack (background)
 make prod-stop                     # stop the stack
@@ -298,49 +316,37 @@ make prod-ssh                      # shell into the running web container
 make prod-manage ARGS='migrate'    # run a manage.py command in the web container
 ```
 
-**Requirements:** [Docker](https://www.docker.com/get-started) and
-[Docker Compose](https://docs.docker.com/compose/install).
+On startup the `web` service **applies migrations and runs `collectstatic` automatically**, then
+serves the app with gunicorn on port `8000`. Static files are served directly by the app via
+[WhiteNoise](https://whitenoise.readthedocs.io/) — no separate web server is required (put a
+TLS-terminating reverse proxy in front for HTTPS; the production settings honour the
+`X-Forwarded-Proto` header).
 
 ### What the stack contains
 
-`docker-compose.yml` defines five services:
+`docker-compose.yml` defines four services:
 
 | Service | Image / build | Role |
 |---------|---------------|------|
 | `db` | `postgres:17` | Postgres database (persisted in the `postgres_data` volume) |
-| `redis` | `redis` | Cache + Celery broker (persisted in `redis_data`) |
-| `web` | `Dockerfile.dev` | Django app on port `8000` |
-| `vite` | `Dockerfile.vite` | Vite asset server on port `5173` |
-| `celery` | `Dockerfile.dev` | Celery worker + beat |
+| `redis` | `redis:7` | Cache + Celery broker (persisted in `redis_data`) |
+| `web` | `Dockerfile` | Django app under gunicorn on port `8000` (runs migrate + collectstatic on boot) |
+| `celery` | `Dockerfile` | Celery worker + beat |
 
-`MY_UID` / `MY_GID` (in the `Makefile`) set the container user/group so files created in mounted
-volumes belong to your host user rather than `root`. The defaults (`1000`) suit most setups.
+Uploaded media persists in the `media_files` volume. `MY_UID` / `MY_GID` (in the `Makefile`) set the
+container user/group so files created in mounted volumes belong to your host user rather than `root`.
+The defaults (`1000`) suit most setups.
 
-### Configuring a real deployment
+### Before going live
 
-The compose stack boots the full multi-service topology, but for a hardened production deployment you
-should:
-
-1. **Use the production settings module:** set `DJANGO_SETTINGS_MODULE=chrisdevcode.settings_production`
-   (forces `DEBUG=False` + security headers).
-2. **Set required environment variables** in the deployment environment (or `.env`):
-   - `SECRET_KEY` — a strong, unique secret.
-   - `ALLOWED_HOSTS` — your real domain(s), not `*`.
-   - `DATABASE_URL` — your Postgres instance.
-   - `REDIS_URL` — your Redis instance (cache + Celery broker).
-   - A real `EMAIL_BACKEND` and its credentials (e.g. Mailgun via Anymail — see `.env.example`).
-3. **Build & collect static assets:** run `make npm-build`, then `collectstatic`
-   (`make prod-manage ARGS='collectstatic --noinput'`). Static files are written to `static_root/`.
-4. **Apply migrations:** `make prod-manage ARGS='migrate'`.
-5. **Serve via a WSGI server.** `gunicorn` is included as a dependency; point it at
-   `chrisdevcode.wsgi` behind a reverse proxy that terminates TLS (the production settings expect the
-   `X-Forwarded-Proto` header).
-
-Validate your configuration before going live:
+Validate the deployment settings:
 
 ```bash
 make prod-manage ARGS='check --deploy'
 ```
+
+Consider also enabling HSTS (see the commented block in `config/settings/prod.py`) once you're
+confident HTTPS works, and scaling `GUNICORN_WORKERS` in `.env.prod` to `(2 × CPU cores) + 1`.
 
 ---
 

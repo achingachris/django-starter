@@ -22,8 +22,11 @@ The project runs in two modes, driven by `DEBUG` and a few env vars:
 - **Local development** runs **natively** (no Docker) via `uv` + `npm` and uses **SQLite**,
   Django's `DummyCache`, and **eager (synchronous) Celery** — so no Postgres or Redis is required.
 - **Production** uses the Docker Compose stack with **Postgres** (database), **Redis** (cache +
-  Celery broker), and a dedicated Celery worker. Select `chrisdevcode.settings_production` and set
+  Celery broker), and a dedicated Celery worker. Select `config.settings.prod` and set
   `DATABASE_URL` / `REDIS_URL` in the environment.
+
+Settings live in the `config/settings/` package: `base.py` (shared), `dev.py` (default, local
+development), and `prod.py` (production). `DJANGO_SETTINGS_MODULE` defaults to `config.settings.dev`.
 
 See `README.md` for full setup details.
 
@@ -52,9 +55,11 @@ make start     # Terminal 1: Django dev server (http://localhost:8000)
 make npm-dev   # Terminal 2: Vite front-end dev server (port 5173)
 ```
 
-To run the full containerized stack instead (Postgres + Redis + web + Vite + Celery):
+To run the production containerized stack instead (Postgres + Redis + gunicorn web + Celery),
+configure `.env.prod` first (`make setup-env-prod`), then:
 
 ```bash
+make prod-build      # build the production image
 make prod-start      # foreground
 make prod-start-bg   # background
 make prod-stop       # stop the containers

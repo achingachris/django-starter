@@ -28,7 +28,7 @@ default_context:
   marketing_email_platform: none
   plugins: []
   post_process: y
-  project_name: chrisdevcode-django-templare
+  project_name: django-template
   project_slug: chrisdevcode
   python_package_manager: uv
   standalone_front_end: none

@@ -1,7 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * chrisdevcode-django-templare
+ * django-template
  * my django template
  *
  * The version of the OpenAPI document: 0.1.0

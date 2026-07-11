@@ -52,7 +52,7 @@ test: ## Run Django tests
 	@uv run python manage.py test ${ARGS}
 
 celery: ## Run a Celery worker with beat (requires a running Redis broker)
-	@uv run celery -A chrisdevcode worker -l INFO --beat --pool=solo
+	@uv run celery -A config worker -l INFO --beat --pool=solo
 
 # -----------------------------------------------------------------------------
 # Python tooling
@@ -119,14 +119,21 @@ generate-api-client: ## Regenerate the TypeScript API client (api-client/) from 
 # -----------------------------------------------------------------------------
 # Production (Docker / docker compose)
 # -----------------------------------------------------------------------------
+# The stack (gunicorn web + Celery + Postgres + Redis) reads secrets from .env.prod
+# and runs with DJANGO_SETTINGS_MODULE=config.settings.prod.
 
-prod-build: ## Build the production docker images
+setup-env-prod: ## Create .env.prod from the template if it doesn't exist
+	@[ ! -f ./.env.prod ] && cp ./.env.prod.example ./.env.prod && \
+		echo "✅ Created .env.prod — fill in real secrets before deploying." || \
+		echo ".env.prod file already exists."
+
+prod-build: setup-env-prod ## Build the production docker images
 	@docker compose build
 
-prod-start: ## Start the production docker containers
+prod-start: setup-env-prod ## Start the production docker containers
 	@docker compose up
 
-prod-start-bg: ## Start the production docker containers in the background
+prod-start-bg: setup-env-prod ## Start the production docker containers in the background
 	@docker compose up -d
 
 prod-stop: ## Stop the production docker containers

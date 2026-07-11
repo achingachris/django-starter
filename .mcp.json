@@ -1,18 +1,16 @@
 {
   "mcpServers": {
-    "postgres": {
+    "sqlite": {
       "command": "uvx",
       "args": [
         "--from",
         "mcp-alchemy==2025.8.15.91819",
-        "--with",
-        "psycopg2-binary",
         "--refresh-package",
         "mcp-alchemy",
         "mcp-alchemy"
       ],
       "env": {
-        "DB_URL": "postgresql://postgres:postgres@localhost:5432/chrisdevcode"
+        "DB_URL": "sqlite:////Users/ca/ChrisDevCode/repos/django-starter/db.sqlite3"
       }
     },
     "playwright": {

@@ -13,6 +13,12 @@
 @plugin "@tailwindcss/typography";
 @plugin "daisyui";
 
+/* Use IBM Plex Mono as the default (sans + mono) font across the app. */
+@theme {
+  --font-sans: "IBM Plex Mono", monospace;
+  --font-mono: "IBM Plex Mono", monospace;
+}
+
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still

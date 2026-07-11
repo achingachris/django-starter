@@ -4,7 +4,7 @@
 
 .help {
   /* forms */
-  @apply text-xs text-gray-700 dark:text-gray-300;
+  @apply text-xs text-base-content/60;
 }
 
 .app-card {
