@@ -16,7 +16,7 @@ if "DATABASE_URL" not in env:
 
 DATABASES = {"default": env.db("DATABASE_URL")}
 
-if "postgresql" not in DATABASES["default"].get("ENGINE", ""):
+if "postgresql" not in str(DATABASES["default"].get("ENGINE", "")):
     raise ImproperlyConfigured("Production requires a PostgreSQL DATABASE_URL.")
 
 # Serve static files directly from the app via WhiteNoise (no separate web server / CDN required).
