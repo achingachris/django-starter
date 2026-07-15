@@ -1,6 +1,6 @@
-# ChrisDevCode Django Project Starter Template
+# Django Project Starter Template
 
-> Django (Server Only) starter template, built with [SaaS Pegasus](https://www.saaspegasus.com/).
+> Django (Server Only) starter template, inherited from [SaaS Pegasus](https://www.saaspegasus.com/).
 
 This project runs in **two distinct modes**:
 
