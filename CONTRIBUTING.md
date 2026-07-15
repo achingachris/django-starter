@@ -135,5 +135,3 @@ New features and bug fixes should include tests covering the change.
   `{% vite_asset %}`.
 - Use Django signals sparingly and document them well.
 - Always validate user input server-side.
-
-
