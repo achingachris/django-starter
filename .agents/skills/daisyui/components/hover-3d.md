@@ -1,5 +1,5 @@
 ### hover-3d
-Hover 3D is a wrapper component that adds a 3D hover effect to its content. When we hover over the component, it tilts and rotates based on the mouse position, creating an interactive 3D effect. 
+Hover 3D is a wrapper component that adds a 3D hover effect to its content. When we hover over the component, it tilts and rotates based on the mouse position, creating an interactive 3D effect.
 
 `hover-3d` works by placing 8 hover zones on top of the content. Each zone detects mouse movement and applies a slight rotation to the content based on the mouse position within that zone. The combined effect of all 8 zones creates a smooth and responsive 3D tilt effect as the user moves their mouse over the component.
 
