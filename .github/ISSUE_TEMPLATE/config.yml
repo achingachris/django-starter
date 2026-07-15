@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question / discussion
+    url: https://github.com/achingachris/django-starter/discussions
+    about: Ask questions or discuss ideas that aren't a concrete bug or feature request.
