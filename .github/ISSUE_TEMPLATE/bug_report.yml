@@ -1,0 +1,64 @@
+name: Bug report
+description: Report something that isn't working correctly
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please search
+        [existing issues](../issues) first to avoid duplicates.
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear and concise description of the bug.
+      placeholder: When I do X, Y happens instead of Z.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Minimal steps to reproduce the behavior.
+      placeholder: |
+        1. Run `make start`
+        2. Go to '...'
+        3. Click on '...'
+        4. See error
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Run mode
+      description: How are you running the project?
+      options:
+        - Local development (native, SQLite)
+        - Production stack (Docker Compose, Postgres + Redis)
+        - Other / not sure
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Python version, Node version, browser (if relevant).
+      placeholder: |
+        - OS: macOS 15
+        - Python: 3.14 (via uv)
+        - Node: 24.x
+        - Browser: Chrome 138
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or tracebacks
+      description: Paste any relevant output. This will be formatted as code automatically.
+      render: shell
