@@ -95,6 +95,25 @@ this project's existing `Dockerfile` + `docker-compose.yml` stack
 (Postgres + Redis + gunicorn + Celery) to a plain Ubuntu VPS, with Nginx
 + Let's Encrypt in front for HTTPS.
 
+## 6. Real dashboard instead of the placeholder home page
+
+Replaced the starter's default `templates/web/app_home.html` (rocket-ship
+graphic + "You're Signed In! Now go make something great!") with an
+actual dashboard, styled around the project's own existing choice of
+`IBM Plex Mono` as the site-wide font (set in `assets/styles/site-tailwind.css`)
+rather than a generic card-grid look:
+
+- A session header (name, avatar, role badge, join date).
+- A terminal-style status panel reporting real account state (auth,
+  role, email-verified, last login) as `>` prompt lines.
+- Quick-action cards linking to real routes: edit profile, change
+  password, and the "Install App" PWA button (relocated here from the
+  nav so it has a real home instead of just floating in the header).
+- An admin-only callout linking to `/admin-dashboard/`, rendered
+  server-side only for users where `is_admin_role` is true — verified
+  with `Client()` tests that the markup is absent for Members, not just
+  hidden with CSS.
+
 ## Files touched
 
 ```
@@ -108,6 +127,7 @@ apps/web/urls.py                                   # + routes for the above
 apps/web/management/commands/runserver.py          # bugfix: py2 except syntax
 apps/web/tests/test_admin_dashboard.py             # new tests
 templates/web/admin_dashboard.html                 # new
+templates/web/app_home.html                        # rebuilt: real dashboard, not placeholder
 templates/web/offline.html                         # new
 templates/web/components/app_nav_menu_items.html   # + admin nav link
 templates/web/components/top_nav.html              # + install-app button

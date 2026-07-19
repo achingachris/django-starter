@@ -2,26 +2,82 @@
 {% load i18n %}
 {% load static %}
 {% block app %}
-<section class="app-card">
-    <div class="flex flex-col space-y-4 lg:flex-row lg:space-x-4 lg:space-y-0 lg:flex-row-reverse items-center">
-        <div class="basis-1/3 grow-0 shrink-0">
-            <img class="img-fluid" src="{% static 'images/web/rocket-laptop.svg' %}" alt="{% translate "Fly Away!" %}">
-        </div>
-        <div class="flex-1">
-            <h1 class="text-3xl font-bold mb-2">{% translate "You're Signed In!" %}</h1>
-            <h2 class="text-xl mb-1">
-                {% translate "This is your application's logged in home page." %}
-            </h2>
-            <p>
-                Now go make something great!
-            </p>
-        </div>
+
+{# ---- Session header: eyebrow + welcome, avatar, role badge ---- #}
+<section class="app-card !pb-6">
+  <div class="flex items-start justify-between gap-6 flex-wrap">
+    <div>
+      <p class="text-xs tracking-[0.2em] uppercase text-base-content/50 mb-2">{% translate "Session" %}</p>
+      <h1 class="text-3xl font-bold mb-1">{% blocktranslate with name=user.first_name|default:user.email %}Welcome back, {{ name }}{% endblocktranslate %}</h1>
+      <p class="text-base-content/60">
+        {% translate "Here's where things stand." %}
+      </p>
     </div>
-</section>
-<section class="app-card">
-    <div class="prose max-w-none lg:prose-lg">
-        <p>To add more to this page you can make new sections like this one.</p>
-        <p>Tip: the source of this page can be found at <code>templates/web/app_home.html</code></p>
+    <div class="flex items-center gap-3">
+      <img src="{{ user.avatar_url }}" alt="" class="w-14 h-14 rounded-full border border-base-300 object-cover">
+      <div>
+        <span class="badge {% if user.is_admin_role %}badge-primary{% else %}badge-ghost{% endif %} font-mono">
+          {{ user.role_display }}
+        </span>
+        <p class="text-xs text-base-content/50 mt-1">{% translate "Joined" %} {{ user.date_joined|date:"M j, Y" }}</p>
+      </div>
     </div>
+  </div>
 </section>
+
+{# ---- Signature element: terminal-style status readout ---- #}
+<section class="app-card !pt-2">
+  <div class="rounded-box border border-base-300 bg-base-200/50 font-mono text-sm overflow-hidden">
+    <div class="px-4 py-2 border-b border-base-300 flex items-center gap-2 text-base-content/50">
+      <span class="w-2 h-2 rounded-full bg-error/60"></span>
+      <span class="w-2 h-2 rounded-full bg-warning/60"></span>
+      <span class="w-2 h-2 rounded-full bg-success/60"></span>
+      <span class="ml-2 text-xs">{% translate "account status" %}</span>
+    </div>
+    <div class="p-4 space-y-1.5">
+      <div class="flex gap-3"><span class="text-success">&gt;</span><span class="text-base-content/50 w-32 shrink-0">auth</span><span>ok — signed in as {{ user.email }}</span></div>
+      <div class="flex gap-3"><span class="text-success">&gt;</span><span class="text-base-content/50 w-32 shrink-0">role</span><span>{{ user.role }}{% if user.is_superuser %} (superuser){% endif %}</span></div>
+      <div class="flex gap-3"><span class="text-success">&gt;</span><span class="text-base-content/50 w-32 shrink-0">email verified</span><span>{% if user.has_verified_email %}yes{% else %}<span class="text-warning">no — check your inbox</span>{% endif %}</span></div>
+      <div class="flex gap-3"><span class="text-success">&gt;</span><span class="text-base-content/50 w-32 shrink-0">last login</span><span>{{ user.last_login|date:"M j, Y, g:i A"|default:"this is your first login" }}</span></div>
+    </div>
+  </div>
+</section>
+
+{# ---- Quick actions: real routes, not filler ---- #}
+<section class="app-card !pt-2">
+  <h2 class="text-xs tracking-[0.2em] uppercase text-base-content/50 mb-3">{% translate "Quick actions" %}</h2>
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <a href="{% url 'users:user_profile' %}" class="card border border-base-300 hover:border-primary transition-colors p-4">
+      <i class="fa fa-user-circle text-xl mb-2 text-primary"></i>
+      <p class="font-semibold">{% translate "Edit profile" %}</p>
+      <p class="text-xs text-base-content/60">{% translate "Update your name and avatar" %}</p>
+    </a>
+    <a href="{% url 'account_change_password' %}" class="card border border-base-300 hover:border-primary transition-colors p-4">
+      <i class="fa fa-key text-xl mb-2 text-primary"></i>
+      <p class="font-semibold">{% translate "Change password" %}</p>
+      <p class="text-xs text-base-content/60">{% translate "Keep your account secure" %}</p>
+    </a>
+    <button id="pwa-install-button" type="button" class="card border border-base-300 hover:border-primary transition-colors p-4 text-left hidden">
+      <i class="fa fa-download text-xl mb-2 text-primary"></i>
+      <p class="font-semibold">{% translate "Install app" %}</p>
+      <p class="text-xs text-base-content/60">{% translate "Add to your home screen, works offline" %}</p>
+    </button>
+  </div>
+</section>
+
+{# ---- Admin-only snapshot ---- #}
+{% if user.is_admin_role %}
+<section class="app-card !pt-2">
+  <div class="rounded-box border border-primary/30 bg-primary/5 p-4 flex items-center justify-between flex-wrap gap-3">
+    <div>
+      <p class="text-xs tracking-[0.2em] uppercase text-primary/70 mb-1">{% translate "Admin" %}</p>
+      <p class="text-sm text-base-content/70">{% translate "You have access to the full user list and role management." %}</p>
+    </div>
+    <a href="{% url 'web:admin_dashboard' %}" class="btn btn-primary btn-sm">
+      {% translate "Open admin dashboard" %} &rarr;
+    </a>
+  </div>
+</section>
+{% endif %}
+
 {% endblock %}
