@@ -114,6 +114,22 @@ rather than a generic card-grid look:
   with `Client()` tests that the markup is absent for Members, not just
   hidden with CSS.
 
+## 7. Verify email + admin role management
+
+- The dashboard's status panel now links straight to allauth's existing
+  "manage email" page (`account_email`) when the user's email isn't
+  verified yet, so there's a real, one-click way to resend the
+  verification email instead of just being told to "check your inbox."
+- The admin dashboard's role column is now an actual control: admins
+  can change any other user's role from a dropdown right in the table.
+  An admin's own row shows a locked, read-only badge instead of the
+  form — and this is enforced server-side in `admin_dashboard`
+  (`apps/web/views.py`), not just hidden in the template, so a crafted
+  POST request can't be used to self-promote or self-demote either.
+- New tests: admin changes another user's role, admin cannot change
+  their own role, a non-admin can't POST a role change at all, and an
+  invalid role value is rejected.
+
 ## Files touched
 
 ```

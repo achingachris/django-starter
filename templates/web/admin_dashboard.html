@@ -37,9 +37,40 @@
           <td>{{ u.get_display_name }}</td>
           <td>{{ u.email }}</td>
           <td>
-            <span class="badge {% if u.role == 'admin' %}badge-primary{% else %}badge-ghost{% endif %}">
-              {{ u.role_display }}
-            </span>
+            {% if u.pk == request.user.pk %}
+              <span class="badge {% if u.role == 'admin' %}badge-primary{% else %}badge-ghost{% endif %}">
+                {{ u.role_display }}
+              </span>
+              <span class="text-xs text-base-content/50 ml-1" title="{% translate "You can't change your own role." %}">
+                <i class="fa fa-lock"></i>
+              </span>
+            {% else %}
+              <form method="post" class="inline-flex items-center gap-1 flex-nowrap">
+                {% csrf_token %}
+                <input type="hidden" name="user_id" value="{{ u.pk }}">
+                <span style="font-family: monospace; font-size: 11px; margin-right: 4px;">
+                  {% translate "now:" %} {{ u.role }}
+                </span>
+                <button
+                  type="submit"
+                  name="role"
+                  value="member"
+                  class="btn btn-sm {% if u.role == 'member' %}btn-primary{% else %}btn-outline{% endif %}"
+                  {% if u.role == 'member' %}disabled{% endif %}
+                >
+                  {% translate "Member" %}
+                </button>
+                <button
+                  type="submit"
+                  name="role"
+                  value="admin"
+                  class="btn btn-sm {% if u.role == 'admin' %}btn-primary{% else %}btn-outline{% endif %}"
+                  {% if u.role == 'admin' %}disabled{% endif %}
+                >
+                  {% translate "Admin" %}
+                </button>
+              </form>
+            {% endif %}
           </td>
           <td>{{ u.date_joined|date:"M j, Y" }}</td>
         </tr>

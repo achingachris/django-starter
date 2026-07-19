@@ -37,7 +37,7 @@
     <div class="p-4 space-y-1.5">
       <div class="flex gap-3"><span class="text-success">&gt;</span><span class="text-base-content/50 w-32 shrink-0">auth</span><span>ok — signed in as {{ user.email }}</span></div>
       <div class="flex gap-3"><span class="text-success">&gt;</span><span class="text-base-content/50 w-32 shrink-0">role</span><span>{{ user.role }}{% if user.is_superuser %} (superuser){% endif %}</span></div>
-      <div class="flex gap-3"><span class="text-success">&gt;</span><span class="text-base-content/50 w-32 shrink-0">email verified</span><span>{% if user.has_verified_email %}yes{% else %}<span class="text-warning">no — check your inbox</span>{% endif %}</span></div>
+      <div class="flex gap-3"><span class="text-success">&gt;</span><span class="text-base-content/50 w-32 shrink-0">email verified</span><span>{% if user.has_verified_email %}yes{% else %}<span class="text-warning">no</span> — <a href="{% url 'account_email' %}" class="link link-primary">{% translate "verify your email" %}</a>{% endif %}</span></div>
       <div class="flex gap-3"><span class="text-success">&gt;</span><span class="text-base-content/50 w-32 shrink-0">last login</span><span>{{ user.last_login|date:"M j, Y, g:i A"|default:"this is your first login" }}</span></div>
     </div>
   </div>
