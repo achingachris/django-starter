@@ -1,6 +1,9 @@
 {
-    "name": "",
-    "short_name": "",
+    "name": "ChrisDevCode",
+    "short_name": "ChrisDevCode",
+    "description": "A Django starter app with auth, roles and offline support.",
+    "start_url": "/",
+    "scope": "/",
     "icons": [
         {
             "src": "./android-chrome-192x192.png",

@@ -4,3 +4,4 @@ import './htmx';
 import './mock-i18n';
 import './alpine';
 import './logout';
+import './pwa';

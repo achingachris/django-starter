@@ -17,6 +17,10 @@
       </div>
     </div>
     <div class="navbar-end">
+      <button id="pwa-install-button" class="btn btn-ghost btn-sm hidden mr-2" type="button">
+        <i class="fa fa-download h-4 w-4"></i>
+        {% translate "Install App" %}
+      </button>
       {% if user.is_authenticated %}
       {% else %}
       <a href="{% url 'account_signup' %}" class="btn btn-primary">

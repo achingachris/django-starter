@@ -1,0 +1,82 @@
+{% extends "web/app/app_base.html" %}
+{% load i18n %}
+{% block app %}
+<section class="app-card">
+  <h1 class="text-2xl font-bold mb-4">{% translate "Admin Dashboard" %}</h1>
+  <p class="mb-6 text-sm opacity-70">
+    {% translate "This page is only visible to users with the Admin role." %}
+  </p>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+    <div class="stat bg-base-200 rounded-box">
+      <div class="stat-title">{% translate "Total Members" %}</div>
+      <div class="stat-value">{{ member_count }}</div>
+    </div>
+    <div class="stat bg-base-200 rounded-box">
+      <div class="stat-title">{% translate "Total Admins" %}</div>
+      <div class="stat-value">{{ admin_count }}</div>
+    </div>
+  </div>
+
+  <h2 class="text-lg font-semibold mb-2">{% translate "All Users" %}</h2>
+  <div class="overflow-x-auto">
+    <table class="table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>{% translate "Name" %}</th>
+          <th>{% translate "Email" %}</th>
+          <th>{% translate "Role" %}</th>
+          <th>{% translate "Joined" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td><img class="w-8 h-8 rounded-full" src="{{ u.avatar_url }}" alt=""></td>
+          <td>{{ u.get_display_name }}</td>
+          <td>{{ u.email }}</td>
+          <td>
+            {% if u.pk == request.user.pk %}
+              <span class="badge {% if u.role == 'admin' %}badge-primary{% else %}badge-ghost{% endif %}">
+                {{ u.role_display }}
+              </span>
+              <span class="text-xs text-base-content/50 ml-1" title="{% translate "You can't change your own role." %}">
+                <i class="fa fa-lock"></i>
+              </span>
+            {% else %}
+              <form method="post" class="inline-flex items-center gap-1 flex-nowrap">
+                {% csrf_token %}
+                <input type="hidden" name="user_id" value="{{ u.pk }}">
+                <span style="font-family: monospace; font-size: 11px; margin-right: 4px;">
+                  {% translate "now:" %} {{ u.role }}
+                </span>
+                <button
+                  type="submit"
+                  name="role"
+                  value="member"
+                  class="btn btn-sm {% if u.role == 'member' %}btn-primary{% else %}btn-outline{% endif %}"
+                  {% if u.role == 'member' %}disabled{% endif %}
+                >
+                  {% translate "Member" %}
+                </button>
+                <button
+                  type="submit"
+                  name="role"
+                  value="admin"
+                  class="btn btn-sm {% if u.role == 'admin' %}btn-primary{% else %}btn-outline{% endif %}"
+                  {% if u.role == 'admin' %}disabled{% endif %}
+                >
+                  {% translate "Admin" %}
+                </button>
+              </form>
+            {% endif %}
+          </td>
+          <td>{{ u.date_joined|date:"M j, Y" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

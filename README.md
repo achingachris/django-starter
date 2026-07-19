@@ -2,6 +2,11 @@
 
 > Django (Server Only) starter template, inherited from [SaaS Pegasus](https://www.saaspegasus.com/).
 
+> 📌 New to this fork? See [**WHATS_NEW.md**](./WHATS_NEW.md) for the
+> full user-flow / two-role / PWA additions on top of the base template,
+> and [**DEPLOYMENT.md**](./DEPLOYMENT.md) to deploy it on a VPS.
+
+
 This project runs in **two distinct modes**:
 
 | Mode | How it runs | Database | Cache / broker | Celery | Used for |

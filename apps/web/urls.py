@@ -7,6 +7,9 @@ from . import views
 app_name = "web"
 urlpatterns = [
     path("", views.home, name="home"),
+    path("admin-dashboard/", views.admin_dashboard, name="admin_dashboard"),
+    path("offline/", views.offline, name="offline"),
+    path("service-worker.js", views.service_worker, name="service_worker"),
     path("terms/", TemplateView.as_view(template_name="web/terms.html"), name="terms"),
     path("robots.txt", TemplateView.as_view(template_name="robots.txt", content_type="text/plain"), name="robots.txt"),
     # these views are just for testing error pages

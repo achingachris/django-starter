@@ -1,10 +1,28 @@
 import os
+from functools import wraps
 
 from allauth.account import app_settings
 from allauth.account.models import EmailAddress
 from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
+from django.shortcuts import redirect
 from django.utils.translation import gettext as _
+
+
+def admin_role_required(view_func):
+    """Restrict a view to users whose role is Admin (or Django superusers)."""
+
+    @login_required
+    @wraps(view_func)
+    def _wrapped(request, *args, **kwargs):
+        if not request.user.is_admin_role:
+            messages.error(request, _("You don't have permission to access that page."))
+            return redirect("web:home")
+        return view_func(request, *args, **kwargs)
+
+    return _wrapped
 
 
 def require_email_confirmation():
