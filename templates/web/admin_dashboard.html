@@ -1,0 +1,51 @@
+{% extends "web/app/app_base.html" %}
+{% load i18n %}
+{% block app %}
+<section class="app-card">
+  <h1 class="text-2xl font-bold mb-4">{% translate "Admin Dashboard" %}</h1>
+  <p class="mb-6 text-sm opacity-70">
+    {% translate "This page is only visible to users with the Admin role." %}
+  </p>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+    <div class="stat bg-base-200 rounded-box">
+      <div class="stat-title">{% translate "Total Members" %}</div>
+      <div class="stat-value">{{ member_count }}</div>
+    </div>
+    <div class="stat bg-base-200 rounded-box">
+      <div class="stat-title">{% translate "Total Admins" %}</div>
+      <div class="stat-value">{{ admin_count }}</div>
+    </div>
+  </div>
+
+  <h2 class="text-lg font-semibold mb-2">{% translate "All Users" %}</h2>
+  <div class="overflow-x-auto">
+    <table class="table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>{% translate "Name" %}</th>
+          <th>{% translate "Email" %}</th>
+          <th>{% translate "Role" %}</th>
+          <th>{% translate "Joined" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td><img class="w-8 h-8 rounded-full" src="{{ u.avatar_url }}" alt=""></td>
+          <td>{{ u.get_display_name }}</td>
+          <td>{{ u.email }}</td>
+          <td>
+            <span class="badge {% if u.role == 'admin' %}badge-primary{% else %}badge-ghost{% endif %}">
+              {{ u.role_display }}
+            </span>
+          </td>
+          <td>{{ u.date_joined|date:"M j, Y" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
