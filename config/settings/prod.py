@@ -32,6 +32,15 @@ STORAGES["staticfiles"]["BACKEND"] = "whitenoise.storage.CompressedStaticFilesSt
 # fix ssl mixed content issues
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
+# POST forms behind the TLS proxy send an https Origin that must be trusted explicitly.
+# Add custom domains here, e.g. CSRF_TRUSTED_ORIGINS="https://app.example.com"
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=["https://*.vercel.app"])
+
+# Redis is optional in production (e.g. serverless deployments without a broker):
+# fall back to a process-local cache so `django-waffle` flag checks don't crash.
+if not env("REDIS_URL", default=""):
+    CACHES["default"] = {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}
+
 # Django security checklist settings.
 # More details here: https://docs.djangoproject.com/en/stable/howto/deployment/checklist/
 SECURE_SSL_REDIRECT = True
@@ -65,4 +74,4 @@ USE_HTTPS_IN_ABSOLUTE_URLS = True
 #     "MAILGUN_SENDER_DOMAIN": env("MAILGUN_SENDER_DOMAIN", default=None),
 # }
 
-ADMINS = ["achinga.chris@gmail.com"]
+ADMINS = ["vicmutua254@gmail.com"]

@@ -1,0 +1,13 @@
+# keep deploys small and secrets out of Vercel
+.env
+.env.prod
+db.sqlite3
+media/
+node_modules/
+.git/
+.github/
+.venv/
+*.pyc
+__pycache__/
+static_root/
+.tmp/

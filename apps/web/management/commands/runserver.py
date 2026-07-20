@@ -48,7 +48,9 @@ class Command(StaticfilesRunserverCommand):
             if username_field != "email":
                 create_kwargs[username_field] = email
             user_model.objects.create_superuser(**create_kwargs)
-        except OperationalError, ProgrammingError:
+        # NOTE: keep the parentheses - py3.14-style bare multi-except breaks Python <= 3.13.
+        # (ruff targets py314 and would strip them, hence the fmt: skip.)
+        except (OperationalError, ProgrammingError):  # fmt: skip
             # Database isn't migrated yet — skip quietly; `make migrate` will set it up.
             self.stdout.write(
                 self.style.WARNING("Skipping dev superuser creation: database not ready (run migrations).")

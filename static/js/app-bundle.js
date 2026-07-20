@@ -1,0 +1,1 @@
+import{n as e,t}from"./csrf-C7XvwPHf.js";window.SiteJS===void 0&&(window.SiteJS={}),window.SiteJS.app={Cookies:e,getCsrfToken:t};

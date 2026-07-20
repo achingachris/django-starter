@@ -1,0 +1,18 @@
+# Vercel deployment dependencies (what @vercel/python installs).
+# Dev-only tooling (linters, debug toolbar, etc.) and gunicorn are intentionally
+# excluded: Vercel runs the app serverlessly via the WSGI entrypoint.
+
+Django>=6.0
+django-allauth>=65.13.0
+django-anymail[mailgun]
+django-environ
+django-htmx
+django-vite>=3.1.0
+django-waffle
+djangorestframework
+drf-spectacular
+celery
+celery-progress
+django-celery-beat
+psycopg[binary]
+whitenoise>=6.12.0

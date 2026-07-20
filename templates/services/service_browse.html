@@ -1,0 +1,27 @@
+{% extends "web/app/app_base.html" %}
+{% load i18n %}
+{% block app %}
+<section class="app-card">
+  <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+    <div>
+      <h1 class="text-2xl font-bold">{% translate "Browse Services" %}</h1>
+      <p class="text-base-content/70">{% translate "Find and book the service you need." %}</p>
+    </div>
+    <form class="w-full max-w-xs" method="get">
+      <label class="input input-bordered flex items-center gap-2 w-full">
+        <i class="fa fa-search opacity-60"></i>
+        <input type="search" name="q" value="{{ query }}" class="grow"
+               placeholder="{% translate "Search services or providers…" %}"
+               hx-get="{% url 'services:service_browse' %}"
+               hx-trigger="keyup changed delay:400ms, search"
+               hx-target="#service-grid" hx-swap="innerHTML"
+               hx-include="this">
+      </label>
+    </form>
+  </div>
+
+  <div id="service-grid">
+    {% include "services/partials/service_cards.html" %}
+  </div>
+</section>
+{% endblock %}

@@ -1,35 +1,124 @@
-.idea
-.vscode
-*.code-workspace
-*.pyc
-*~
-.venv
-/.vite/
-venv
-db.sqlite3
-.sass-cache/
-celerybeat-schedule
-chrisdevcode/localsettings.py
-chrisdevcode/local.py
-static_root/
-node_modules/
-# ai assistants
-.playwright-mcp/
-.claude/settings.local.json
-openapitools.json
-# transient OpenAPI schema written by `make generate-api-client`
-schema.yaml
-media/
-docs/_build
-_dist/
+# ============================================
+# Python / Django
+# ============================================
+*.py[cod]
+*$py.class
+*.pyo
+__pycache__/
+**/__pycache__/
+*.so
+
+# Environments
 .env
+.env.*
+!.env.example
+!.env.prod.example
 .env.prod
-.env.production
-.DS_Store
-.direnv
+.venv/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+*.sqlite3
+*.db
+static_root/
+media/
+local_settings.py
+localsettings.py
+chrisdevcode/local.py
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# ============================================
+# Testing / Linting / Coverage
+# ============================================
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+*.cover
+*.py,cover
+.hypothesis/
+test-results/
+
+# ============================================
+# Node.js / Frontend
+# ============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+bun.lockb
+.vite/
+dist/
+build/
+.cache/
+
+# ============================================
+# Environment / Secrets / Keys
+# ============================================
+*.pem
+*.key
+*.p12
+*.pfx
+*.p8
+*.secret
+*.credentials
+credentials.json
+secrets/
+secret.json
+id_rsa
+id_ed25519
+*.ppk
+*.gpg
+.gnupg/
+
+# ============================================
+# Direnv / Shell
+# ============================================
+.direnv/
 .envrc
-# compiled static files are built in dev/deploy
-static/assets/
-static/css/
-static/js/
-static/.vite/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ============================================
+# Logs
+# ============================================
+*.log
+logs/
+log/
+
+# ============================================
+# Generated / Build Artifacts
+# ============================================
+schema.yaml
+openapitools.json
+docs/_build/
+_dist/
+*.egg-info/
+.eggs/
+dist/
+build/
+MANIFEST
+
+# ============================================
+# Docker / Infrastructure
+# ============================================
+docker-compose.override.yml
+# Local Docker volumes (not committed, but good to be explicit)
+postgres_data/
+redis_data/
+media_files/

@@ -8,15 +8,17 @@
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
         </button>
       </div>
+      <a href="{% url 'web:home' %}" class="ml-1 hover:opacity-90 transition-opacity">
+        {% include "web/components/logo.html" %}
+      </a>
     </div>
-    <div class="navbar-center hidden lg:flex">
-      <div role="tablist" class="tabs p-0">
-        <a class="tab {% if request.path == '/' %}tab-active{% endif %}" href="{% url 'web:home' %}">
-          <div>{{project_meta.NAME}}</div>
-        </a>
-      </div>
-    </div>
+    <div class="navbar-center hidden lg:flex"></div>
     <div class="navbar-end">
+      <button id="theme-toggle" type="button" class="btn btn-ghost btn-circle mr-1"
+              aria-label="{% translate "Toggle dark mode" %}" title="{% translate "Toggle dark mode" %}">
+        <i data-theme-icon="moon" class="fa fa-moon"></i>
+        <i data-theme-icon="sun" class="fa fa-sun hidden"></i>
+      </button>
       {% if user.is_authenticated %}
       {% else %}
       <a href="{% url 'account_signup' %}" class="btn btn-primary">
@@ -49,7 +51,7 @@
            x-transition:leave-end="-translate-x-full"
            class="fixed inset-y-0 left-0 w-64 bg-base-100 shadow-xl overflow-y-auto">
         <div class="flex items-center justify-between p-4 border-b border-base-200">
-          <span class="font-semibold text-lg">{{ project_meta.NAME }}</span>
+          {% include "web/components/logo.html" %}
           <button @click="mobileMenuOpen = false" class="btn btn-ghost btn-sm">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

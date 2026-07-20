@@ -22,6 +22,7 @@ from django.urls import include, path
 from django.views.generic import RedirectView
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
+from apps.services.views import booking_reminders_cron
 from apps.web.sitemaps import StaticViewSitemap
 
 sitemaps = {
@@ -33,8 +34,17 @@ urlpatterns = [
     path("admin/login/", RedirectView.as_view(pattern_name="account_login")),
     path("admin/", admin.site.urls),
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="django.contrib.sitemaps.views.sitemap"),
+    # OTP based auth flow (registration / login / sign-in codes / password reset with
+    # e-mailed one-time codes, password change). Mounted BEFORE allauth so these
+    # routes win over the matching allauth paths.
+    path("accounts/", include("apps.users.auth_urls")),
     path("accounts/", include("allauth.urls")),
     path("users/", include("apps.users.urls")),
+    # service marketplace
+    path("services/", include("apps.services.urls")),
+    path("api/", include("apps.services.api.urls")),
+    # HTTP cron endpoint (Vercel Cron Jobs - replaces celery-beat on serverless)
+    path("internal/cron/booking-reminders/", booking_reminders_cron, name="cron_booking_reminders"),
     path("", include("apps.web.urls")),
     path("celery-progress/", include("celery_progress.urls")),
     # API docs.

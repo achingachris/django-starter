@@ -72,6 +72,7 @@ THIRD_PARTY_APPS = [
 # Put your project-specific apps here
 PROJECT_APPS = [
     "apps.users.apps.UserConfig",
+    "apps.services.apps.ServicesConfig",
     "apps.web",
 ]
 
@@ -299,12 +300,31 @@ FORMS_URLFIELD_ASSUME_HTTPS = True
 # Email setup
 
 # default email used by your server
-SERVER_EMAIL = env("SERVER_EMAIL", default="noreply@localhost:8000")
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="achinga.chris@gmail.com")
+SERVER_EMAIL = env("SERVER_EMAIL", default="vicmutua254@gmail.com")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="vicmutua254@gmail.com")
 
-# The default value will print emails to the console, but you can change that here
-# and in your environment.
-EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
+# SMTP configuration (Gmail by default). All values can be overridden from the
+# environment / .env file. Gmail requires an *App Password* in EMAIL_HOST_PASSWORD.
+# For local development without SMTP credentials, set:
+#   EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
+EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")
+EMAIL_HOST = env("EMAIL_HOST", default="smtp.gmail.com")
+EMAIL_PORT = env.int("EMAIL_PORT", default=587)
+EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="vicmutua254@gmail.com")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
+
+# Dev convenience: Gmail rejects SMTP logins without an App Password, which would break
+# the OTP flows on a fresh clone. When DEBUG is on and no SMTP password is configured,
+# fall back to the console backend so verification codes are printed in the runserver
+# terminal instead of being e-mailed. Set EMAIL_HOST_PASSWORD to send real e-mails.
+if DEBUG and EMAIL_BACKEND == "django.core.mail.backends.smtp.EmailBackend" and not EMAIL_HOST_PASSWORD:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+    print(
+        "\n  [email] EMAIL_HOST_PASSWORD is empty — using the console e-mail backend."
+        "\n  [email] OTP codes will be printed in this terminal. Set EMAIL_HOST_PASSWORD"
+        "\n  [email] (a Gmail App Password) in .env to send real e-mails.\n"
+    )
 
 # Most production backends will require further customization. The below example uses Mailgun.
 # ANYMAIL = {
@@ -316,7 +336,19 @@ EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.console.
 # see https://github.com/anymail/django-anymail for more details/examples
 # EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
 
-EMAIL_SUBJECT_PREFIX = "[django-template] "
+EMAIL_SUBJECT_PREFIX = "[Sokoni] "
+
+# Secret shared with Vercel Cron Jobs: required in production for the HTTP cron endpoint
+# (internal/cron/booking-reminders/). Generate a random value and set it as a Vercel env var.
+CRON_SECRET = env("CRON_SECRET", default="")
+
+# OTP (one-time-passcode) authentication settings -------------------------------------------
+# Used by the e-mail OTP flows in apps.users (signup verification, sign-in codes,
+# and password resets). Codes are e-mailed automatically when a flow form is submitted.
+OTP_CODE_LENGTH = env.int("OTP_CODE_LENGTH", default=6)
+OTP_EXPIRY_MINUTES = env.int("OTP_EXPIRY_MINUTES", default=10)
+OTP_MAX_VERIFY_ATTEMPTS = env.int("OTP_MAX_VERIFY_ATTEMPTS", default=5)
+OTP_RESEND_COOLDOWN_SECONDS = env.int("OTP_RESEND_COOLDOWN_SECONDS", default=60)
 
 # Django sites
 
@@ -371,13 +403,14 @@ CELERY_TASK_ALWAYS_EAGER = env.bool("CELERY_TASK_ALWAYS_EAGER", default=DEBUG)
 CELERY_TASK_EAGER_PROPAGATES = True
 
 # Add tasks to this dict and run `python manage.py bootstrap_celery_tasks` to create them
+from celery import schedules  # noqa: E402
+
 SCHEDULED_TASKS: dict[str, Any] = {
-    # Example of a crontab schedule
-    # from celery import schedules
-    # "daily-4am-task": {
-    #     "task": "some.task.path",
-    #     "schedule": schedules.crontab(minute=0, hour=4),
-    # },
+    # e-mail clients & providers the day before a confirmed booking
+    "hourly-booking-reminders": {
+        "task": "apps.services.tasks.send_booking_reminders",
+        "schedule": schedules.crontab(minute=0),
+    },
 }
 
 
@@ -385,12 +418,14 @@ SCHEDULED_TASKS: dict[str, Any] = {
 
 # replace any values below with specifics for your project
 PROJECT_METADATA = {
-    "NAME": gettext_lazy("django-template"),
+    "NAME": gettext_lazy("Sokoni"),
     "URL": "http://localhost:8000",
-    "DESCRIPTION": gettext_lazy("my django template"),  # noqa: E501
+    "DESCRIPTION": gettext_lazy(
+        "Kenya's service marketplace — book trusted local pros in minutes, or list your services and get booked."
+    ),
     "IMAGE": "https://upload.wikimedia.org/wikipedia/commons/2/20/PEO-pegasus_black.svg",
-    "KEYWORDS": "SaaS, django",
-    "CONTACT_EMAIL": "achinga.chris@gmail.com",
+    "KEYWORDS": "service marketplace, bookings, appointments, kenya",
+    "CONTACT_EMAIL": "vicmutua254@gmail.com",
 }
 
 # set this to True in production to have URLs generated with https instead of http

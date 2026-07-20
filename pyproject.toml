@@ -99,3 +99,15 @@ prod = [
     "psycopg[c]",
     "whitenoise>=6.12.0",
 ]
+
+# ---------------------------------------------------------------------------
+# Vercel deployment (https://vercel.com/docs/frameworks/full-stack/django)
+# ---------------------------------------------------------------------------
+[tool.vercel]
+# Vercel auto-detects Django via manage.py; this pins the entrypoint explicitly.
+entrypoint = "config.wsgi:application"
+
+[tool.vercel.scripts]
+# Runs after dependency installation, before deploy. Migrates the database when
+# DATABASE_URL is available (it no-ops gracefully otherwise).
+build = "python build.py"

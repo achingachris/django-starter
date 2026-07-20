@@ -1,0 +1,49 @@
+{% extends "web/base.html" %}
+{% load i18n %}
+{% load static %}
+{% load form_tags %}
+{% block body %}
+  <div class="flex justify-center my-8">
+    <div class="w-96 max-w-full px-4 py-4 card bg-base-100 border border-base-300">
+      <div class="card-body">
+        {% include "otp_account/partials/brand_header.html" %}
+        <h2 class="text-center text-2xl font-bold">
+          {% translate "Sign Up" %}
+        </h2>
+        <p class="text-center text-sm text-base-content/70">
+          {% translate "Create your account - we'll e-mail you a verification code to confirm it's you." %}
+        </p>
+        <form class="mt-6 space-y-6" method="post">
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+          {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+          {% render_field form.email %}
+          {% render_field form.password1 %}
+          {% render_field form.password2 %}
+          <div class="w-full mt-2">
+            <label class="block mb-1 font-bold">{{ form.user_type.label }}</label>
+            <div class="flex flex-col gap-2">
+              {% for radio in form.user_type %}
+              <label class="cursor-pointer flex items-center gap-2 border border-base-300 rounded-lg px-3 py-2 has-checked:border-primary has-checked:bg-primary/5">
+                {{ radio.tag }}
+                <span class="text-sm">{{ radio.choice_label }}</span>
+              </label>
+              {% endfor %}
+            </div>
+            {{ form.user_type.errors }}
+          </div>
+          {% render_field form.terms_agreement %}
+          <div>
+            <input class="btn btn-primary btn-block" type="submit" value="{% translate "Sign Up" %}">
+          </div>
+        </form>
+        <div class="text-sm mt-4">
+          {% translate "Already have an account?" %}
+          <a href="{% url 'account_login' %}" class="font-medium pg-link">
+            {% translate "Go to sign in." %}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

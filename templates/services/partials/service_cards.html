@@ -1,0 +1,46 @@
+{% load i18n %}
+{# Card grid; swapped by the live search. #}
+{% if page_obj.object_list %}
+<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  {% for service in page_obj.object_list %}
+  <a href="{% url 'services:service_detail' service.pk %}" class="card bg-base-100 border border-base-300 hover:border-primary hover:shadow transition">
+    <div class="card-body p-4">
+      <div class="flex items-start justify-between gap-2">
+        <h3 class="font-bold">{{ service.title }}</h3>
+        <span class="badge badge-outline whitespace-nowrap">{{ service.duration_display }}</span>
+      </div>
+      <p class="text-sm text-base-content/70 line-clamp-3">{{ service.description }}</p>
+      <div class="flex items-center justify-between mt-2">
+        <div class="flex items-center gap-2">
+          <img src="{{ service.provider.avatar_url }}" alt="" class="w-6 h-6 rounded-full object-cover">
+          <span class="text-sm">{{ service.provider.get_display_name }}</span>
+        </div>
+        <span class="font-bold text-primary">KES {{ service.price|floatformat:2 }}</span>
+      </div>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+
+{% if page_obj.paginator.num_pages > 1 %}
+<div class="join mt-6">
+  {% if page_obj.has_previous %}
+    <a class="join-item btn btn-sm" href="?page=1{% if query %}&q={{ query }}{% endif %}">«</a>
+    <a class="join-item btn btn-sm" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">‹</a>
+  {% endif %}
+  <span class="join-item btn btn-sm btn-disabled">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}
+    <a class="join-item btn btn-sm" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}">›</a>
+    <a class="join-item btn btn-sm" href="?page={{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}">»</a>
+  {% endif %}
+</div>
+{% endif %}
+{% else %}
+<div class="text-center py-10 text-base-content/60">
+  {% if query %}
+    {% blocktranslate trimmed %}No services match “{{ query }}”.{% endblocktranslate %}
+  {% else %}
+    {% translate "No services are available yet. Check back soon!" %}
+  {% endif %}
+</div>
+{% endif %}

@@ -2,13 +2,22 @@
 {% load django_vite %}
 {% load meta_tags %}
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <!--IE compatibility-->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!--Mobile friendly-->
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--Apply a saved theme choice before first paint (avoids a light flash in dark mode)-->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('sokoni-theme');
+          if (t) document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
+    </script>
     <!--CSRF cookie name, read by front-end JS (see assets/javascript/csrf.js)-->
     <meta name="csrf-cookie-name" content="{{ csrf_cookie_name }}">
 {% block meta %}
@@ -40,7 +49,7 @@
 {% include 'web/components/favicon.html' %}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% vite_asset_url 'assets/styles/site-base.css' %}">
     <link rel="stylesheet" href="{% vite_asset_url 'assets/styles/site-tailwind.css' %}">
 
@@ -70,5 +79,29 @@
   {% include 'web/components/messages-js.html' %}
 {% block page_js %}
 {% endblock page_js %}
+<script>
+  // Sokoni light/dark theme toggle (choice persisted in localStorage)
+  function sokoniCurrentTheme() {
+    return document.documentElement.getAttribute('data-theme') ||
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'sokoni-dark' : 'sokoni');
+  }
+  function sokoniUpdateIcon(theme) {
+    var btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    btn.querySelector('[data-theme-icon="moon"]').classList.toggle('hidden', theme === 'sokoni-dark');
+    btn.querySelector('[data-theme-icon="sun"]').classList.toggle('hidden', theme !== 'sokoni-dark');
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    var btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    sokoniUpdateIcon(sokoniCurrentTheme());
+    btn.addEventListener('click', function () {
+      var next = sokoniCurrentTheme() === 'sokoni-dark' ? 'sokoni' : 'sokoni-dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('sokoni-theme', next); } catch (e) {}
+      sokoniUpdateIcon(next);
+    });
+  });
+</script>
 </body>
 </html>

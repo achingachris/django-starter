@@ -12,17 +12,20 @@
       <i class="fa fa-times"></i>
     </button>
   </div>
-  <section class="section" hx-on::response-error="document.getElementById('htmx-error').classList.remove('hidden')">
-    <div class="container flex flex-row">
-      <div class="w-64 hidden lg:flex lg:sticky lg:top-21 lg:self-start">
-        {% block sidebar-nav %}
-          {% include "web/components/app_nav.html" %}
-        {% endblock %}
+  <div class="app-shell" hx-on::response-error="document.getElementById('htmx-error').classList.remove('hidden')">
+    <section class="section">
+      {% block page_banner %}{% endblock %}
+      <div class="container flex flex-row">
+        <div class="w-64 hidden lg:flex lg:sticky lg:top-21 lg:self-start">
+          {% block sidebar-nav %}
+            {% include "web/components/app_nav.html" %}
+          {% endblock %}
+        </div>
+        <div class="w-full min-w-0">
+          {% block app %}
+          {% endblock %}
+        </div>
       </div>
-      <div class="w-full min-w-0">
-        {% block app %}
-        {% endblock %}
-      </div>
-    </div>
-  </section>
+    </section>
+  </div>
 {% endblock %}

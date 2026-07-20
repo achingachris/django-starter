@@ -1,9 +1,26 @@
 {% load i18n %}
-<footer class="p-6 mt-16 border-t footer footer-center border-base-300 text-base-content/60">
-  <div x-data>
-    <p>{{ project_meta.NAME }} &mdash; {% translate "Copyright" %} <span x-text="new Date().getFullYear()">2024</span></p>
-    <p class="text-sm">
-      {% blocktranslate trimmed %}adapted from 🦄 Built with <a class="link link-hover" href="https://www.saaspegasus.com/" target="_blank">SaaS Pegasus</a> by chris achinga{% endblocktranslate %}
-    </p>
+<footer class="mt-24 border-t border-base-300 bg-base-200/60">
+  <div class="footer sm:footer-horizontal p-10 max-w-(--breakpoint-xl) mx-auto text-base-content/70">
+    <aside>
+      {% include "web/components/logo.html" with size="h-10" %}
+      <p class="max-w-xs mt-2">
+        {% translate "The marketplace for local services — book trusted pros near you, or list your skills and get booked." %}
+      </p>
+    </aside>
+    <nav>
+      <h6 class="footer-title text-base-content">{% translate "Marketplace" %}</h6>
+      <a class="link link-hover" href="{% url 'services:service_browse' %}">{% translate "Browse services" %}</a>
+      <a class="link link-hover" href="{% url 'account_signup' %}">{% translate "Become a provider" %}</a>
+      <a class="link link-hover" href="{% url 'web:terms' %}">{% translate "Terms" %}</a>
+    </nav>
+    <nav>
+      <h6 class="footer-title text-base-content">{% translate "Account" %}</h6>
+      <a class="link link-hover" href="{% url 'account_login' %}">{% translate "Sign in" %}</a>
+      <a class="link link-hover" href="{% url 'account_signup' %}">{% translate "Create account" %}</a>
+      <a class="link link-hover" href="{% url 'account_reset_password' %}">{% translate "Reset password" %}</a>
+    </nav>
+  </div>
+  <div class="border-t border-base-300 py-4 text-center text-sm text-base-content/50" x-data>
+    {{ project_meta.NAME }} — {% translate "Copyright" %} <span x-text="new Date().getFullYear()">2026</span>
   </div>
 </footer>

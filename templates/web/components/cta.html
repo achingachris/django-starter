@@ -1,12 +1,12 @@
 {% load i18n %}
 <section class="px-4 py-16">
-  <div class="mx-auto max-w-(--breakpoint-xl) card bg-base-200">
-    <div class="items-center gap-6 text-center card-body lg:flex-row lg:justify-between lg:text-left">
+  <div class="mx-auto max-w-(--breakpoint-xl) card bg-linear-to-r from-primary to-[#0fb5a3] text-primary-content shadow-xl">
+    <div class="items-center gap-6 text-center card-body lg:flex-row lg:justify-between lg:text-left py-14">
       <div>
-        <h2 class="text-2xl font-bold tracking-tight md:text-3xl">Ready to dive in?</h2>
-        <p class="text-base-content/70">Get your first customer in minutes.</p>
+        <h2 class="text-2xl font-extrabold tracking-tight md:text-3xl">{% translate "Ready to get booked?" %}</h2>
+        <p class="text-primary-content/80 mt-1">{% translate "Join Sokoni today — create your account in under a minute." %}</p>
       </div>
-      <a href="{% url 'account_signup' %}" class="btn btn-primary btn-lg">{% translate "Get started" %}</a>
+      <a href="{% url 'account_signup' %}" class="btn btn-secondary btn-lg shadow-lg">{% translate "Get started" %}</a>
     </div>
   </div>
 </section>

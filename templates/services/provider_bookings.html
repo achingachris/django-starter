@@ -1,0 +1,51 @@
+{% extends "web/app/app_base.html" %}
+{% load i18n %}
+{% block app %}
+<section class="app-card">
+  <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+    <div>
+      <h1 class="text-2xl font-bold">{% translate "Incoming Bookings" %}</h1>
+      <p class="text-base-content/70">{% translate "Confirm, complete or cancel appointments booked by clients." %}</p>
+    </div>
+  </div>
+
+  <div role="tablist" class="tabs tabs-border mb-4">
+    <a role="tab" class="tab {% if not status_filter %}tab-active{% endif %}" href="{% url 'services:provider_bookings' %}">{% translate "All" %}</a>
+    {% for value, label in statuses %}
+    <a role="tab" class="tab {% if status_filter == value %}tab-active{% endif %}"
+       href="?status={{ value }}">{{ label }}</a>
+    {% endfor %}
+  </div>
+
+  {% if page_obj.object_list %}
+  <div class="overflow-x-auto">
+    <table class="table">
+      <thead>
+        <tr><th>{% translate "Service" %}</th><th>{% translate "Client" %}</th><th>{% translate "When" %}</th><th>{% translate "Status" %}</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for booking in page_obj.object_list %}
+          {% include "services/partials/booking_row.html" with role="provider" %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if page_obj.paginator.num_pages > 1 %}
+  <div class="join mt-4">
+    {% if page_obj.has_previous %}
+      <a class="join-item btn btn-sm" href="?page=1{% if status_filter %}&status={{ status_filter }}{% endif %}">«</a>
+      <a class="join-item btn btn-sm" href="?page={{ page_obj.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}">‹</a>
+    {% endif %}
+    <span class="join-item btn btn-sm btn-disabled">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+      <a class="join-item btn btn-sm" href="?page={{ page_obj.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}">›</a>
+      <a class="join-item btn btn-sm" href="?page={{ page_obj.paginator.num_pages }}{% if status_filter %}&status={{ status_filter }}{% endif %}">»</a>
+    {% endif %}
+  </div>
+  {% endif %}
+  {% else %}
+  <p class="text-base-content/60">{% translate "No bookings found for this filter." %}</p>
+  {% endif %}
+</section>
+{% endblock %}

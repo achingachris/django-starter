@@ -1,8 +1,9 @@
+{% load i18n %}
 <section class="px-4 py-16 mx-auto max-w-(--breakpoint-xl)">
   <div class="max-w-2xl mx-auto mb-12 text-center">
-    <p class="font-semibold text-primary">Powerful Built-In Features</p>
+    <p class="font-semibold text-primary">{% translate "How it works" %}</p>
     <h2 class="mt-2 text-3xl font-bold tracking-tight md:text-4xl">
-      Headlines that catch your attention
+      {% translate "Bookings made simple for clients and providers" %}
     </h2>
   </div>
   <div class="grid gap-6 md:grid-cols-3">
@@ -11,46 +12,78 @@
         <div class="flex items-center justify-center mb-2 rounded-box size-11 bg-primary/10 text-primary">
           <svg class="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M7 7h10a2 2 0 0 1 2 2v1l1 1v3l-1 1v3a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-3l-1 -1v-3l1 -1v-1a2 2 0 0 1 2 -2z"></path>
-            <path d="M10 16h4"></path>
-            <circle cx="8.5" cy="11.5" r=".5" fill="currentColor"></circle>
-            <circle cx="15.5" cy="11.5" r=".5" fill="currentColor"></circle>
-            <path d="M9 7l-1 -4"></path>
-            <path d="M15 7l1 -4"></path>
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.3-4.3"></path>
           </svg>
         </div>
-        <h3 class="card-title text-lg">Headline 1</h3>
-        <p class="text-base-content/70">Short explanation of headline 1</p>
-        <a href="#section1" class="mt-2 text-sm font-semibold link link-primary no-underline">
-          Learn more <span aria-hidden="true">→</span>
-        </a>
+        <h3 class="card-title text-lg">{% translate "1. Find a service" %}</h3>
+        <p class="text-base-content/70">
+          {% translate "Clients browse the marketplace and search by service or provider name." %}
+        </p>
       </div>
     </div>
     <div class="card border border-base-300">
       <div class="card-body">
         <div class="flex items-center justify-center mb-2 rounded-box size-11 bg-primary/10 text-primary">
-          <svg class="size-6" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M1.045 6.954a2.75 2.75 0 01.217-.678L2.53 3.58A2.75 2.75 0 015.019 2h9.962a2.75 2.75 0 012.488 1.58l1.27 2.696c.101.216.174.444.216.678A1 1 0 0119 7.25v1.5a2.75 2.75 0 01-2.75 2.75H3.75A2.75 2.75 0 011 8.75v-1.5a1 1 0 01.045-.296zm2.843-2.736A1.25 1.25 0 015.02 3.5h9.962c.484 0 .925.28 1.13.718l.957 2.032H14a1 1 0 00-.86.49l-.606 1.02a1 1 0 01-.86.49H8.236a1 1 0 01-.894-.553l-.448-.894A1 1 0 006 6.25H2.932l.956-2.032z" clip-rule="evenodd"/>
-            <path d="M1 14a1 1 0 011-1h4a1 1 0 01.894.553l.448.894a1 1 0 00.894.553h3.438a1 1 0 00.86-.49l.606-1.02A1 1 0 0114 13h4a1 1 0 011 1v2a2 2 0 01-2 2H3a2 2 0 01-2-2v-2z"/>
+          <svg class="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
           </svg>
         </div>
-        <h3 class="card-title text-lg">Headline 2</h3>
-        <p class="text-base-content/70">Short explanation of headline 2</p>
-        <a href="#section2" class="mt-2 text-sm font-semibold link link-primary no-underline">
-          Learn more <span aria-hidden="true">→</span>
-        </a>
+        <h3 class="card-title text-lg">{% translate "2. Book a time" %}</h3>
+        <p class="text-base-content/70">
+          {% translate "Pick a slot that works for you — providers confirm every request." %}
+        </p>
       </div>
     </div>
     <div class="card border border-base-300">
       <div class="card-body">
         <div class="flex items-center justify-center mb-2 rounded-box size-11 bg-primary/10 text-primary">
-          <svg class="size-6" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path d="M3.505 2.365A41.369 41.369 0 019 2c1.863 0 3.697.124 5.495.365 1.247.167 2.18 1.108 2.435 2.268a4.45 4.45 0 00-.577-.069 43.141 43.141 0 00-4.706 0C9.229 4.696 7.5 6.727 7.5 8.998v2.24c0 1.413.67 2.735 1.76 3.562l-2.98 2.98A.75.75 0 015 17.25v-3.443c-.501-.048-1-.106-1.495-.172C2.033 13.438 1 12.162 1 10.72V5.28c0-1.441 1.033-2.717 2.505-2.914z"/>
-            <path d="M14 6c-.762 0-1.52.02-2.271.062C10.157 6.148 9 7.472 9 8.998v2.24c0 1.519 1.147 2.839 2.71 2.935.214.013.428.024.642.034.2.009.385.09.518.224l2.35 2.35a.75.75 0 001.28-.531v-2.07c1.453-.195 2.5-1.463 2.5-2.915V8.998c0-1.526-1.157-2.85-2.729-2.936A41.645 41.645 0 0014 6z"/>
+          <svg class="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
           </svg>
         </div>
-        <h3 class="card-title text-lg">Headline 3</h3>
-        <p class="text-base-content/70">Short explanation of headline 3</p>
+        <h3 class="card-title text-lg">{% translate "3. Get reminded" %}</h3>
+        <p class="text-base-content/70">
+          {% translate "Automatic e-mail reminders go out the day before every confirmed appointment." %}
+        </p>
+      </div>
+    </div>
+  </div>
+
+{% load static %}
+  <div class="grid gap-6 md:grid-cols-2 mt-16">
+    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-lg transition-shadow overflow-hidden">
+      <figure><img src="{% static 'images/web/for-clients.jpg' %}" alt="{% translate "A client booking a service from her couch" %}" class="w-full h-56 object-cover" loading="lazy"></figure>
+      <div class="card-body">
+        <h3 class="card-title">{% translate "For clients" %}</h3>
+        <ul class="space-y-2 text-base-content/80">
+          <li><i class="fa fa-check text-primary mr-1"></i> {% translate "Browse and search active services" %}</li>
+          <li><i class="fa fa-check text-primary mr-1"></i> {% translate "Book, cancel free, and track status" %}</li>
+          <li><i class="fa fa-check text-primary mr-1"></i> {% translate "E-mail verification & sign-in codes — no password hassle" %}</li>
+        </ul>
+        <div class="card-actions mt-4">
+          <a href="{% url 'account_signup' %}" class="btn btn-primary btn-sm">{% translate "Sign up as a client" %}</a>
+        </div>
+      </div>
+    </div>
+    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-lg transition-shadow overflow-hidden">
+      <figure><img src="{% static 'images/web/for-providers.jpg' %}" alt="{% translate "Service providers growing their business" %}" class="w-full h-56 object-cover" loading="lazy"></figure>
+      <div class="card-body">
+        <h3 class="card-title">{% translate "For providers" %}</h3>
+        <ul class="space-y-2 text-base-content/80">
+          <li><i class="fa fa-check text-primary mr-1"></i> {% translate "List services with price and duration" %}</li>
+          <li><i class="fa fa-check text-primary mr-1"></i> {% translate "Confirm, complete or cancel incoming bookings" %}</li>
+          <li><i class="fa fa-check text-primary mr-1"></i> {% translate "A dashboard with your pipeline at a glance" %}</li>
+        </ul>
+        <div class="card-actions mt-4">
+          <a href="{% url 'account_signup' %}" class="btn btn-primary btn-outline btn-sm">{% translate "Offer your services" %}</a>
+        </div>
       </div>
     </div>
   </div>

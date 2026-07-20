@@ -1,20 +1,53 @@
 {% load i18n %}
 {% load static %}
-<section class="hero">
-  <div class="hero-content flex-col gap-10 px-4 py-16 mx-auto max-w-(--breakpoint-xl) lg:flex-row-reverse lg:py-24">
-    <img src="{% static 'images/web/rocket-laptop.svg' %}" alt="{% translate "Fly Away!" %}"
-         class="hidden w-full max-w-sm lg:block">
+<section class="relative overflow-hidden hero-blob">
+  <div class="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-secondary/5 pointer-events-none"></div>
+  <div class="hero-content flex-col gap-10 px-4 py-14 mx-auto max-w-(--breakpoint-xl) lg:flex-row lg:items-center lg:gap-14 lg:py-24 relative">
     <div class="max-w-xl">
-      <h1 class="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-        {{ project_meta.NAME }}
+      <span class="badge badge-primary badge-outline font-semibold mb-4 py-3 px-4">
+        <i class="fa fa-location-dot mr-1"></i> {% translate "Kenya's service marketplace" %}
+      </span>
+      <h1 class="text-4xl font-extrabold tracking-tight md:text-5xl lg:text-6xl leading-[1.1]">
+        {% translate "Book trusted local pros," %}
+        <span class="text-brand-gradient">{% translate "in minutes." %}</span>
       </h1>
       <p class="py-6 text-lg text-base-content/70">
-        {{ project_meta.DESCRIPTION }}
+        {% translate "Cleaning, plumbing, beauty, tutoring and more — find verified providers near you, pick a time, and get automatic reminders. Providers: list your services and grow your business." %}
       </p>
       <div class="flex flex-col gap-3 sm:flex-row">
-        <a href="{% url 'account_signup' %}" class="btn btn-primary btn-lg">{% translate "Get started" %}</a>
-        <a href="{% url 'account_login' %}" class="btn btn-lg">{% translate "Sign in" %}</a>
+        <a href="{% url 'account_signup' %}" class="btn btn-primary btn-lg shadow-lg shadow-primary/25">{% translate "Get started free" %}</a>
+        <a href="{% url 'account_signup' %}" class="btn btn-lg btn-outline">{% translate "Offer your services" %}</a>
       </div>
+      <div class="flex flex-wrap gap-x-5 gap-y-2 mt-6 text-sm text-base-content/70">
+        <span><i class="fa fa-check text-primary mr-1"></i>{% translate "Verified providers" %}</span>
+        <span><i class="fa fa-check text-primary mr-1"></i>{% translate "Free to join" %}</span>
+        <span><i class="fa fa-check text-primary mr-1"></i>{% translate "E-mail reminders" %}</span>
+      </div>
+    </div>
+    <div class="relative max-w-xl w-full">
+      <img src="{% static 'images/web/hero-sokoni.jpg' %}" alt="{% translate "Local service providers ready for booking" %}"
+           class="rounded-2xl shadow-2xl ring-1 ring-base-300 w-full" />
+      <div class="absolute -bottom-5 left-5 card bg-base-100 shadow-xl border border-base-300 hidden sm:block">
+        <div class="card-body p-3 flex-row items-center gap-3">
+          <span class="flex items-center justify-center size-10 rounded-full bg-success/15 text-success">
+            <i class="fa fa-check"></i>
+          </span>
+          <div>
+            <div class="font-bold text-sm">{% translate "Booking confirmed" %}</div>
+            <div class="text-xs text-base-content/60">{% translate "House Cleaning · Sat 10:00" %}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="px-4 pb-10 mx-auto max-w-(--breakpoint-xl)">
+    <div class="flex flex-wrap justify-center gap-2">
+      <span class="badge badge-lg bg-base-100 border-base-300 gap-2 py-4"><i class="fa fa-broom text-primary"></i>{% translate "Cleaning" %}</span>
+      <span class="badge badge-lg bg-base-100 border-base-300 gap-2 py-4"><i class="fa fa-wrench text-primary"></i>{% translate "Plumbing" %}</span>
+      <span class="badge badge-lg bg-base-100 border-base-300 gap-2 py-4"><i class="fa fa-scissors text-primary"></i>{% translate "Beauty & Hair" %}</span>
+      <span class="badge badge-lg bg-base-100 border-base-300 gap-2 py-4"><i class="fa fa-graduation-cap text-primary"></i>{% translate "Tutoring" %}</span>
+      <span class="badge badge-lg bg-base-100 border-base-300 gap-2 py-4"><i class="fa fa-bolt text-primary"></i>{% translate "Electrical" %}</span>
+      <span class="badge badge-lg bg-base-100 border-base-300 gap-2 py-4"><i class="fa fa-paint-roller text-primary"></i>{% translate "Painting" %}</span>
     </div>
   </div>
 </section>

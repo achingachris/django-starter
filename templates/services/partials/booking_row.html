@@ -1,0 +1,66 @@
+{% load i18n %}
+{# A single booking <tr>; `role` is "provider" or "client". Used full-page and HTMX-swapped. #}
+<tr id="booking-row-{{ booking.pk }}">
+  <td>
+    <div class="font-semibold">{{ booking.service.title }}</div>
+    {% if booking.notes %}<div class="text-xs text-base-content/60 max-w-xs truncate" title="{{ booking.notes }}">{{ booking.notes }}</div>{% endif %}
+  </td>
+  <td>
+    {% if role == "provider" %}
+      {{ booking.client.get_display_name }}
+    {% else %}
+      {{ booking.service.provider.get_display_name }}
+    {% endif %}
+  </td>
+  <td>
+    <div>{{ booking.scheduled_at|date:"M d, Y" }}</div>
+    <div class="text-xs text-base-content/60">{{ booking.scheduled_at|date:"H:i" }} – {{ booking.ends_at|date:"H:i" }}</div>
+  </td>
+  <td>
+    <span class="badge
+      {% if booking.status == 'PENDING' %}badge-warning
+      {% elif booking.status == 'CONFIRMED' %}badge-info
+      {% elif booking.status == 'COMPLETED' %}badge-success
+      {% else %}badge-ghost{% endif %}">
+      {{ booking.get_status_display }}
+    </span>
+  </td>
+  <td class="text-right whitespace-nowrap">
+    {% if role == "provider" %}
+      {% if booking.status == "PENDING" %}
+      <button class="btn btn-xs btn-info"
+              hx-post="{% url 'services:booking_set_status' booking.pk 'CONFIRMED' %}"
+              hx-target="#booking-row-{{ booking.pk }}" hx-swap="outerHTML">
+        {% translate "Confirm" %}
+      </button>
+      <button class="btn btn-xs btn-ghost text-error"
+              hx-post="{% url 'services:booking_set_status' booking.pk 'CANCELLED' %}"
+              hx-target="#booking-row-{{ booking.pk }}" hx-swap="outerHTML"
+              hx-confirm="{% translate "Cancel this booking?" %}">
+        {% translate "Decline" %}
+      </button>
+      {% elif booking.status == "CONFIRMED" %}
+      <button class="btn btn-xs btn-success"
+              hx-post="{% url 'services:booking_set_status' booking.pk 'COMPLETED' %}"
+              hx-target="#booking-row-{{ booking.pk }}" hx-swap="outerHTML">
+        {% translate "Mark done" %}
+      </button>
+      <button class="btn btn-xs btn-ghost text-error"
+              hx-post="{% url 'services:booking_set_status' booking.pk 'CANCELLED' %}"
+              hx-target="#booking-row-{{ booking.pk }}" hx-swap="outerHTML"
+              hx-confirm="{% translate "Cancel this booking?" %}">
+        {% translate "Cancel" %}
+      </button>
+      {% endif %}
+    {% else %}
+      {% if booking.can_cancel %}
+      <button class="btn btn-xs btn-ghost text-error"
+              hx-post="{% url 'services:booking_cancel' booking.pk %}"
+              hx-target="#booking-row-{{ booking.pk }}" hx-swap="outerHTML"
+              hx-confirm="{% translate "Cancel this booking?" %}">
+        {% translate "Cancel" %}
+      </button>
+      {% endif %}
+    {% endif %}
+  </td>
+</tr>

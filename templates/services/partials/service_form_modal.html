@@ -1,0 +1,41 @@
+{% load i18n %}
+{% load form_tags %}
+{# Swapped into #modal-container. On validation errors the same partial is
+   re-returned (with errors) so the modal stays open. #}
+<div class="modal modal-open">
+  <div class="modal-box">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">
+        {% if service %}{% translate "Edit Service" %}{% else %}{% translate "New Service" %}{% endif %}
+      </h3>
+      <button class="btn btn-sm btn-circle btn-ghost" onclick="document.getElementById('modal-container').innerHTML=''">✕</button>
+    </div>
+
+    {% if service %}
+      {% url 'services:service_update' service.pk as post_url %}
+    {% else %}
+      {% url 'services:service_create' as post_url %}
+    {% endif %}
+
+    <form hx-post="{{ post_url }}" hx-target="#modal-container" hx-swap="innerHTML">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      {% render_field form.title %}
+      {% render_field form.description %}
+      <div class="flex gap-4">
+        <div class="flex-1">{% render_field form.duration_minutes %}</div>
+        <div class="flex-1">{% render_field form.price %}</div>
+      </div>
+      {% render_field form.active %}
+      <div class="modal-action">
+        <button type="button" class="btn btn-ghost" onclick="document.getElementById('modal-container').innerHTML=''">
+          {% translate "Cancel" %}
+        </button>
+        <button type="submit" class="btn btn-primary">
+          {% if service %}{% translate "Save changes" %}{% else %}{% translate "Create service" %}{% endif %}
+        </button>
+      </div>
+    </form>
+  </div>
+  <div class="modal-backdrop" onclick="document.getElementById('modal-container').innerHTML=''"></div>
+</div>

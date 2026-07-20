@@ -13,11 +13,138 @@
 @plugin "@tailwindcss/typography";
 @plugin "daisyui";
 
-/* Use IBM Plex Mono as the default (sans + mono) font across the app. */
+/*
+  Sokoni brand theme — coastal teal + amber, applied with data-theme="sokoni".
+*/
+@plugin "daisyui/theme" {
+  name: "sokoni";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+
+  --color-base-100: #fcfdfd;
+  --color-base-200: #f0f5f4;
+  --color-base-300: #dfe9e7;
+  --color-base-content: #1b2f33;
+
+  --color-primary: #0d7a6f;
+  --color-primary-content: #e6faf5;
+
+  --color-secondary: #f59e0b;
+  --color-secondary-content: #241a02;
+
+  --color-accent: #5eead4;
+  --color-accent-content: #083932;
+
+  --color-neutral: #20313a;
+  --color-neutral-content: #dce6e8;
+
+  --color-info: #2563eb;
+  --color-info-content: #eff6ff;
+  --color-success: #16a34a;
+  --color-success-content: #f0fdf4;
+  --color-warning: #f59e0b;
+  --color-warning-content: #241a02;
+  --color-error: #dc2626;
+  --color-error-content: #fef2f2;
+
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.85rem;
+}
+
+/*
+  Sokoni dark — same brand, deep teal-charcoal surfaces.
+  Selected by the navbar toggle (persisted in localStorage) or via OS preference.
+*/
+@plugin "daisyui/theme" {
+  name: "sokoni-dark";
+  default: false;
+  prefersdark: true;
+  color-scheme: dark;
+
+  --color-base-100: #0e1b1d;
+  --color-base-200: #152628;
+  --color-base-300: #1f3538;
+  --color-base-content: #e3efec;
+
+  --color-primary: #2dd4bf;
+  --color-primary-content: #04211d;
+
+  --color-secondary: #fbbf24;
+  --color-secondary-content: #241a02;
+
+  --color-accent: #0d9488;
+  --color-accent-content: #e6faf5;
+
+  --color-neutral: #0a1517;
+  --color-neutral-content: #c3d2cf;
+
+  --color-info: #60a5fa;
+  --color-info-content: #0b1c33;
+  --color-success: #4ade80;
+  --color-success-content: #0a2313;
+  --color-warning: #fbbf24;
+  --color-warning-content: #241a02;
+  --color-error: #f87171;
+  --color-error-content: #340f0f;
+
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.85rem;
+}
+
+/* Use Inter as the default sans font (IBM Plex Mono stays for code/mono). */
 @theme {
-  --font-sans: "IBM Plex Mono", monospace;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", monospace;
 }
+
+/* Sokoni brand flourishes */
+@layer components {
+  .text-brand-gradient {
+    background: linear-gradient(100deg, #0d7a6f 20%, #0fb5a3 60%, #f59e0b 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  [data-theme="sokoni-dark"] .text-brand-gradient {
+    background: linear-gradient(100deg, #5eead4 20%, #2dd4bf 60%, #fbbf24 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero-blob {
+    background:
+      radial-gradient(closest-side, rgb(13 122 111 / 0.16), transparent),
+      radial-gradient(closest-side, rgb(245 158 11 / 0.14), transparent);
+  }
+
+  /* Signed-in area: soft brand-tinted page background + gradient hero banner */
+  .app-shell {
+    background:
+      radial-gradient(ellipse 60% 220px at 100% 0%, color-mix(in oklab, var(--color-secondary) 7%, transparent), transparent),
+      radial-gradient(ellipse 70% 260px at 0% 0%, color-mix(in oklab, var(--color-primary) 8%, transparent), transparent),
+      var(--color-base-200);
+    min-height: calc(100vh - 4rem);
+  }
+  .app-hero {
+    background: linear-gradient(
+      115deg,
+      color-mix(in oklab, var(--color-primary) 92%, var(--color-primary-content)) 0%,
+      color-mix(in oklab, var(--color-primary) 70%, var(--color-accent)) 70%,
+      color-mix(in oklab, var(--color-accent) 85%, var(--color-secondary)) 100%
+    );
+    color: var(--color-primary-content);
+    border-radius: var(--radius-box);
+    box-shadow: 0 10px 30px -12px color-mix(in oklab, var(--color-primary) 60%, transparent);
+  }
+  .app-hero .hero-pill {
+    background: color-mix(in oklab, var(--color-primary-content) 14%, transparent);
+    border: 1px solid color-mix(in oklab, var(--color-primary-content) 25%, transparent);
+  }
+}
+
 
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,

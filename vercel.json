@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "crons": [
+    {
+      "path": "/internal/cron/booking-reminders/",
+      "schedule": "0 5 * * *"
+    }
+  ]
+}
