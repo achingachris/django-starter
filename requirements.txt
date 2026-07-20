@@ -14,5 +14,6 @@ drf-spectacular
 celery
 celery-progress
 django-celery-beat
+redis
 psycopg[binary]
 whitenoise>=6.12.0
