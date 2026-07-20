@@ -1,34 +1,64 @@
 """
 Vercel build script (declared under [tool.vercel.scripts] in pyproject.toml).
 
-Runs migrations when a database is reachable.
+Runs `manage.py migrate` during the build when a database is reachable, so a
+fresh deploy always has an up-to-date schema. When no DATABASE_URL is present
+(e.g. a preview build without a database attached yet) the step is skipped —
+the app still deploys, and you can run migrations later with:
 
-Note: Front-end assets are expected to be pre-built and committed to the
-repository. Vercel's Python build environment does not include Node.js, so
-`npm run build` cannot run here. Re-build assets locally with `make npm-build`
-before deploying.
-
-collectstatic is skipped because static files are already committed to git
-for serverless deploys, and `config.settings.prod` requires DATABASE_URL
-at import time which may not be available during the build phase.
+    vercel env pull .env.local && python manage.py migrate
 """
 
+import importlib
 import os
 import subprocess
 import sys
 
 
-def run(cmd, **kwargs):
-    print(f"$ {' '.join(cmd)}")
-    subprocess.check_call(cmd, **kwargs)
+def _ensure_psycopg_binary():
+    """Guarantee a *precompiled* Postgres driver (Vercel images have no libpq).
+
+    Vercel may install only pyproject.toml's main deps (plain `psycopg`), so we
+    top up `psycopg[binary]` here when it's missing. Idempotent no-op when the
+    binary wheel is already installed.
+    """
+    try:
+        import psycopg_binary  # noqa: F401
+
+        return
+    except ImportError:
+        pass
+    import shutil
+
+    uv = shutil.which("uv")
+    cmd = (
+        [uv, "pip", "install", "--python", sys.executable, "psycopg[binary]"]
+        if uv
+        else [sys.executable, "-m", "pip", "install", "psycopg[binary]"]
+    )
+    print("Installing precompiled Postgres driver (psycopg[binary])...")
+    subprocess.run(cmd, check=False)
 
 
 def main():
-    env = {**os.environ, "DJANGO_SETTINGS_MODULE": os.environ.get("DJANGO_SETTINGS_MODULE", "config.settings.prod")}
+    _ensure_psycopg_binary()
+
+    module = os.environ.get("DJANGO_SETTINGS_MODULE") or "config.settings.prod"
+    try:
+        importlib.import_module(module)
+    except ImportError as exc:
+        sys.exit(
+            f'\nERROR: DJANGO_SETTINGS_MODULE="{module}" could not be imported: {exc}\n'
+            "It must be exactly: config.settings.prod  "
+            "(Vercel -> Settings -> Environment Variables)"
+        )
 
     if os.environ.get("DATABASE_URL"):
         print("DATABASE_URL found - running migrations...")
-        run([sys.executable, "manage.py", "migrate", "--noinput"], env=env)
+        subprocess.check_call(
+            [sys.executable, "manage.py", "migrate", "--noinput"],
+            env={**os.environ, "DJANGO_SETTINGS_MODULE": module},
+        )
     else:
         print("DATABASE_URL not set - skipping migrations (run them manually after attaching a database).")
 

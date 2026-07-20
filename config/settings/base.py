@@ -320,10 +320,14 @@ EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
 # terminal instead of being e-mailed. Set EMAIL_HOST_PASSWORD to send real e-mails.
 if DEBUG and EMAIL_BACKEND == "django.core.mail.backends.smtp.EmailBackend" and not EMAIL_HOST_PASSWORD:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-    print(
-        "\n  [email] EMAIL_HOST_PASSWORD is empty — using the console e-mail backend."
-        "\n  [email] OTP codes will be printed in this terminal. Set EMAIL_HOST_PASSWORD"
-        "\n  [email] (a Gmail App Password) in .env to send real e-mails.\n"
+    # NOTE: never print() from settings — machine readers (Vercel parses
+    # `manage.py diffsettings --output json`) break on extra stdout.
+    import logging
+
+    logging.getLogger(__name__).warning(
+        "[email] EMAIL_HOST_PASSWORD is empty - console email backend active; "
+        "OTP codes go to the runserver terminal. Set EMAIL_HOST_PASSWORD (a Gmail "
+        "App Password) in .env for real e-mails."
     )
 
 # Most production backends will require further customization. The below example uses Mailgun.
