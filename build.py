@@ -44,6 +44,16 @@ def main():
     _ensure_psycopg_binary()
 
     module = os.environ.get("DJANGO_SETTINGS_MODULE") or "config.settings.prod"
+
+    # Check for a database BEFORE importing prod settings (prod.py hard-fails
+    # on a missing DATABASE_URL). A build without one can still succeed — the
+    # app just needs DATABASE_URL set for the runtime to work.
+    if not os.environ.get("DATABASE_URL"):
+        print("DATABASE_URL not set - skipping migrations.")
+        print("WARN: the app needs DATABASE_URL (Vercel -> Settings -> Environment")
+        print("Vars -> Production) or every request will fail at runtime.")
+        return
+
     try:
         importlib.import_module(module)
     except ImportError as exc:
@@ -53,14 +63,11 @@ def main():
             "(Vercel -> Settings -> Environment Variables)"
         )
 
-    if os.environ.get("DATABASE_URL"):
-        print("DATABASE_URL found - running migrations...")
-        subprocess.check_call(
-            [sys.executable, "manage.py", "migrate", "--noinput"],
-            env={**os.environ, "DJANGO_SETTINGS_MODULE": module},
-        )
-    else:
-        print("DATABASE_URL not set - skipping migrations (run them manually after attaching a database).")
+    print("DATABASE_URL found - running migrations...")
+    subprocess.check_call(
+        [sys.executable, "manage.py", "migrate", "--noinput"],
+        env={**os.environ, "DJANGO_SETTINGS_MODULE": module},
+    )
 
 
 if __name__ == "__main__":
