@@ -1,0 +1,66 @@
+{
+  "_csrf-C7XvwPHf.js": {
+    "file": "js/csrf-C7XvwPHf.js",
+    "name": "csrf"
+  },
+  "assets/javascript/app.js": {
+    "file": "js/app-bundle.js",
+    "name": "app",
+    "src": "assets/javascript/app.js",
+    "isEntry": true,
+    "imports": [
+      "_csrf-C7XvwPHf.js"
+    ]
+  },
+  "assets/javascript/site.js": {
+    "file": "js/site-bundle.js",
+    "name": "site",
+    "src": "assets/javascript/site.js",
+    "isEntry": true,
+    "imports": [
+      "_csrf-C7XvwPHf.js"
+    ]
+  },
+  "assets/styles/site-base.css": {
+    "file": "css/site-base-css.css",
+    "name": "site-base-css",
+    "names": [
+      "site-base-css.css"
+    ],
+    "src": "assets/styles/site-base.css",
+    "isEntry": true,
+    "assets": [
+      "assets/fa-brands-400-BP5tdqmh.woff2",
+      "assets/fa-regular-400-nyy7hhHF.woff2",
+      "assets/fa-solid-900-DRAAbZTg.woff2"
+    ]
+  },
+  "assets/styles/site-tailwind.css": {
+    "file": "css/site-tailwind-css.css",
+    "name": "site-tailwind-css",
+    "names": [
+      "site-tailwind-css.css"
+    ],
+    "src": "assets/styles/site-tailwind.css",
+    "isEntry": true,
+    "assets": [
+      "assets/texture-abstract-1-BuE6g2L9.jpg"
+    ]
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.woff2": {
+    "file": "assets/fa-brands-400-BP5tdqmh.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.woff2"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2": {
+    "file": "assets/fa-regular-400-nyy7hhHF.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2": {
+    "file": "assets/fa-solid-900-DRAAbZTg.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2"
+  },
+  "static/images/web/texture-abstract-1.jpg": {
+    "file": "assets/texture-abstract-1-BuE6g2L9.jpg",
+    "src": "static/images/web/texture-abstract-1.jpg"
+  }
+}
