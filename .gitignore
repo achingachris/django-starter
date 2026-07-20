@@ -31,6 +31,15 @@ local_settings.py
 localsettings.py
 chrisdevcode/local.py
 
+# compiled static files are COMMITTED so serverless deploys (Vercel) already have the
+# built front-end + the django-vite manifest. Re-run `npm run build` and commit when
+# assets/styles/ or assets/javascript/ change.
+# static/assets/
+# static/css/
+# static/.vite/
+# static/images/
+# static/js/
+
 # Celery
 celerybeat-schedule
 celerybeat.pid

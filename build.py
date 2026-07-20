@@ -1,12 +1,15 @@
 """
 Vercel build script (declared under [tool.vercel.scripts] in pyproject.toml).
 
-Builds front-end assets with Vite, collects static files, and runs migrations
-when a database is reachable.
+Collects static files and runs migrations when a database is reachable.
+
+Note: Front-end assets are expected to be pre-built and committed to the
+repository (see the commented-out static/ patterns in .gitignore). Vercel's
+Python build environment does not include Node.js, so `npm run build` cannot
+run here. Re-build assets locally with `make npm-build` before deploying.
 """
 
 import os
-import shutil
 import subprocess
 import sys
 
@@ -18,11 +21,6 @@ def run(cmd, **kwargs):
 
 def main():
     env = {**os.environ, "DJANGO_SETTINGS_MODULE": os.environ.get("DJANGO_SETTINGS_MODULE", "config.settings.prod")}
-
-    if shutil.which("npm"):
-        run(["npm", "run", "build"])
-    else:
-        print("npm not found - skipping front-end build")
 
     run([sys.executable, "manage.py", "collectstatic", "--noinput"], env=env)
 

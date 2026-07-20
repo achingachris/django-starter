@@ -59,6 +59,8 @@ Key variables: `SECRET_KEY`, `DEBUG`, `DATABASE_URL`, `REDIS_URL`, `EMAIL_HOST_P
 
 ## Production
 
+### Docker Compose
+
 ```bash
 make prod-build      # build Docker image
 make prod-start      # run stack (foreground)
@@ -67,6 +69,18 @@ make prod-stop       # stop containers
 ```
 
 Stack: Postgres, Redis, gunicorn web server, Celery worker. Settings module: `config.settings.prod`.
+
+### Vercel (serverless)
+
+Front-end assets must be pre-built and committed before deploying:
+
+```bash
+npm run build        # build assets into static/
+git add static/ && git commit -m "chore: rebuild front-end assets"
+git push             # triggers Vercel deploy
+```
+
+Configure environment variables in Vercel: `DJANGO_SETTINGS_MODULE=config.settings.prod`, `SECRET_KEY`, `EMAIL_HOST_PASSWORD`, `ALLOWED_HOSTS`, `DATABASE_URL` (set automatically with Postgres integration), and `CRON_SECRET` (for booking reminders).
 
 ## Testing & quality
 
