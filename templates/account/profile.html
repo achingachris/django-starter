@@ -2,8 +2,10 @@
 {% load static %}
 {% load django_vite %}
 {% block app %}
-<section class="app-card">
-  {% include 'account/components/profile_form.html' %}
+<section class="mx-auto max-w-5xl px-6 lg:px-10 py-6 lg:py-10">
+  <article class="bg-base-100 border border-base-300/50 rounded-[2.5rem] shadow-sm overflow-hidden p-8 lg:p-12">
+    {% include 'account/components/profile_form.html' %}
+  </article>
 </section>
 {% endblock %}
 {% block page_js %}

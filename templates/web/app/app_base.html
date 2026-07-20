@@ -12,7 +12,7 @@
       <i class="fa fa-times"></i>
     </button>
   </div>
-  <div class="app-shell" hx-on::response-error="document.getElementById('htmx-error').classList.remove('hidden')">
+  <div class="app-shell bg-gradient-to-b from-base-200/50 to-base-100" hx-on::response-error="document.getElementById('htmx-error').classList.remove('hidden')">
     <section class="section">
       {% block page_banner %}{% endblock %}
       <div class="container flex flex-row">

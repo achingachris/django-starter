@@ -3,29 +3,49 @@
 {% load static %}
 {% load form_tags %}
 {% block body %}
-  <div class="flex justify-center my-8">
-    <div class="w-96 max-w-full px-4 py-4 card bg-base-100 border border-base-300">
-      <div class="card-body">
-        <h2 class="text-center text-2xl font-bold">
-          {% translate "Sign In" %}
-        </h2>
-        <form class="mt-6 space-y-6" method="post">
+  <main class="min-h-[calc(100vh-12rem)] flex items-center justify-center px-6 py-16">
+    <article class="w-full max-w-md bg-base-100 border border-base-300/60 rounded-[2.5rem] shadow-xl shadow-base-content/5 overflow-hidden">
+      <!-- Header -->
+      <div class="bg-gradient-to-br from-neutral via-[#25252a] to-[#2a1f1e] px-10 pt-12 pb-16 text-center relative overflow-hidden">
+        <div class="absolute inset-0 opacity-[0.06]" style="background-image: url('/static/images/web/texture-abstract-2.jpg'); background-size: cover; mix-blend-mode: overlay;"></div>
+        <div class="relative z-10">
+          <a href="{% url 'web:home' %}" class="inline-block hover:opacity-80 transition-opacity mb-6">
+            {% include "web/components/logo.html" with size="h-10" %}
+          </a>
+          <h1 class="font-serif text-3xl font-bold text-base-content tracking-tight">Welcome back</h1>
+          <p class="text-base-content/50 text-sm mt-2">Sign in to manage your bookings and services.</p>
+        </div>
+      </div>
+
+      <div class="p-10 -mt-8 relative z-10">
+        <form class="space-y-5" method="post">
           {% csrf_token %}
           {{ form.non_field_errors }}
-          {% render_field form.login %}
-          {% render_field form.password %}
           <div>
-            <input class="btn btn-primary btn-block" type="submit" value="{% translate "Sign In" %}">
+            <label for="{{ form.login.id_for_label }}" class="block text-xs font-bold uppercase tracking-wider text-base-content/50 mb-2">Email or username</label>
+            {% render_field form.login %}
+          </div>
+          <div>
+            <label for="{{ form.password.id_for_label }}" class="block text-xs font-bold uppercase tracking-wider text-base-content/50 mb-2">Password</label>
+            {% render_field form.password %}
+          </div>
+          <div class="pt-2">
+            <button type="submit" class="btn btn-primary btn-block rounded-full shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-300 font-semibold tracking-tight">
+              Sign In
+            </button>
           </div>
         </form>
         {% if LOGIN_BY_CODE_ENABLED %}
-        <p class="pg-text-centered pg-text-muted">
-          <a class="text-sm muted-link" href="{{ request_login_code_url }}">
-            {% translate "Mail me a sign-in code" %}
+        <div class="mt-6 text-center">
+          <a href="{{ request_login_code_url }}" class="text-sm text-base-content/40 hover:text-primary transition-colors underline underline-offset-2 decoration-base-300 hover:decoration-primary">
+            Mail me a sign-in code
           </a>
-        </p>
+        </div>
         {% endif %}
+        <div class="mt-6 text-center text-xs text-base-content/30">
+          Don't have an account? <a href="{% url 'account_signup' %}" class="text-primary hover:underline">Create one</a>
+        </div>
       </div>
-    </div>
-  </div>
+    </article>
+  </main>
 {% endblock %}

@@ -1,26 +1,39 @@
 {% load i18n %}
-<footer class="mt-24 border-t border-base-300 bg-base-200/60">
-  <div class="footer sm:footer-horizontal p-10 max-w-(--breakpoint-xl) mx-auto text-base-content/70">
-    <aside>
-      {% include "web/components/logo.html" with size="h-10" %}
-      <p class="max-w-xs mt-2">
-        {% translate "The marketplace for local services — book trusted pros near you, or list your skills and get booked." %}
-      </p>
-    </aside>
-    <nav>
-      <h6 class="footer-title text-base-content">{% translate "Marketplace" %}</h6>
-      <a class="link link-hover" href="{% url 'services:service_browse' %}">{% translate "Browse services" %}</a>
-      <a class="link link-hover" href="{% url 'account_signup' %}">{% translate "Become a provider" %}</a>
-      <a class="link link-hover" href="{% url 'web:terms' %}">{% translate "Terms" %}</a>
-    </nav>
-    <nav>
-      <h6 class="footer-title text-base-content">{% translate "Account" %}</h6>
-      <a class="link link-hover" href="{% url 'account_login' %}">{% translate "Sign in" %}</a>
-      <a class="link link-hover" href="{% url 'account_signup' %}">{% translate "Create account" %}</a>
-      <a class="link link-hover" href="{% url 'account_reset_password' %}">{% translate "Reset password" %}</a>
-    </nav>
+<footer class="mt-24 border-t border-base-300/60 bg-base-200/30">
+  <div class="mx-auto max-w-6xl px-6 lg:px-10 py-16 lg:py-20">
+    <div class="grid gap-12 lg:grid-cols-12">
+      <!-- Brand -->
+      <aside class="lg:col-span-5">
+        <a href="{% url 'web:home' %}" class="inline-block hover:opacity-80 transition-opacity">
+          {% include "web/components/logo.html" with size="h-10" %}
+        </a>
+        <p class="mt-5 text-base-content/60 leading-relaxed max-w-sm text-sm">
+          {% translate "The curated marketplace for trusted local services — connecting skilled providers with clients who value craft, reliability, and real results." %}
+        </p>
+      </aside>
+
+      <!-- Links -->
+      <nav class="lg:col-span-3 lg:pl-8">
+        <h6 class="font-serif text-base font-bold text-base-content mb-5">Marketplace</h6>
+        <ul class="flex flex-col gap-3 text-sm text-base-content/60">
+          <li><a href="{% url 'services:service_browse' %}" class="hover:text-primary transition-colors">Browse services</a></li>
+          <li><a href="{% url 'account_signup' %}" class="hover:text-primary transition-colors">Become a provider</a></li>
+          <li><a href="{% url 'web:terms' %}" class="hover:text-primary transition-colors">Terms</a></li>
+        </ul>
+      </nav>
+
+      <nav class="lg:col-span-4 lg:pl-8">
+        <h6 class="font-serif text-base font-bold text-base-content mb-5">Account</h6>
+        <ul class="flex flex-col gap-3 text-sm text-base-content/60">
+          <li><a href="{% url 'account_login' %}" class="hover:text-primary transition-colors">Sign in</a></li>
+          <li><a href="{% url 'account_signup' %}" class="hover:text-primary transition-colors">Create account</a></li>
+          <li><a href="{% url 'account_reset_password' %}" class="hover:text-primary transition-colors">Reset password</a></li>
+        </ul>
+      </nav>
+    </div>
   </div>
-  <div class="border-t border-base-300 py-4 text-center text-sm text-base-content/50" x-data>
-    {{ project_meta.NAME }} — {% translate "Copyright" %} <span x-text="new Date().getFullYear()">2026</span>
+  <div class="border-t border-base-300/60 px-6 lg:px-10 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-base-content/40">
+    <span>{{ project_meta.NAME }}</span>
+    <span>© <span x-data x-text="new Date().getFullYear()">2026</span></span>
   </div>
 </footer>

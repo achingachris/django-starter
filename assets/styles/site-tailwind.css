@@ -1,20 +1,16 @@
 @import 'tailwindcss';
 
-/*
-   add custom components using imports, as described here:
-   https://tailwindcss.com/docs/using-with-preprocessors#build-time-imports
-*/
 @import './app/tailwind/app-components.css';
 @import './pegasus/tailwind.css';
 
 @config "../../tailwind.config.js";
 
-
 @plugin "@tailwindcss/typography";
 @plugin "daisyui";
 
 /*
-  Sokoni brand theme — coastal teal + amber, applied with data-theme="sokoni".
+  Sokoni Editorial — Luxury editorial marketplace theme.
+  Charcoal + Coral + Cream palette with Playfair Display serif headings.
 */
 @plugin "daisyui/theme" {
   name: "sokoni";
@@ -22,40 +18,42 @@
   prefersdark: false;
   color-scheme: light;
 
-  --color-base-100: #fcfdfd;
-  --color-base-200: #f0f5f4;
-  --color-base-300: #dfe9e7;
-  --color-base-content: #1b2f33;
+  --color-base-100: #fdfcf8;       /* warm cream */
+  --color-base-200: #f5f2eb;       /* soft cream */
+  --color-base-300: #e8e4da;       /* warm gray border */
+  --color-base-content: #1a1a1e;   /* deep charcoal text */
 
-  --color-primary: #0d7a6f;
-  --color-primary-content: #e6faf5;
+  --color-primary: #e0705a;        /* coral */
+  --color-primary-content: #fff8f5;
 
-  --color-secondary: #f59e0b;
-  --color-secondary-content: #241a02;
+  --color-secondary: #c9a96e;      /* warm gold */
+  --color-secondary-content: #2d2414;
 
-  --color-accent: #5eead4;
-  --color-accent-content: #083932;
+  --color-accent: #c48b7a;         /* muted terracotta */
+  --color-accent-content: #fff5f2;
 
-  --color-neutral: #20313a;
-  --color-neutral-content: #dce6e8;
+  --color-neutral: #2d2d30;        /* dark neutral */
+  --color-neutral-content: #f0ebe6;
 
-  --color-info: #2563eb;
-  --color-info-content: #eff6ff;
-  --color-success: #16a34a;
-  --color-success-content: #f0fdf4;
-  --color-warning: #f59e0b;
-  --color-warning-content: #241a02;
-  --color-error: #dc2626;
-  --color-error-content: #fef2f2;
+  --color-info: #5a7aa0;
+  --color-info-content: #f0f4f7;
 
-  --radius-selector: 0.5rem;
-  --radius-field: 0.5rem;
-  --radius-box: 0.85rem;
+  --color-success: #6a8f6e;
+  --color-success-content: #f4f7f4;
+
+  --color-warning: #c9a96e;
+  --color-warning-content: #2d2414;
+
+  --color-error: #c75a5a;
+  --color-error-content: #fdf2f2;
+
+  --radius-selector: 1rem;
+  --radius-field: 0.75rem;
+  --radius-box: 1.25rem;
 }
 
 /*
-  Sokoni dark — same brand, deep teal-charcoal surfaces.
-  Selected by the navbar toggle (persisted in localStorage) or via OS preference.
+  Sokoni Editorial Dark — refined dark editorial mode.
 */
 @plugin "daisyui/theme" {
   name: "sokoni-dark";
@@ -63,108 +61,141 @@
   prefersdark: true;
   color-scheme: dark;
 
-  --color-base-100: #0e1b1d;
-  --color-base-200: #152628;
-  --color-base-300: #1f3538;
-  --color-base-content: #e3efec;
+  --color-base-100: #121214;       /* deep charcoal */
+  --color-base-200: #1a1a1e;       /* charcoal surface */
+  --color-base-300: #2d2d30;       /* dark border */
+  --color-base-content: #f0ebe6;   /* warm cream text */
 
-  --color-primary: #2dd4bf;
-  --color-primary-content: #04211d;
+  --color-primary: #e0705a;        /* coral */
+  --color-primary-content: #fff8f5;
 
-  --color-secondary: #fbbf24;
-  --color-secondary-content: #241a02;
+  --color-secondary: #c9a96e;      /* warm gold */
+  --color-secondary-content: #2d2414;
 
-  --color-accent: #0d9488;
-  --color-accent-content: #e6faf5;
+  --color-accent: #d4a48b;
+  --color-accent-content: #fff5f2;
 
-  --color-neutral: #0a1517;
-  --color-neutral-content: #c3d2cf;
+  --color-neutral: #121214;
+  --color-neutral-content: #f0ebe6;
 
-  --color-info: #60a5fa;
-  --color-info-content: #0b1c33;
-  --color-success: #4ade80;
-  --color-success-content: #0a2313;
-  --color-warning: #fbbf24;
-  --color-warning-content: #241a02;
-  --color-error: #f87171;
-  --color-error-content: #340f0f;
+  --color-info: #7a9ac0;
+  --color-info-content: #0f1525;
 
-  --radius-selector: 0.5rem;
-  --radius-field: 0.5rem;
-  --radius-box: 0.85rem;
+  --color-success: #6a8f6e;
+  --color-success-content: #0f2010;
+
+  --color-warning: #c9a96e;
+  --color-warning-content: #2d2414;
+
+  --color-error: #c75a5a;
+  --color-error-content: #2a0f0f;
+
+  --radius-selector: 1rem;
+  --radius-field: 0.75rem;
+  --radius-box: 1.25rem;
 }
 
-/* Use Inter as the default sans font (IBM Plex Mono stays for code/mono). */
+/* Serif display font for luxury editorial headings */
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", Georgia, "Times New Roman", serif;
   --font-mono: "IBM Plex Mono", monospace;
 }
 
-/* Sokoni brand flourishes */
+/* Brand gradient — coral to warm gold */
 @layer components {
   .text-brand-gradient {
-    background: linear-gradient(100deg, #0d7a6f 20%, #0fb5a3 60%, #f59e0b 100%);
+    background: linear-gradient(110deg, #e0705a 20%, #c48b7a 50%, #c9a96e 80%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
   [data-theme="sokoni-dark"] .text-brand-gradient {
-    background: linear-gradient(100deg, #5eead4 20%, #2dd4bf 60%, #fbbf24 100%);
+    background: linear-gradient(110deg, #e0705a 10%, #f09080 60%, #d4bfa8 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
-  .hero-blob {
-    background:
-      radial-gradient(closest-side, rgb(13 122 111 / 0.16), transparent),
-      radial-gradient(closest-side, rgb(245 158 11 / 0.14), transparent);
+
+  /* Elegant hero background with abstract texture overlay */
+  .hero-editorial {
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-editorial::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url('/static/images/web/texture-abstract-1.jpg');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.12;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .hero-editorial > * {
+    position: relative;
+    z-index: 1;
   }
 
-  /* Signed-in area: soft brand-tinted page background + gradient hero banner */
-  .app-shell {
-    background:
-      radial-gradient(ellipse 60% 220px at 100% 0%, color-mix(in oklab, var(--color-secondary) 7%, transparent), transparent),
-      radial-gradient(ellipse 70% 260px at 0% 0%, color-mix(in oklab, var(--color-primary) 8%, transparent), transparent),
-      var(--color-base-200);
-    min-height: calc(100vh - 4rem);
+  /* Subtle animation keyframes */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
   }
-  .app-hero {
-    background: linear-gradient(
-      115deg,
-      color-mix(in oklab, var(--color-primary) 92%, var(--color-primary-content)) 0%,
-      color-mix(in oklab, var(--color-primary) 70%, var(--color-accent)) 70%,
-      color-mix(in oklab, var(--color-accent) 85%, var(--color-secondary)) 100%
-    );
-    color: var(--color-primary-content);
-    border-radius: var(--radius-box);
-    box-shadow: 0 10px 30px -12px color-mix(in oklab, var(--color-primary) 60%, transparent);
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
-  .app-hero .hero-pill {
-    background: color-mix(in oklab, var(--color-primary-content) 14%, transparent);
-    border: 1px solid color-mix(in oklab, var(--color-primary-content) 25%, transparent);
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  .animate-fade-up {
+    animation: fadeUp 0.9s ease-out both;
+  }
+  .animate-fade-in {
+    animation: fadeIn 1s ease-out both;
+  }
+  .delay-100 { animation-delay: 0.1s; }
+  .delay-200 { animation-delay: 0.2s; }
+  .delay-300 { animation-delay: 0.3s; }
+  .delay-400 { animation-delay: 0.4s; }
+}
+
+/* Typography refinements */
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--color-base-content);
+  }
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-base-100);
+    color: var(--color-base-content);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--color-primary) 25%, transparent);
+    color: var(--color-base-content);
   }
 }
 
-
-/*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
+/* Default border compatibility */
 @layer base {
   *,
   ::after,
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
+    border-color: var(--color-base-300, currentColor);
   }
 }
-
-/* set pegasus css variables to DaisyUI default colors: https://daisyui.com/docs/colors/ */
 
 :root {
   --primary: var(--color-primary);

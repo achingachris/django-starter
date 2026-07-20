@@ -1,31 +1,48 @@
 {% load i18n %}
 {% load form_tags %}
-<div class="flex flex-col space-y-4 lg:flex-row lg:space-x-4 lg:space-y-0">
-  <div id="profile-picture" class="basis-1/4 grow-0 shrink-0">
+<div class="flex flex-col lg:flex-row gap-8 lg:gap-12">
+  <aside class="lg:w-72 shrink-0">
     <div class="text-center">
-      <img class="avatar" src="{{ user.avatar_url }}">
-      <div id='profile-upload-holder'>
-        <label for="profile-upload" >
-          <a id="profile-upload-label" class="btn btn-ghost">
-            {% translate "Change Picture" %}
-          </a>
+      <div class="relative inline-block">
+        <img class="avatar w-32 h-32 rounded-full object-cover ring-4 ring-base-200 shadow-xl mx-auto" src="{{ user.avatar_url }}" alt="Profile">
+        <label for="profile-upload" class="absolute bottom-2 right-2 bg-base-100 rounded-full p-2 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 cursor-pointer border border-base-300/50" title="Change picture">
+          <i class="fa fa-camera text-sm text-base-content"></i>
+          <input id="profile-upload" type="file" accept="image/*" class="hidden"/>
         </label>
-        <input id="profile-upload" type="file" accept="image/*"/>
+      </div>
+      <div id="profile-upload-holder" class="mt-4">
+        <label for="profile-upload" id="profile-upload-label" class="btn btn-outline btn-sm rounded-full text-xs font-medium border-base-300 hover:border-primary hover:text-primary transition-all">
+          <i class="fa fa-camera mr-1.5 text-xs"></i> Change Picture
+        </label>
       </div>
     </div>
-  </div>
+  </aside>
   <div class="flex-1">
-    <h2 class="text-xl mb-1">{% translate "My Details" %}</h2>
-    <form method="post">
+    <h2 class="font-serif text-2xl font-bold mb-1">My Details</h2>
+    <p class="text-sm text-base-content/50 mb-6">Update your profile information.</p>
+    <form method="post" class="space-y-4">
       {% csrf_token %}
-      {% render_text_input form.email %}
+      <div>
+        <label for="{{ form.email.id_for_label }}" class="block text-xs font-bold uppercase tracking-wider text-base-content/50 mb-1.5">Email</label>
+        {% render_text_input form.email %}
+      </div>
       {% if user.emailaddress_set.count > 1 %}
-        <div class="text-sm text-base-content/70"><a href="{% url "account_email" %}" class="link">{%  translate "Manage email addresses" %}</a></div>
+        <div class="text-sm text-base-content/60"><a href="{% url 'account_email' %}" class="text-primary hover:underline underline-offset-2">Manage email addresses</a></div>
       {% endif %}
-      {% render_text_input form.first_name %}
-      {% render_text_input form.last_name %}
-      <div class="mt-2">
-        <input class="btn btn-primary" type="submit" value="{% translate "Save" %}">
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label for="{{ form.first_name.id_for_label }}" class="block text-xs font-bold uppercase tracking-wider text-base-content/50 mb-1.5">First name</label>
+          {% render_text_input form.first_name %}
+        </div>
+        <div>
+          <label for="{{ form.last_name.id_for_label }}" class="block text-xs font-bold uppercase tracking-wider text-base-content/50 mb-1.5">Last name</label>
+          {% render_text_input form.last_name %}
+        </div>
+      </div>
+      <div class="pt-2">
+        <button type="submit" class="btn btn-primary rounded-full shadow-lg shadow-primary/20 hover:-translate-y-0.5 transition-all duration-300 font-semibold px-8">
+          Save Changes
+        </button>
       </div>
     </form>
   </div>

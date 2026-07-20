@@ -1,8 +1,6 @@
 {% extends 'error_base.html' %}
 {% load i18n %}
+{% block error_heading %}{% translate "Something went wrong." %}{% endblock %}
 {% block error_details %}
-  <h1 class="text-3xl font-bold mb-2">{% translate "Oops. You don't have permission to do that." %}</h1>
-  <h2 class="text-xl mb-1">
-    {% translate "If you think this is a mistake, contact support." %}
-  </h2>
+<p>We're working to fix the issue. Please try again in a moment.</p>
 {% endblock %}

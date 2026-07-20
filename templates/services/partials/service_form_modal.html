@@ -2,14 +2,14 @@
 {% load form_tags %}
 {# Swapped into #modal-container. On validation errors the same partial is
    re-returned (with errors) so the modal stays open. #}
-<div class="modal modal-open">
-  <div class="modal-box">
-    <div class="flex items-center justify-between mb-2">
-      <h3 class="font-bold text-lg">
-        {% if service %}{% translate "Edit Service" %}{% else %}{% translate "New Service" %}{% endif %}
-      </h3>
-      <button class="btn btn-sm btn-circle btn-ghost" onclick="document.getElementById('modal-container').innerHTML=''">✕</button>
-    </div>
+  <div class="modal modal-open">
+    <div class="modal-box bg-base-100 border border-base-300/60 rounded-[2rem] shadow-2xl max-w-lg">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="font-serif text-2xl font-bold tracking-tight">
+          {% if service %}{% translate "Edit Service" %}{% else %}{% translate "New Service" %}{% endif %}
+        </h3>
+        <button class="btn btn-sm btn-circle btn-ghost hover:bg-base-200" onclick="document.getElementById('modal-container').innerHTML=''" aria-label="Close">✕</button>
+      </div>
 
     {% if service %}
       {% url 'services:service_update' service.pk as post_url %}

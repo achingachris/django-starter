@@ -1,7 +1,7 @@
 {% extends "web/app/app_base.html" %}
 {% load i18n %}
 {% block page_banner %}
-<section class="app-hero p-6 lg:p-8 mb-4">
+<section class="relative overflow-hidden rounded-[2rem] bg-gradient-to-r from-neutral via-[#25252a] to-[#2a1f1e] shadow-xl shadow-neutral/20 mb-8">
   <div class="flex flex-wrap items-center justify-between gap-4">
     <div class="flex items-center gap-4">
       <img src="{{ user.avatar_url }}" alt="" class="w-14 h-14 rounded-full object-cover ring-2 ring-white/50 shadow">
@@ -23,38 +23,46 @@
     </div>
   </div>
   <div class="flex flex-wrap gap-2 mt-5">
-    <span class="hero-pill badge badge-lg gap-2 font-semibold"><i class="fa fa-briefcase"></i> {{ stats.services }} {% translate "services" %}</span>
-    <span class="hero-pill badge badge-lg gap-2 font-semibold"><i class="fa fa-hourglass-half"></i> {{ stats.pending }} {% translate "pending" %}</span>
-    <span class="hero-pill badge badge-lg gap-2 font-semibold"><i class="fa fa-calendar-check"></i> {{ stats.upcoming }} {% translate "upcoming" %}</span>
+    <span class="hero-pill badge badge-lg gap-2 font-semibold bg-white/10 border-white/20 text-white"><i class="fa fa-briefcase"></i> {{ stats.services }} services</span>
+    <span class="hero-pill badge badge-lg gap-2 font-semibold bg-white/10 border-white/20 text-white"><i class="fa fa-hourglass-half"></i> {{ stats.pending }} pending</span>
+    <span class="hero-pill badge badge-lg gap-2 font-semibold bg-white/10 border-white/20 text-white"><i class="fa fa-calendar-check"></i> {{ stats.upcoming }} upcoming</span>
   </div>
 </section>
 {% endblock %}
 {% block app %}
-<section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-  <div class="stats shadow bg-base-100 border border-base-300"><div class="stat">
-    <div class="stat-figure"><span class="flex items-center justify-center size-11 rounded-box bg-primary/10 text-primary"><i class="fa fa-briefcase"></i></span></div>
-    <div class="stat-title">{% translate "Services" %}</div>
-    <div class="stat-value text-primary">{{ stats.services }}</div>
-  </div></div>
-  <div class="stats shadow bg-base-100 border border-base-300"><div class="stat">
-    <div class="stat-figure"><span class="flex items-center justify-center size-11 rounded-box bg-warning/15 text-warning"><i class="fa fa-hourglass-half"></i></span></div>
-    <div class="stat-title">{% translate "Pending Requests" %}</div>
-    <div class="stat-value text-warning">{{ stats.pending }}</div>
-  </div></div>
-  <div class="stats shadow bg-base-100 border border-base-300"><div class="stat">
-    <div class="stat-figure"><span class="flex items-center justify-center size-11 rounded-box bg-info/10 text-info"><i class="fa fa-calendar-check"></i></span></div>
-    <div class="stat-title">{% translate "Upcoming (Confirmed)" %}</div>
-    <div class="stat-value text-info">{{ stats.upcoming }}</div>
-  </div></div>
-  <div class="stats shadow bg-base-100 border border-base-300"><div class="stat">
-    <div class="stat-figure"><span class="flex items-center justify-center size-11 rounded-box bg-success/10 text-success"><i class="fa fa-circle-check"></i></span></div>
-    <div class="stat-title">{% translate "Completed" %}</div>
-    <div class="stat-value text-success">{{ stats.completed }}</div>
-  </div></div>
+<section class="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+  <article class="bg-base-100 border border-base-300/50 rounded-[1.5rem] p-6 shadow-sm hover:shadow-md transition-shadow">
+    <div class="flex items-center gap-3 mb-3">
+      <span class="w-11 h-11 rounded-2xl bg-primary/10 text-primary flex items-center justify-center"><i class="fa fa-briefcase"></i></span>
+    </div>
+    <div class="text-xs font-bold uppercase tracking-wider text-base-content/40 mb-1">Services</div>
+    <div class="font-serif text-3xl font-bold text-primary">{{ stats.services }}</div>
+  </article>
+  <article class="bg-base-100 border border-base-300/50 rounded-[1.5rem] p-6 shadow-sm hover:shadow-md transition-shadow">
+    <div class="flex items-center gap-3 mb-3">
+      <span class="w-11 h-11 rounded-2xl bg-warning/10 text-warning flex items-center justify-center"><i class="fa fa-hourglass-half"></i></span>
+    </div>
+    <div class="text-xs font-bold uppercase tracking-wider text-base-content/40 mb-1">Pending Requests</div>
+    <div class="font-serif text-3xl font-bold text-warning">{{ stats.pending }}</div>
+  </article>
+  <article class="bg-base-100 border border-base-300/50 rounded-[1.5rem] p-6 shadow-sm hover:shadow-md transition-shadow">
+    <div class="flex items-center gap-3 mb-3">
+      <span class="w-11 h-11 rounded-2xl bg-info/10 text-info flex items-center justify-center"><i class="fa fa-calendar-check"></i></span>
+    </div>
+    <div class="text-xs font-bold uppercase tracking-wider text-base-content/40 mb-1">Upcoming (Confirmed)</div>
+    <div class="font-serif text-3xl font-bold text-info">{{ stats.upcoming }}</div>
+  </article>
+  <article class="bg-base-100 border border-base-300/50 rounded-[1.5rem] p-6 shadow-sm hover:shadow-md transition-shadow">
+    <div class="flex items-center gap-3 mb-3">
+      <span class="w-11 h-11 rounded-2xl bg-success/10 text-success flex items-center justify-center"><i class="fa fa-circle-check"></i></span>
+    </div>
+    <div class="text-xs font-bold uppercase tracking-wider text-base-content/40 mb-1">Completed</div>
+    <div class="font-serif text-3xl font-bold text-success">{{ stats.completed }}</div>
+  </article>
 </section>
 
-<section class="app-card mt-4">
-  <h2 class="text-xl font-bold mb-3">{% translate "Requests awaiting your confirmation" %}</h2>
+<section class="bg-base-100 border border-base-300/50 rounded-[2rem] shadow-sm overflow-hidden p-8 lg:p-10 mb-8">
+  <h2 class="font-serif text-2xl font-bold tracking-tight mb-6">Requests awaiting your confirmation</h2>
   {% if pending_bookings %}
   <div class="overflow-x-auto">
     <table class="table">

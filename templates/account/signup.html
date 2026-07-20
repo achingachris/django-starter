@@ -8,21 +8,43 @@
 {% endif %}
 {% endblock %}
 {% block body %}
-  <div class="flex justify-center my-8">
-    <div class="w-96 max-w-full px-4 py-4 card bg-base-100 border border-base-300">
-      <div class="card-body">
-        <h2 class="text-center text-2xl font-bold">
-          Sign up
-        </h2>
-        <form class="mt-6 space-y-6" method="post">
+  <main class="min-h-[calc(100vh-12rem)] flex items-center justify-center px-6 py-16">
+    <article class="w-full max-w-md bg-base-100 border border-base-300/60 rounded-[2.5rem] shadow-xl shadow-base-content/5 overflow-hidden">
+      <div class="bg-gradient-to-br from-neutral via-[#25252a] to-[#2a1f1e] px-10 pt-12 pb-16 text-center relative overflow-hidden">
+        <div class="absolute inset-0 opacity-[0.06]" style="background-image: url('/static/images/web/texture-abstract-2.jpg'); background-size: cover; mix-blend-mode: overlay;"></div>
+        <div class="relative z-10">
+          <a href="{% url 'web:home' %}" class="inline-block hover:opacity-80 transition-opacity mb-6">
+            {% include "web/components/logo.html" with size="h-10" %}
+          </a>
+          <h1 class="font-serif text-3xl font-bold text-base-content tracking-tight">Create account</h1>
+          <p class="text-base-content/50 text-sm mt-2">Join Sokoni — it takes under a minute.</p>
+        </div>
+      </div>
+
+      <div class="p-10 -mt-8 relative z-10">
+        <form class="space-y-4" method="post">
           {% csrf_token %}
           {{ form.non_field_errors }}
-          {% render_field form.email %}
-          {% render_field form.password1 %}
+          <div>
+            <label for="{{ form.email.id_for_label }}" class="block text-xs font-bold uppercase tracking-wider text-base-content/50 mb-2">Email</label>
+            {% render_field form.email %}
+          </div>
+          <div>
+            <label for="{{ form.password1.id_for_label }}" class="block text-xs font-bold uppercase tracking-wider text-base-content/50 mb-2">Password</label>
+            {% render_field form.password1 %}
+          </div>
           {% if form.password2 %}
+          <div>
+            <label for="{{ form.password2.id_for_label }}" class="block text-xs font-bold uppercase tracking-wider text-base-content/50 mb-2">Confirm password</label>
             {% render_field form.password2 %}
+          </div>
           {% endif %}
-          {% render_field form.terms_agreement %}
+          {% if form.terms_agreement %}
+          <div class="flex items-start gap-2 pt-1">
+            {% render_field form.terms_agreement %}
+            <label for="{{ form.terms_agreement.id_for_label }}" class="text-xs text-base-content/50 leading-relaxed">I agree to the terms and privacy policy.</label>
+          </div>
+          {% endif %}
           <div class="relative overflow-hidden">
             {% render_field form.phone_number_x %}
           </div>
@@ -30,15 +52,16 @@
           <div class="cf-turnstile" data-sitekey="{{ turnstile_key }}" data-response-field-name="turnstile_token"></div>
           {{ form.turnstile_token.errors }}
           {% endif %}
-          <input class="btn btn-primary btn-block" type="submit" value="{% translate "Sign Up" %}">
+          <div class="pt-2">
+            <button type="submit" class="btn btn-primary btn-block rounded-full shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-300 font-semibold tracking-tight">
+              Sign Up
+            </button>
+          </div>
         </form>
-        <div class="text-sm mt-4">
-          {% translate "Already have account?" %}
-          <a href="{% url 'account_login' %}" class="font-medium pg-link">
-            {% translate "Go to sign in." %}
-          </a>
+        <div class="mt-6 text-center text-xs text-base-content/30">
+          Already have an account? <a href="{% url 'account_login' %}" class="text-primary hover:underline">Sign in</a>
         </div>
       </div>
-    </div>
-  </div>
+    </article>
+  </main>
 {% endblock %}

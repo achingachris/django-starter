@@ -1,29 +1,32 @@
 {% extends "web/app/app_base.html" %}
 {% load i18n %}
 {% block app %}
-<section class="app-card">
-  <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
-    <div>
-      <h1 class="text-2xl font-bold">{% translate "My Services" %}</h1>
-      <p class="text-base-content/70">{% translate "Create and manage what you offer to clients." %}</p>
+<section class="mx-auto max-w-6xl px-6 lg:px-10 py-6 lg:py-10">
+  <article class="bg-base-100 border border-base-300/50 rounded-[2rem] shadow-sm overflow-hidden">
+    <div class="p-8 lg:p-10 border-b border-base-300/40 flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <h1 class="font-serif text-3xl font-bold tracking-tight">My Services</h1>
+        <p class="text-sm text-base-content/50 mt-1">Create and manage what you offer to clients.</p>
+      </div>
+      <button class="btn btn-primary rounded-full shadow-lg shadow-primary/20 hover:-translate-y-0.5 transition-all duration-300"
+              hx-get="{% url 'services:service_create' %}"
+              hx-target="#modal-container" hx-swap="innerHTML">
+        <i class="fa fa-plus mr-2"></i> New Service
+      </button>
     </div>
-    <button class="btn btn-primary"
-            hx-get="{% url 'services:service_create' %}"
-            hx-target="#modal-container" hx-swap="innerHTML">
-      <i class="fa fa-plus"></i> {% translate "New Service" %}
-    </button>
-  </div>
+
+    <div class="p-8 lg:p-10">
 
   {% if services %}
   <div class="overflow-x-auto">
-    <table class="table">
+    <table class="table w-full text-sm">
       <thead>
-        <tr>
-          <th>{% translate "Service" %}</th>
-          <th>{% translate "Duration" %}</th>
-          <th>{% translate "Price" %}</th>
-          <th>{% translate "Visibility" %}</th>
-          <th class="text-right">{% translate "Actions" %}</th>
+        <tr class="border-b border-base-300/60">
+          <th class="text-xs font-bold uppercase tracking-wider text-base-content/40">{% translate "Service" %}</th>
+          <th class="text-xs font-bold uppercase tracking-wider text-base-content/40">{% translate "Duration" %}</th>
+          <th class="text-xs font-bold uppercase tracking-wider text-base-content/40">{% translate "Price" %}</th>
+          <th class="text-xs font-bold uppercase tracking-wider text-base-content/40">{% translate "Visibility" %}</th>
+          <th class="text-right text-xs font-bold uppercase tracking-wider text-base-content/40">{% translate "Actions" %}</th>
         </tr>
       </thead>
       <tbody id="service-rows">
@@ -64,15 +67,18 @@
     </table>
   </div>
   {% else %}
-  <div class="text-center py-10">
-    <p class="text-base-content/60 mb-4">{% translate "You haven't listed any services yet." %}</p>
-    <button class="btn btn-primary"
+  <div class="text-center py-16">
+    <i class="fa fa-briefcase text-4xl text-base-content/20 mb-4"></i>
+    <p class="text-base-content/60 mb-6 text-lg">{% translate "You haven't listed any services yet." %}</p>
+    <button class="btn btn-primary rounded-full shadow-lg shadow-primary/20 hover:-translate-y-0.5 transition-all duration-300"
             hx-get="{% url 'services:service_create' %}"
             hx-target="#modal-container" hx-swap="innerHTML">
-      <i class="fa fa-plus"></i> {% translate "Create your first service" %}
+      <i class="fa fa-plus mr-2"></i> Create your first service
     </button>
   </div>
   {% endif %}
+    </div>
+  </article>
 </section>
 
 {# HTMX modal target #}

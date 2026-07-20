@@ -1,12 +1,25 @@
 {% extends "web/base.html" %}
 {% load static %}
 {% block body %}
-<section class="section mt-7">
-  <div class="container">
-    <div class="prose max-w-none lg:prose-lg">
-      <h1>Terms Of Service</h1>
-      <p>Your site's terms go here.</p>
+<main class="min-h-[calc(100vh-12rem)] mx-auto max-w-3xl px-6 lg:px-10 py-16 lg:py-24">
+  <article class="bg-base-100 border border-base-300/50 rounded-[2.5rem] shadow-sm overflow-hidden p-10 lg:p-14">
+    <header class="mb-10 border-b border-base-300/40 pb-8">
+      <h1 class="font-serif text-4xl lg:text-5xl font-bold tracking-tight">Terms of Service</h1>
+      <p class="text-base-content/40 text-sm mt-2">Last updated: July 2026</p>
+    </header>
+    <div class="prose prose-lg max-w-none text-base-content/80 leading-relaxed space-y-6">
+      <h2 class="font-serif text-2xl font-bold">Overview</h2>
+      <p>Welcome to Sokoni. By using our platform, you agree to these terms. We provide a curated marketplace connecting clients with verified local service providers.</p>
+
+      <h2 class="font-serif text-2xl font-bold">For Clients</h2>
+      <p>Clients may browse services, request bookings, and manage appointments. All bookings are confirmed by providers before becoming final.</p>
+
+      <h2 class="font-serif text-2xl font-bold">For Providers</h2>
+      <p>Providers must maintain accurate service listings, honor confirmed bookings, and communicate clearly with clients.</p>
+
+      <h2 class="font-serif text-2xl font-bold">Privacy</h2>
+      <p>We respect your privacy and handle all data in accordance with our privacy policy.</p>
     </div>
-  </div>
-</section>
+  </article>
+</main>
 {% endblock %}
