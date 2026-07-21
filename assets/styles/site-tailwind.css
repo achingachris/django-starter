@@ -14,7 +14,7 @@
 */
 @plugin "daisyui/theme" {
   name: "sokoni";
-  default: true;
+  default: false;
   prefersdark: false;
   color-scheme: light;
 
@@ -57,7 +57,7 @@
 */
 @plugin "daisyui/theme" {
   name: "sokoni-dark";
-  default: false;
+  default: true;
   prefersdark: true;
   color-scheme: dark;
 

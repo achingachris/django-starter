@@ -2,22 +2,13 @@
 {% load django_vite %}
 {% load meta_tags %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="sokoni-dark">
 <head>
     <meta charset="utf-8">
     <!--IE compatibility-->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!--Mobile friendly-->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--Apply a saved theme choice before first paint (avoids a light flash in dark mode)-->
-    <script>
-      (function () {
-        try {
-          var t = localStorage.getItem('sokoni-theme');
-          if (t) document.documentElement.setAttribute('data-theme', t);
-        } catch (e) {}
-      })();
-    </script>
     <!--CSRF cookie name, read by front-end JS (see assets/javascript/csrf.js)-->
     <meta name="csrf-cookie-name" content="{{ csrf_cookie_name }}">
 {% block meta %}
@@ -80,28 +71,12 @@
 {% block page_js %}
 {% endblock page_js %}
 <script>
-  // Sokoni light/dark theme toggle (choice persisted in localStorage)
-  function sokoniCurrentTheme() {
-    return document.documentElement.getAttribute('data-theme') ||
-      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'sokoni-dark' : 'sokoni');
-  }
-  function sokoniUpdateIcon(theme) {
-    var btn = document.getElementById('theme-toggle');
-    if (!btn) return;
-    btn.querySelector('[data-theme-icon="moon"]').classList.toggle('hidden', theme === 'sokoni-dark');
-    btn.querySelector('[data-theme-icon="sun"]').classList.toggle('hidden', theme !== 'sokoni-dark');
-  }
-  document.addEventListener('DOMContentLoaded', function () {
-    var btn = document.getElementById('theme-toggle');
-    if (!btn) return;
-    sokoniUpdateIcon(sokoniCurrentTheme());
-    btn.addEventListener('click', function () {
-      var next = sokoniCurrentTheme() === 'sokoni-dark' ? 'sokoni' : 'sokoni-dark';
-      document.documentElement.setAttribute('data-theme', next);
-      try { localStorage.setItem('sokoni-theme', next); } catch (e) {}
-      sokoniUpdateIcon(next);
+  // Register PWA service worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register("{% url 'web:service_worker' %}").catch(function () {});
     });
-  });
+  }
 </script>
 </body>
 </html>

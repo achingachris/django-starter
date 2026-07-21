@@ -21,7 +21,7 @@
           Home
           <span class="absolute -bottom-1 left-0 w-0 h-[1.5px] bg-primary transition-all duration-300 group-hover:w-full"></span>
         </a>
-        <a href="{% url 'services:service_browse' %}" class="text-sm tracking-wide font-medium text-base-content/80 hover:text-base-content hover:text-primary transition-colors relative group">
+        <a href="{% if user.is_authenticated and user.is_provider %}{% url 'services:service_list' %}{% else %}{% url 'services:service_browse' %}{% endif %}" class="text-sm tracking-wide font-medium text-base-content/80 hover:text-base-content hover:text-primary transition-colors relative group">
           Services
           <span class="absolute -bottom-1 left-0 w-0 h-[1.5px] bg-primary transition-all duration-300 group-hover:w-full"></span>
         </a>
@@ -29,13 +29,8 @@
 
       <!-- Right actions -->
       <div class="flex items-center gap-3">
-        <button id="theme-toggle" type="button" class="btn btn-ghost btn-circle btn-sm text-base-content/60 hover:text-base-content hover:bg-base-200/60" aria-label="Toggle theme" title="Toggle theme">
-          <i data-theme-icon="moon" class="fa fa-moon text-sm"></i>
-          <i data-theme-icon="sun" class="fa fa-sun hidden text-sm"></i>
-        </button>
-
         {% if user.is_authenticated %}
-          <a href="{% url 'services:provider_dashboard' %}" class="hidden sm:inline-flex btn btn-outline btn-sm rounded-full border-base-300 text-base-content hover:border-primary hover:text-primary transition-all">
+          <a href="{% if user.is_provider %}{% url 'services:provider_dashboard' %}{% else %}{% url 'services:client_dashboard' %}{% endif %}" class="hidden sm:inline-flex btn btn-outline btn-sm rounded-full border-base-300 text-base-content hover:border-primary hover:text-primary transition-all">
             <i class="fa fa-user-circle mr-1.5 text-xs"></i>
             <span class="text-xs font-medium">Dashboard</span>
           </a>
@@ -79,9 +74,9 @@
         </div>
         <nav class="flex flex-col gap-1">
           <a href="{% url 'web:home' %}" class="px-3 py-3 rounded-xl text-base font-medium text-base-content hover:bg-base-200 hover:text-primary transition-all">Home</a>
-          <a href="{% url 'services:service_browse' %}" class="px-3 py-3 rounded-xl text-base font-medium text-base-content hover:bg-base-200 hover:text-primary transition-all">Services</a>
+          <a href="{% if user.is_authenticated and user.is_provider %}{% url 'services:service_list' %}{% else %}{% url 'services:service_browse' %}{% endif %}" class="px-3 py-3 rounded-xl text-base font-medium text-base-content hover:bg-base-200 hover:text-primary transition-all">Services</a>
           {% if user.is_authenticated %}
-            <a href="{% url 'services:provider_dashboard' %}" class="px-3 py-3 rounded-xl text-base font-medium text-base-content hover:bg-base-200 hover:text-primary transition-all">Dashboard</a>
+            <a href="{% if user.is_provider %}{% url 'services:provider_dashboard' %}{% else %}{% url 'services:client_dashboard' %}{% endif %}" class="px-3 py-3 rounded-xl text-base font-medium text-base-content hover:bg-base-200 hover:text-primary transition-all">Dashboard</a>
           {% else %}
             <a href="{% url 'account_signup' %}" class="mt-4 btn btn-primary rounded-full w-full">Get Started</a>
           {% endif %}

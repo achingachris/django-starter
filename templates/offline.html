@@ -1,0 +1,19 @@
+{% extends "web/base.html" %}
+{% load i18n %}
+
+{% block page_title %}{% translate "You're offline" %}{% endblock %}
+
+{% block body %}
+<section class="section min-h-[60vh] flex items-center justify-center">
+  <div class="container max-w-md text-center">
+    <i class="fa fa-wifi text-4xl text-base-content/30 mb-4"></i>
+    <h1 class="text-2xl font-serif font-semibold mb-2">{% translate "You're offline" %}</h1>
+    <p class="text-base-content/70 mb-6">
+      {% translate "It looks like you've lost your connection. Check it and try again." %}
+    </p>
+    <button onclick="window.location.reload()" class="btn btn-primary rounded-full px-6">
+      {% translate "Try again" %}
+    </button>
+  </div>
+</section>
+{% endblock %}

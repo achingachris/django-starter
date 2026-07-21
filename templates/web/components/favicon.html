@@ -1,5 +1,11 @@
 {% load static %}
 {# Sokoni brand icon (SVG favicons are supported by all modern browsers) #}
 <link rel="icon" type="image/svg+xml" href="{% static 'images/favicons/favicon.svg' %}">
-<link rel="apple-touch-icon" href="{% static 'images/favicons/favicon.svg' %}">
-<meta name="theme-color" content="#0d7a6f">
+<link rel="apple-touch-icon" href="{% static 'images/favicons/apple-touch-icon.png' %}">
+<meta name="theme-color" content="#121214">
+<!-- PWA -->
+<link rel="manifest" href="{% static 'images/favicons/site.webmanifest' %}">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sokoni">

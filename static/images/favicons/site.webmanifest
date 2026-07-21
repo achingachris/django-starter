@@ -1,6 +1,9 @@
 {
-    "name": "",
-    "short_name": "",
+    "name": "Sokoni",
+    "short_name": "Sokoni",
+    "description": "Kenya's service marketplace \u2014 book trusted local pros in minutes, or list your services and get booked.",
+    "start_url": "/",
+    "scope": "/",
     "icons": [
         {
             "src": "./android-chrome-192x192.png",
@@ -13,7 +16,7 @@
             "type": "image/png"
         }
     ],
-    "theme_color": "#ffffff",
-    "background_color": "#ffffff",
+    "theme_color": "#121214",
+    "background_color": "#121214",
     "display": "standalone"
 }
