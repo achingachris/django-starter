@@ -1,0 +1,91 @@
+{% extends "web/app/app_base.html" %}
+{% load i18n %}
+{% block app %}
+<section class="mx-auto max-w-3xl px-6 lg:px-10 py-6 lg:py-10">
+  <a href="{% url 'services:provider_bookings' %}" class="inline-flex items-center gap-2 text-sm text-base-content/50 hover:text-primary transition-colors mb-6 group">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    <span class="group-hover:-translate-x-0.5 transition-transform">{% translate "Back to bookings" %}</span>
+  </a>
+
+  <article class="bg-base-100 border border-base-300/50 rounded-[2rem] shadow-sm overflow-hidden">
+    <div class="p-8 lg:p-10 border-b border-base-300/40 flex flex-wrap items-start justify-between gap-4">
+      <div>
+        <h1 class="font-serif text-2xl lg:text-3xl font-bold tracking-tight mb-1">{{ booking.service.title }}</h1>
+        <p class="text-sm text-base-content/50">{% translate "Booked on" %} {{ booking.created_at|date:"M d, Y H:i" }}</p>
+      </div>
+      <span class="badge badge-lg
+        {% if booking.status == 'PENDING' %}badge-warning
+        {% elif booking.status == 'CONFIRMED' %}badge-info
+        {% elif booking.status == 'COMPLETED' %}badge-success
+        {% else %}badge-ghost{% endif %}">
+        {{ booking.get_status_display }}
+      </span>
+    </div>
+
+    <div class="p-8 lg:p-10 grid md:grid-cols-2 gap-8">
+      <div>
+        <h2 class="text-xs font-bold uppercase tracking-wider text-base-content/40 mb-3">{% translate "Client" %}</h2>
+        <div class="flex items-center gap-3 mb-4">
+          <img src="{{ booking.client.avatar_url }}" alt="" class="w-12 h-12 rounded-full object-cover ring-2 ring-base-200 shadow-sm">
+          <div>
+            <div class="font-semibold">{{ booking.client.get_display_name }}</div>
+            <div class="text-sm text-base-content/50">{{ booking.client.email }}</div>
+          </div>
+        </div>
+
+        <h2 class="text-xs font-bold uppercase tracking-wider text-base-content/40 mb-3 mt-6">{% translate "Schedule" %}</h2>
+        <p class="text-sm">
+          <i class="fa fa-calendar mr-2 text-primary"></i>
+          {{ booking.scheduled_at|date:"l, M d, Y" }}
+        </p>
+        <p class="text-sm mt-1">
+          <i class="fa fa-clock mr-2 text-primary"></i>
+          {{ booking.scheduled_at|date:"H:i" }} – {{ booking.ends_at|date:"H:i" }}
+          <span class="text-base-content/50">({{ booking.service.duration_display }})</span>
+        </p>
+        <p class="text-sm mt-1">
+          <i class="fa fa-tag mr-2 text-primary"></i>
+          KES {{ booking.service.price|floatformat:2 }}
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-xs font-bold uppercase tracking-wider text-base-content/40 mb-3">{% translate "Notes from client" %}</h2>
+        {% if booking.notes %}
+          <p class="text-sm text-base-content/80 leading-relaxed whitespace-pre-line bg-base-200/50 rounded-xl p-4 border border-base-300/40">{{ booking.notes }}</p>
+        {% else %}
+          <p class="text-sm text-base-content/40 italic">{% translate "The client didn't leave any notes." %}</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="px-8 lg:px-10 pb-8 lg:pb-10 flex flex-wrap gap-3">
+      {% if booking.status == "PENDING" %}
+        <form method="post" action="{% url 'services:booking_set_status' booking.pk 'CONFIRMED' %}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{% url 'services:booking_detail' booking.pk %}">
+          <button type="submit" class="btn btn-info">{% translate "Confirm booking" %}</button>
+        </form>
+        <form method="post" action="{% url 'services:booking_set_status' booking.pk 'CANCELLED' %}"
+              onsubmit="return confirm('{% translate "Decline this booking?" %}');">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{% url 'services:booking_detail' booking.pk %}">
+          <button type="submit" class="btn btn-ghost text-error">{% translate "Decline" %}</button>
+        </form>
+      {% elif booking.status == "CONFIRMED" %}
+        <form method="post" action="{% url 'services:booking_set_status' booking.pk 'COMPLETED' %}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{% url 'services:booking_detail' booking.pk %}">
+          <button type="submit" class="btn btn-success">{% translate "Mark done" %}</button>
+        </form>
+        <form method="post" action="{% url 'services:booking_set_status' booking.pk 'CANCELLED' %}"
+              onsubmit="return confirm('{% translate "Cancel this booking?" %}');">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{% url 'services:booking_detail' booking.pk %}">
+          <button type="submit" class="btn btn-ghost text-error">{% translate "Cancel" %}</button>
+        </form>
+      {% endif %}
+    </div>
+  </article>
+</section>
+{% endblock %}

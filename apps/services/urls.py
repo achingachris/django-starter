@@ -12,6 +12,7 @@ urlpatterns = [
     path("manage/<int:pk>/toggle/", views.service_toggle_active, name="service_toggle_active"),
     path("manage/<int:pk>/delete/", views.service_delete, name="service_delete"),
     path("incoming/", views.provider_bookings, name="provider_bookings"),
+    path("incoming/<int:pk>/", views.booking_detail, name="booking_detail"),
     path("incoming/<int:pk>/status/<str:new_status>/", views.booking_set_status, name="booking_set_status"),
     # client
     path("dashboard/client/", views.client_dashboard, name="client_dashboard"),

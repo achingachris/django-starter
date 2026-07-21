@@ -2,7 +2,11 @@
 {# A single booking <tr>; `role` is "provider" or "client". Used full-page and HTMX-swapped. #}
 <tr id="booking-row-{{ booking.pk }}">
   <td>
-    <div class="font-semibold">{{ booking.service.title }}</div>
+    {% if role == "provider" %}
+      <a href="{% url 'services:booking_detail' booking.pk %}" class="font-semibold hover:text-primary transition-colors">{{ booking.service.title }}</a>
+    {% else %}
+      <div class="font-semibold">{{ booking.service.title }}</div>
+    {% endif %}
     {% if booking.notes %}<div class="text-xs text-base-content/60 max-w-xs truncate" title="{{ booking.notes }}">{{ booking.notes }}</div>{% endif %}
   </td>
   <td>

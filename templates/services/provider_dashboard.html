@@ -86,7 +86,8 @@
   {% if upcoming_bookings %}
   <ul class="space-y-2">
     {% for booking in upcoming_bookings %}
-    <li class="flex flex-wrap items-center justify-between gap-2 border border-base-300 rounded-lg px-4 py-2">
+    <li>
+    <a href="{% url 'services:booking_detail' booking.pk %}" class="flex flex-wrap items-center justify-between gap-2 border border-base-300 rounded-lg px-4 py-2 hover:border-primary/50 hover:bg-base-200/40 transition-colors">
       <div>
         <span class="font-semibold">{{ booking.service.title }}</span>
         <span class="text-base-content/60"> · {{ booking.client.get_display_name }}</span>
@@ -97,6 +98,7 @@
           {{ booking.get_status_display }}
         </span>
       </div>
+    </a>
     </li>
     {% endfor %}
   </ul>

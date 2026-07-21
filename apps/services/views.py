@@ -179,6 +179,22 @@ def provider_bookings(request):
 
 
 @provider_required
+def booking_detail(request, pk):
+    booking = get_object_or_404(
+        Booking.objects.select_related("service", "client"), pk=pk, service__provider=request.user
+    )
+    return render(
+        request,
+        "services/booking_detail.html",
+        {
+            "active_tab": "provider_bookings",
+            "page_title": _("Booking details"),
+            "booking": booking,
+        },
+    )
+
+
+@provider_required
 @require_POST
 def booking_set_status(request, pk, new_status):
     booking = get_object_or_404(
@@ -197,6 +213,9 @@ def booking_set_status(request, pk, new_status):
     if request.htmx:
         # re-render just the affected row
         return render(request, "services/partials/booking_row.html", {"booking": booking, "role": "provider"})
+    next_url = request.POST.get("next")
+    if next_url and next_url.startswith("/"):
+        return redirect(next_url)
     return redirect("services:provider_bookings")
 
 
