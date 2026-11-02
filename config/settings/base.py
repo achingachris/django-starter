@@ -46,12 +46,16 @@ DJANGO_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
+    # >>> web
     "django.contrib.sitemaps",
+    # <<< web
     "django.contrib.messages",
     "django.contrib.postgres",
     "django.contrib.staticfiles",
     "django.contrib.sites",
+    # >>> web
     "django.forms",
+    # <<< web
 ]
 
 # Put your third-party apps here
@@ -59,7 +63,10 @@ THIRD_PARTY_APPS = [
     "allauth",  # allauth account/registration management
     "allauth.account",
     "allauth.socialaccount",
+    "allauth.headless",
+    # >>> web
     "django_htmx",
+    # <<< web
     "rest_framework",
     "drf_spectacular",
 ]
@@ -85,7 +92,9 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    # >>> web
     "django_htmx.middleware.HtmxMiddleware",
+    # <<< web
     "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -122,10 +131,12 @@ if ENABLE_DEBUG_TOOLBAR:
     if env("LOGINOUT_SERVER", default=None):
         LOGINOUT_SERVER = env("LOGINOUT_SERVER")
 
+# >>> web
 # add browser reload only in debug mode
 if DEBUG:
     INSTALLED_APPS.append("django_browser_reload")
     MIDDLEWARE.append("django_browser_reload.middleware.BrowserReloadMiddleware")
+# <<< web
 
 # add watchfiles only in debug mode
 if DEBUG:
@@ -154,8 +165,10 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                # >>> web
                 "apps.web.context_processors.project_meta",
                 "apps.web.context_processors.csrf_settings",
+                # <<< web
             ],
             "loaders": _DEFAULT_LOADERS if DEBUG else _CACHED_LOADERS,
         },
@@ -164,7 +177,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
+# >>> web
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
+# <<< web
 
 # Database
 # https://docs.djangoproject.com/en/stable/ref/settings/#databases
@@ -183,7 +198,9 @@ DATABASES = {
 # Django recommends overriding the user model even if you don"t think you need to because it makes
 # future changes much easier.
 AUTH_USER_MODEL = "users.CustomUser"
+# >>> web
 LOGIN_URL = "account_login"
+# <<< web
 LOGIN_REDIRECT_URL = "/"
 
 # Path prefix for the Django admin (must end in a slash). Override it in the environment
@@ -238,9 +255,11 @@ ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_LOGIN_BY_CODE_ENABLED = True
 ACCOUNT_USER_DISPLAY = lambda user: user.get_display_name()  # noqa: E731
 
+# >>> web
 ACCOUNT_FORMS = {
     "signup": "apps.users.forms.TermsSignupForm",
 }
+# <<< web
 
 # User signup configuration: change to "mandatory" to require users to confirm email before signing in.
 # or "optional" to send confirmation emails but not require them
@@ -253,9 +272,33 @@ AUTHENTICATION_BACKENDS = (
     "allauth.account.auth_backends.AuthenticationBackend",
 )
 
+# allauth headless exposes signup, login, email verification etc. as a JSON API under /_allauth/
+# for SPAs ("browser" client, cookie session) and mobile apps ("app" client, X-Session-Token header).
+# With HEADLESS_ONLY, Django serves no account pages, so links in emails point at the front end.
+# >>> web
+HEADLESS_ONLY = False
+# <<< web
+# api-only: HEADLESS_ONLY = True
+FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:3000")
+HEADLESS_FRONTEND_URLS = (
+    {
+        "account_confirm_email": f"{FRONTEND_URL}/account/verify-email/{{key}}",
+        "account_reset_password": f"{FRONTEND_URL}/account/password/reset",
+        "account_reset_password_from_key": f"{FRONTEND_URL}/account/password/reset/key/{{key}}",
+        "account_signup": f"{FRONTEND_URL}/account/signup",
+        "socialaccount_login_error": f"{FRONTEND_URL}/account/provider/callback",
+    }
+    if HEADLESS_ONLY
+    else {}
+)
+# Serves the auth API's OpenAPI spec at /_allauth/openapi.html (and .json/.yaml).
+HEADLESS_SERVE_SPECIFICATION = DEBUG
+# >>> web
+
 # For turnstile captchas
 TURNSTILE_KEY = env("TURNSTILE_KEY", default=None)
 TURNSTILE_SECRET = env("TURNSTILE_SECRET", default=None)
+# <<< web
 
 
 # Internationalization
@@ -263,7 +306,7 @@ TURNSTILE_SECRET = env("TURNSTILE_SECRET", default=None)
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Africa/Nairobi"
 
 USE_I18N = False
 
@@ -344,6 +387,8 @@ SITE_ID = 1
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication",
+        # Lets app clients call DRF views with the X-Session-Token issued by allauth headless.
+        "allauth.headless.contrib.rest_framework.authentication.XSessionTokenAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
@@ -408,9 +453,11 @@ PROJECT_METADATA = {
 USE_HTTPS_IN_ABSOLUTE_URLS = env.bool("USE_HTTPS_IN_ABSOLUTE_URLS", default=False)
 
 ADMINS = ["achinga.chris@gmail.com"]
+# >>> web
 
 # Umami website ID used by the shared site analytics script.
 UMAMI_WEBSITE_ID = env("UMAMI_WEBSITE_ID", default="")
+# <<< web
 
 
 LOGGING = {

@@ -1,11 +1,21 @@
+from django.conf import settings
+from django.contrib.sitemaps.views import sitemap
 from django.urls import path
 from django.views import defaults as default_views
-from django.views.generic import TemplateView
+from django.views.generic import RedirectView, TemplateView
 
 from . import views
+from .sitemaps import StaticViewSitemap
+
+sitemaps = {
+    "static": StaticViewSitemap(),
+}
 
 app_name = "web"
 urlpatterns = [
+    # redirect Django admin login to main login page
+    path(f"{settings.ADMIN_URL}login/", RedirectView.as_view(pattern_name="account_login")),
+    path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="sitemap"),
     path("", views.home, name="home"),
     path("admin-dashboard/", views.admin_dashboard, name="admin_dashboard"),
     path("offline/", views.offline, name="offline"),
