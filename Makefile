@@ -18,14 +18,18 @@ setup-env:
 init: setup-env ## Quickly get up and running (install deps and bootstrap the SQLite DB)
 	@echo "Installing Python dependencies"
 	@uv sync
+# >>> web
 	@echo "Installing front-end dependencies and building the CSS"
 	@npm install
 	@npm run build
+# <<< web
 	@$(MAKE) migrate
 	@echo ""
 	@echo "✅ Project setup complete!"
 	@echo "   Run 'make start' to launch the Django dev server at http://localhost:8000/"
+# >>> web
 	@echo "   Run 'make npm-dev' in a second terminal to rebuild the CSS as you edit templates."
+# <<< web
 
 start: ## Run the Django development server
 	@uv run python manage.py runserver
@@ -69,6 +73,7 @@ ruff: ruff-format ruff-lint ## Formatting and linting using Ruff
 type-check: ## Run Python type checking
 	@uv run mypy .
 
+# >>> web
 # -----------------------------------------------------------------------------
 # Front end (native npm)
 # -----------------------------------------------------------------------------
@@ -88,7 +93,9 @@ npm-build: ## Build the CSS and copy vendored JS/fonts into static/ (production 
 npm-dev: ## Rebuild the CSS whenever templates change (optional second terminal)
 	@npm run dev
 
-upgrade: requirements migrations migrate npm-install npm-build  ## Run after a Pegasus upgrade to update requirements, migrate the database, and rebuild the front end
+upgrade: requirements migrations migrate npm-install npm-build  ## Update requirements, migrate the database, and rebuild the front end
+# <<< web
+# api-only: upgrade: requirements migrations migrate  ## Update requirements and migrate the database
 
 # -----------------------------------------------------------------------------
 # Production (Docker / docker compose)

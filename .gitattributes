@@ -1,0 +1,4 @@
+# Keep the starter CLI and its workflows out of release tarballs, which the CLI downloads as the project.
+cli/ export-ignore
+.github/workflows/publish_cli.yml export-ignore
+.github/workflows/starter_cli.yml export-ignore

@@ -2,6 +2,7 @@
 #
 # Production image for the Django app.
 #
+# >>> web
 # Stage 1 builds the Tailwind CSS and copies the vendored JS/fonts (into ./static,
 # alongside the committed images/favicons/scripts). Stage 2 installs the production Python dependencies
 # and copies the built assets in, then runs the app under gunicorn.
@@ -21,6 +22,7 @@ RUN npm ci
 # /code/static/css/site.css and htmx/Alpine/Font Awesome are copied into /code/static/vendor.
 COPY . .
 RUN npm run build
+# <<< web
 
 # ---------------------------------------------------------------------------
 # Stage 2: Python application
@@ -73,8 +75,10 @@ RUN --mount=type=cache,target=/tmp/uv-cache,uid=$MY_UID,gid=$MY_GID \
 # Copy the application source.
 COPY --chown=django:django . /code/
 
+# >>> web
 # Overlay the front-end assets built in stage 1 (CSS + vendored libraries).
 COPY --from=frontend --chown=django:django /code/static /code/static
+# <<< web
 
 EXPOSE 8000
 

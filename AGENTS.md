@@ -4,6 +4,8 @@
 
 - This is a Django project built on Python 3.14.
 - User authentication uses `django-allauth`.
+- APIs use Django Rest Framework with an OpenAPI schema from `drf-spectacular`.
+<!-- >>> web -->
 - The front end is mostly standard Django views and templates.
 - HTMX and Alpine.js are used to provide single-page-app user experience with Django templates.
   HTMX is used for interactions which require accessing the backend, and Alpine.js is used for
@@ -11,8 +13,8 @@
 - There is no JavaScript bundler. Site-wide JavaScript is a plain script at `static/javascript/site.js`;
   htmx, Alpine.js and Font Awesome are copied from `node_modules` into `static/vendor/` by `npm run build`.
 - CSS is written in `assets/styles/site.css` and compiled by the Tailwind CLI into `static/css/site.css`.
-- APIs use Django Rest Framework with an OpenAPI schema from `drf-spectacular`.
 - The front end uses Tailwind (Version 4) with plain utility classes and no component library.
+<!-- <<< web -->
 - Background jobs use Django's built-in tasks framework (`django.tasks`) with the immediate backend;
   there is no Celery, broker, or worker. Periodic work runs as management commands from cron.
 
@@ -49,13 +51,19 @@ make init  # copy .env, uv sync, npm install, create + migrate the SQLite DB
 
 ### Starting the Application
 
-Local development runs the Django dev server; the CSS watcher is optional and only needed while
-editing templates or styles (`make init` builds the CSS once):
+Local development runs the Django dev server:
 
 ```bash
-make start     # Terminal 1: Django dev server (http://localhost:8000)
-make npm-dev   # Terminal 2 (optional): rebuild static/css/site.css as templates change
+make start     # Django dev server (http://localhost:8000)
 ```
+
+<!-- >>> web -->
+The CSS watcher is optional and only needed while editing templates or styles (`make init` builds the CSS once):
+
+```bash
+make npm-dev   # Second terminal: rebuild static/css/site.css as templates change
+```
+<!-- <<< web -->
 
 To run the production containerized stack instead (Postgres + Redis + gunicorn web),
 configure `.env.prod` first (`make setup-env-prod`), then:
@@ -108,6 +116,7 @@ make requirements               # Sync Python dependencies from the lockfile (uv
 make uv run '<command> <args>'  # Run a Python command
 ```
 
+<!-- >>> web -->
 ### Frontend
 
 ```bash
@@ -121,6 +130,7 @@ make npm-build        # Build the minified CSS and copy vendored JS/fonts into s
 Note: new Tailwind classes only show up after a rebuild, so run `make npm-dev` in a second
 terminal while editing templates. The last built CSS keeps serving when the watcher is off.
 
+<!-- <<< web -->
 ### Creating a new app
 
 ```bash
@@ -176,6 +186,15 @@ and extend `apps.utils.models.BaseModel` in its models.
 - All Django models should extend `apps.utils.models.BaseModel` (which adds `created_at` and `updated_at` fields).
 - The project's user model is `apps.users.models.CustomUser` and should be imported directly.
 
+## API
+
+- Authentication (signup, login, email verification, password reset) is `allauth.headless`, served under `/_allauth/`
+  (OpenAPI docs at `/_allauth/openapi.html` in DEBUG). App clients send the `X-Session-Token` it issues;
+  DRF accepts it via `XSessionTokenAuthentication`.
+- Project endpoints live under `/api/`, e.g. `GET /api/users/me/` in `apps/users/api.py`; their schema is at
+  `/api/schema/swagger-ui/`.
+
+<!-- >>> web -->
 ## Django Template Coding Guidelines for HTML files
 
 - Indent templates with two spaces.
@@ -213,3 +232,4 @@ and extend `apps.utils.models.BaseModel` in its models.
 ### Build System
 
 - There is no JavaScript build. `npm run build` compiles the Tailwind CSS and copies vendored libraries into `static/`.
+<!-- <<< web -->

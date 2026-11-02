@@ -1,0 +1,47 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "django-starter-cdc"
+version = "0.1.0"
+description = "Generate a new Django 6.1 project from django-starter: full-stack (HTMX, Alpine.js, Tailwind) or API-only."
+readme = "README.md"
+requires-python = ">=3.14"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Chris Achinga" }]
+keywords = ["django", "starter", "template", "generator", "htmx", "allauth", "drf"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Framework :: Django",
+    "Framework :: Django :: 6.1",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Code Generators",
+]
+dependencies = []
+
+[project.scripts]
+django-starter-cdc = "django_starter_cdc.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/achingachris/django-starter"
+Source = "https://github.com/achingachris/django-starter"
+Issues = "https://github.com/achingachris/django-starter/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/django_starter_cdc"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py314"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.ruff.format]
+quote-style = "double"

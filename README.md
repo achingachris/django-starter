@@ -19,6 +19,24 @@ The split is driven by `DEBUG` and a few environment variables — see [Configur
 
 ---
 
+<!-- >>> starter -->
+## Create a new project
+
+Generate a fresh project from this template with the
+[`django-starter-cdc`](https://pypi.org/project/django-starter-cdc/) CLI instead of cloning the repo
+(needs [uv](https://docs.astral.sh/uv/)):
+
+```bash
+uvx django-starter-cdc new myproject          # full setup: templates, HTMX, Alpine.js, Tailwind
+uvx django-starter-cdc new myproject --api    # API only: DRF + allauth headless, no templates or npm
+```
+
+The project is renamed, gets a fresh `SECRET_KEY` in `.env`, a new git repository and has `make init` run
+for you. See [`cli/README.md`](cli/README.md) for all options.
+
+---
+
+<!-- <<< starter -->
 ## Table of contents
 
 - [Local development](#local-development)
@@ -29,7 +47,9 @@ The split is driven by `DEBUG` and a few environment variables — see [Configur
   - [4. Open it](#4-open-it)
 - [Everyday commands](#everyday-commands)
 - [Database](#database)
+<!-- >>> web -->
 - [Front end](#front-end)
+<!-- <<< web -->
 - [Background tasks](#background-tasks)
 - [Testing](#testing)
 - [Code quality & git hooks](#code-quality--git-hooks)
@@ -53,7 +73,9 @@ Install these once on your machine:
   ```bash
   curl -LsSf https://astral.sh/uv/install.sh | sh   # or: brew install uv
   ```
+<!-- >>> web -->
 - **[Node.js](https://nodejs.org/) 20+** — provides `node` and `npm` for the front-end build.
+<!-- <<< web -->
 - **`make`** — preinstalled on macOS/Linux. On Windows,
   [follow these instructions](https://stackoverflow.com/a/57042516/8207).
 
@@ -69,7 +91,9 @@ This single command:
 
 1. Copies `.env.example` → `.env` (only if `.env` doesn't already exist).
 2. Installs Python dependencies into a local `.venv` with `uv sync`.
+<!-- >>> web -->
 3. Installs front-end dependencies with `npm install`.
+<!-- <<< web -->
 4. Creates the SQLite database (`db.sqlite3`) and applies all migrations.
 
 ### 2. Admin user (automatic)
@@ -97,12 +121,14 @@ are POST-only, CSRF-protected, and 404 unless `DEBUG` is on and the toolbar is v
 make start
 ```
 
+<!-- >>> web -->
 `make init` already built the CSS once. While you edit templates or styles, run the Tailwind watcher in a
 second terminal so new utility classes get compiled:
 
 ```bash
 make npm-dev
 ```
+<!-- <<< web -->
 
 ### 4. Open it
 
@@ -110,8 +136,10 @@ Visit **[http://localhost:8000](http://localhost:8000/)** — you should see a f
 Django admin is at [http://localhost:8000/admin/](http://localhost:8000/admin/) (log in with the
 auto-created dev superuser from step 2).
 
+<!-- >>> web -->
 > **Styles not loading?** `static/css/site.css` and `static/vendor/` are build outputs. Run
 > `make npm-build` (or `make init`) to create them.
+<!-- <<< web -->
 
 New to Pegasus? [Try these next steps](https://docs.saaspegasus.com/getting-started/#post-installation-steps).
 
@@ -154,6 +182,7 @@ precedence over SQLite automatically.
 
 ---
 
+<!-- >>> web -->
 ## Front end
 
 There is no JavaScript bundler. Styling is Tailwind v4 (plain utility classes, no component library)
@@ -174,6 +203,7 @@ first stage.
 
 ---
 
+<!-- <<< web -->
 ## Background tasks
 
 Background work uses Django's built-in tasks framework

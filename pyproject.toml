@@ -27,6 +27,10 @@ line-ending = "auto"
 [tool.mypy]
 python_version = "3.14"
 plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
+# >>> starter
+# The project generator in cli/ is a separate package (see cli/pyproject.toml).
+exclude = ["^cli/"]
+# <<< starter
 
 # Third-party libraries without type stubs - explicitly list each to suppress import-untyped
 [[tool.mypy.overrides]]
@@ -48,6 +52,7 @@ disable_error_code = ["attr-defined", "assignment"]
 [tool.django-stubs]
 django_settings_module = "config.settings.dev"
 
+# >>> web
 # djLint checks/formats the Django templates (run via pre-commit).
 [tool.djlint]
 blank_line_after_tag = "load,extends"
@@ -60,6 +65,7 @@ include = "H017,H035"
 indent = 2
 max_line_length = 120
 profile = "django"
+# <<< web
 
 [tool.setuptools]
 py-modules = []
@@ -75,7 +81,9 @@ dependencies = [
     "argon2-cffi>=25.1.0",
     "django-allauth[socialaccount]>=65.13.0",
     "django-environ",
+    # >>> web
     "django-htmx",
+    # <<< web
     "djangorestframework",
     "drf-spectacular",
     "psycopg",
@@ -85,7 +93,9 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    # >>> web
     "django-browser-reload",
+    # <<< web
     "django-debug-toolbar",
     "django-watchfiles",
     "pre-commit",
