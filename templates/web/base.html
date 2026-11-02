@@ -58,7 +58,8 @@
     <script defer src="{% static 'javascript/site.js' %}"></script>
     {% block page_head %}{% endblock %}
   </head>
-  <body class="bg-white text-gray-900" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+  <body class="bg-white text-gray-900"
+        hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     {% block body_wrapper %}
       {% block top_nav %}
         {% include 'web/components/top_nav.html' %}

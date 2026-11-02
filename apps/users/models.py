@@ -27,7 +27,7 @@ class CustomUser(AbstractUser):
     """
 
     avatar = models.FileField(upload_to=_get_avatar_filename, blank=True, validators=[validate_profile_picture])
-    role = models.CharField(max_length=16, choices=UserRole.choices, default=UserRole.MEMBER)
+    role = models.CharField(max_length=16, choices=UserRole, default=UserRole.MEMBER)
 
     def __str__(self):
         return f"{self.get_full_name()} <{self.email or self.username}>"

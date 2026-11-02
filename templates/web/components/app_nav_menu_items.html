@@ -1,7 +1,9 @@
 {% load i18n %}
+
 <li class="nav-title">{% translate "Application" %}</li>
 <li>
-  <a href="{% url 'web:home' %}" class="nav-link {% if active_tab == 'dashboard' %}nav-link-active{% endif %}">
+  <a href="{% url 'web:home' %}"
+     class="nav-link {% if active_tab == 'dashboard' %}nav-link-active{% endif %}">
     <i class="fa fa-home h-4 w-4"></i>
     {% translate "Dashboard" %}
   </a>
@@ -9,21 +11,25 @@
 {% if not user.is_anonymous %}
   <li class="nav-title">{% translate "My Account" %}</li>
   <li>
-    <a href="{% url 'users:user_profile' %}" class="nav-link {% if active_tab == 'profile' %}nav-link-active{% endif %}">
+    <a href="{% url 'users:user_profile' %}"
+       class="nav-link {% if active_tab == 'profile' %}nav-link-active{% endif %}">
       <i class="fa fa-user h-4 w-4"></i>
       {% translate "Profile" %}
     </a>
   </li>
   {% if user.has_usable_password %}
     <li>
-      <a href="{% url 'account_change_password' %}" class="nav-link {% if 'accounts/password/change' in request.path %}nav-link-active{% endif %}">
+      <a href="{% url 'account_change_password' %}"
+         class="nav-link {% if 'accounts/password/change' in request.path %}nav-link-active{% endif %}">
         <i class="fa fa-unlock-alt h-4 w-4"></i>
         {% translate "Change Password" %}
       </a>
     </li>
   {% endif %}
   <li>
-    <a href="{% url 'account_logout' %}" data-logout-link class="nav-link {% if 'accounts/logout' in request.path %}nav-link-active{% endif %}">
+    <a href="{% url 'account_logout' %}"
+       data-logout-link
+       class="nav-link {% if 'accounts/logout' in request.path %}nav-link-active{% endif %}">
       <i class="fa fa-sign-out h-4 w-4"></i>
       {% translate "Sign out" %}
     </a>
@@ -32,7 +38,8 @@
 {% if user.is_admin_role %}
   <li class="nav-title">{% translate "Admin" %}</li>
   <li>
-    <a href="{% url 'web:admin_dashboard' %}" class="nav-link {% if active_tab == 'admin_dashboard' %}nav-link-active{% endif %}">
+    <a href="{% url 'web:admin_dashboard' %}"
+       class="nav-link {% if active_tab == 'admin_dashboard' %}nav-link-active{% endif %}">
       <i class="fa fa-shield h-4 w-4"></i>
       {% translate "Admin Dashboard" %}
     </a>

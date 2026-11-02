@@ -4,7 +4,9 @@
      x-data="{ mobileMenuOpen: false }">
   <div class="flex items-center justify-between px-4 py-3">
     <div class="flex-1 lg:hidden">
-      <button @click="mobileMenuOpen = true" class="btn btn-ghost" aria-label="{% translate 'Open menu' %}">
+      <button @click="mobileMenuOpen = true"
+              class="btn btn-ghost"
+              aria-label="{% translate 'Open menu' %}">
         <svg xmlns="http://www.w3.org/2000/svg"
              class="h-5 w-5"
              fill="none"
@@ -21,7 +23,9 @@
          href="{% url 'web:home' %}">{{ project_meta.NAME }}</a>
     </div>
     <div class="flex flex-1 items-center justify-end gap-2">
-      <button id="pwa-install-button" class="btn btn-ghost btn-sm hidden" type="button">
+      <button id="pwa-install-button"
+              class="btn btn-ghost btn-sm hidden"
+              type="button">
         <i class="fa fa-download h-4 w-4"></i>
         {% translate "Install App" %}
       </button>
@@ -54,7 +58,9 @@
            class="fixed inset-y-0 left-0 w-64 overflow-y-auto bg-white shadow-xl">
         <div class="flex items-center justify-between border-b border-gray-200 p-4">
           <span class="text-lg font-semibold">{{ project_meta.NAME }}</span>
-          <button @click="mobileMenuOpen = false" class="btn btn-ghost btn-sm" aria-label="{% translate 'Close menu' %}">
+          <button @click="mobileMenuOpen = false"
+                  class="btn btn-ghost btn-sm"
+                  aria-label="{% translate 'Close menu' %}">
             <svg xmlns="http://www.w3.org/2000/svg"
                  class="h-5 w-5"
                  fill="none"

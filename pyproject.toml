@@ -103,4 +103,3 @@ prod = [
     "sentry-sdk>=2.67.1",
     "whitenoise>=6.12.0",
 ]
-
