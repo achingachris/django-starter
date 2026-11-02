@@ -1,0 +1,93 @@
+name: Starter CLI
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+# Cancel superseded runs when new commits are pushed to the same branch/PR.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+jobs:
+  cli-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "0.9.17"
+          enable-cache: true
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.14
+      - name: Run CLI unit tests
+        run: |
+          uv run --project cli python -m unittest discover cli/tests
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [full, api]
+    steps:
+      # The runner context is not available in job-level env, so DEMO_DIR is exported from a step.
+      - name: Set the demo project directory
+        run: echo "DEMO_DIR=${{ runner.temp }}/demo" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "0.9.17"
+          enable-cache: true
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.14
+      - name: Generate the ${{ matrix.variant }} project
+        run: |
+          uvx --from ./cli django-starter-cdc new demo --source . --dir "$DEMO_DIR" --no-git --no-install \
+            ${{ matrix.variant == 'api' && '--api' || '' }}
+      # Runs before any install so .venv and node_modules are not scanned.
+      - name: Check for leftover personal names and variant markers
+        working-directory: ${{ env.DEMO_DIR }}
+        run: |
+          if grep -rIl -e 'achinga.chris@' -e 'chrisdevcode' -e '>>> web' -e '<<< web' -e '>>> starter' -e '<<< starter' \
+            -e 'api-only:' .; then
+            echo "::error::The generated project still contains the files listed above."
+            exit 1
+          fi
+      - name: Check the API variant has no front end
+        if: matrix.variant == 'api'
+        working-directory: ${{ env.DEMO_DIR }}
+        run: |
+          test ! -e package.json || { echo "::error::package.json exists in the API variant."; exit 1; }
+          test ! -e templates/web || { echo "::error::templates/web exists in the API variant."; exit 1; }
+      - name: Install Python dependencies
+        working-directory: ${{ env.DEMO_DIR }}
+        run: |
+          uv sync
+      - name: Run Django system checks
+        working-directory: ${{ env.DEMO_DIR }}
+        run: |
+          uv run python manage.py check
+      - name: Check for missing migrations
+        working-directory: ${{ env.DEMO_DIR }}
+        run: |
+          uv run python manage.py makemigrations --check --dry-run
+      - name: Run tests
+        working-directory: ${{ env.DEMO_DIR }}
+        run: |
+          uv run python manage.py test --settings=config.settings.test
+      - name: Use Node.js 24.x
+        if: matrix.variant == 'full'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+      - name: Build the front end
+        if: matrix.variant == 'full'
+        working-directory: ${{ env.DEMO_DIR }}
+        run: |
+          npm ci && npm run build

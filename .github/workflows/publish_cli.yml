@@ -1,0 +1,52 @@
+name: Publish Starter CLI
+on:
+  push:
+    tags:
+      - "v*"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "0.9.17"
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.14
+      # The CLI downloads the release tarball of the tag matching its own version, so they must agree.
+      - name: Check the tag matches the CLI version
+        run: |
+          version=$(python -c "import tomllib; print(tomllib.load(open('cli/pyproject.toml', 'rb'))['project']['version'])")
+          tag="${GITHUB_REF_NAME#v}"
+          if [ "$tag" != "$version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match version $version in cli/pyproject.toml."
+            exit 1
+          fi
+      - name: Build the package
+        working-directory: cli
+        run: |
+          uv build
+      - name: Upload the distributions
+        uses: actions/upload-artifact@v4
+        with:
+          name: cli-dist
+          path: cli/dist
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - name: Download the distributions
+        uses: actions/download-artifact@v4
+        with:
+          name: cli-dist
+          path: cli/dist
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: cli/dist
