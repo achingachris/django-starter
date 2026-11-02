@@ -306,7 +306,7 @@ TURNSTILE_SECRET = env("TURNSTILE_SECRET", default=None)
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Africa/Nairobi"
 
 USE_I18N = False
 
