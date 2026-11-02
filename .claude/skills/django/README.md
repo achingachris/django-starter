@@ -2,7 +2,7 @@
 
 House conventions for writing code in this project. Adapted from
 [Mariatta/claude-skills](https://github.com/Mariatta/claude-skills) with
-django-starter's concrete values baked in; `CLAUDE.md` takes precedence where
+django-starter's concrete values baked in; `AGENTS.md` takes precedence where
 they differ.
 
 - **Code style** — ruff only (format + lint, 120 cols, double quotes); emit code
@@ -15,9 +15,9 @@ they differ.
 - **Permissions** — gate on `has_perm`, never on group membership.
 - **Secrets** — env vars via django-environ; secret model fields encrypted in the
   same commit they appear in.
-- **Templates** — no inline `<style>` blocks; DaisyUI/Tailwind per `CLAUDE.md`.
+- **Templates** — no inline `<style>` blocks; plain Tailwind per `AGENTS.md`.
 - **Session workflow** — `uv run` / make targets, run tests after changes, stage
   but never commit unasked.
 - **Email** — console backend in dev, Resend SMTP in prod, allauth templates.
-- **Deployment** — native local dev, Docker Compose (gunicorn + Celery + Postgres
+- **Deployment** — native local dev, Docker Compose (gunicorn + Postgres
   + Redis) for production.

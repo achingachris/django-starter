@@ -76,13 +76,12 @@ ADMINS = ["achinga.chris@gmail.com"]
 SENTRY_DSN = env("SENTRY_DSN", default="")
 if SENTRY_DSN:
     import sentry_sdk
-    from sentry_sdk.integrations.celery import CeleryIntegration
     from sentry_sdk.integrations.django import DjangoIntegration
     from sentry_sdk.integrations.redis import RedisIntegration
 
     sentry_sdk.init(
         dsn=SENTRY_DSN,
-        integrations=[DjangoIntegration(), CeleryIntegration(), RedisIntegration()],
+        integrations=[DjangoIntegration(), RedisIntegration()],
         environment=env("SENTRY_ENVIRONMENT", default="production"),
         # Performance tracing is off by default; set SENTRY_TRACES_SAMPLE_RATE=0.1 to sample 10%.
         traces_sample_rate=env.float("SENTRY_TRACES_SAMPLE_RATE", default=0.0),

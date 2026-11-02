@@ -8,21 +8,22 @@
 - HTMX and Alpine.js are used to provide single-page-app user experience with Django templates.
   HTMX is used for interactions which require accessing the backend, and Alpine.js is used for
   browser-only interactions.
-- JavaScript files are kept in the `/assets/` folder and built by vite.
-  JavaScript code is typically loaded via the static files framework inside Django templates using `django-vite`.
-- APIs use Django Rest Framework, and JavaScript code that interacts with APIs uses an
-  auto-generated OpenAPI-schema-baesd client.
-- The front end uses Tailwind (Version 4) and DaisyUI.
-- Celery is used for background jobs and scheduled tasks.
+- There is no JavaScript bundler. Site-wide JavaScript is a plain script at `static/javascript/site.js`;
+  htmx, Alpine.js and Font Awesome are copied from `node_modules` into `static/vendor/` by `npm run build`.
+- CSS is written in `assets/styles/site.css` and compiled by the Tailwind CLI into `static/css/site.css`.
+- APIs use Django Rest Framework with an OpenAPI schema from `drf-spectacular`.
+- The front end uses Tailwind (Version 4) with plain utility classes and no component library.
+- Background jobs use Django's built-in tasks framework (`django.tasks`) with the immediate backend;
+  there is no Celery, broker, or worker. Periodic work runs as management commands from cron.
 
 ### Local vs production
 
 The project runs in two modes, driven by `DEBUG` and a few env vars:
 
 - **Local development** runs **natively** (no Docker) via `uv` + `npm` and uses **SQLite**,
-  Django's `DummyCache`, and **eager (synchronous) Celery** — so no Postgres or Redis is required.
-- **Production** uses the Docker Compose stack with **Postgres** (database), **Redis** (cache +
-  Celery broker), and a dedicated Celery worker. Select `config.settings.prod` and set
+  Django's `DummyCache`, and the immediate task backend — so no Postgres or Redis is required.
+- **Production** uses the Docker Compose stack with **Postgres** (database) and **Redis** (cache).
+  Select `config.settings.prod` and set
   `DATABASE_URL` / `REDIS_URL` in the environment.
 
 Settings live in the `config/settings/` package: `base.py` (shared), `dev.py` (default, local
@@ -48,14 +49,15 @@ make init  # copy .env, uv sync, npm install, create + migrate the SQLite DB
 
 ### Starting the Application
 
-Local development needs **two processes in two terminals** (in DEBUG, assets are served by Vite):
+Local development runs the Django dev server; the CSS watcher is optional and only needed while
+editing templates or styles (`make init` builds the CSS once):
 
 ```bash
 make start     # Terminal 1: Django dev server (http://localhost:8000)
-make npm-dev   # Terminal 2: Vite front-end dev server (port 5173)
+make npm-dev   # Terminal 2 (optional): rebuild static/css/site.css as templates change
 ```
 
-To run the production containerized stack instead (Postgres + Redis + gunicorn web + Celery),
+To run the production containerized stack instead (Postgres + Redis + gunicorn web),
 configure `.env.prod` first (`make setup-env-prod`), then:
 
 ```bash
@@ -112,19 +114,22 @@ make uv run '<command> <args>'  # Run a Python command
 make npm-install      # Install npm packages
 make npm-install package-name  # Install specific package
 make npm-uninstall package-name  # Uninstall package
-make npm-dev          # Run the Vite development server
-make npm-build        # Build for production
-make npm-type-check   # Run TypeScript type checking
+make npm-dev          # Rebuild the CSS whenever templates change (Tailwind CLI --watch)
+make npm-build        # Build the minified CSS and copy vendored JS/fonts into static/
 ```
 
-Note: In local development, run `make npm-dev` in a second terminal alongside `make start` — the
-Vite dev server provides hot-reloaded CSS/JS. Without it, pages load unstyled.
+Note: new Tailwind classes only show up after a rebuild, so run `make npm-dev` in a second
+terminal while editing templates. The last built CSS keeps serving when the watcher is off.
 
-### Code generation
+### Creating a new app
 
 ```bash
-make uv run 'pegasus startapp <app_name> <Model1> <Model2Name>'  # Start a new Django app (models are optional)
+mkdir apps/<app_name>
+make manage ARGS='startapp <app_name> apps/<app_name>'
 ```
+
+Then set `name = "apps.<app_name>"` in the generated `apps.py`, add `"apps.<app_name>"` to `INSTALLED_APPS`,
+and extend `apps.utils.models.BaseModel` in its models.
 
 ## General Coding Preferences
 
@@ -176,14 +181,15 @@ make uv run 'pegasus startapp <app_name> <Model1> <Model2Name>'  # Start a new D
 - Indent templates with two spaces.
 - Use standard Django template syntax.
 - For multi-line comments, use `{% comment %}...{% endcomment %}`. The `{# ... #}` syntax is single-line only and does NOT work across multiple lines — never write `{# first line\n   second line #}`.
-- JavaScript and CSS files built with vite should be included with the `{% vite_asset %}` template tag provided by `django-vite` (must have `{% load django_vite %}` at the top of the template)
-- Any react components also need `{% vite_react_refresh %}` for Vite + React's HMR functionality, from the same `django_vite` template library)
-- Use the Django `{% static %}` tag for loading images and external JavaScript / CSS files not managed by vite.
+- Load CSS, JavaScript and images with the Django `{% static %}` tag. The compiled stylesheet is `css/site.css`;
+  vendored libraries live under `vendor/` and project scripts under `javascript/`, all inside `static/`.
 - Prefer using alpine.js for page-level JavaScript, and avoid inline `<script>` tags where possible.
 - Break re-usable template components into separate templates with `{% include %}` statements.
   These normally go into a `components` folder.
-- Use DaisyUI styling markup for available components. When not available, fall back to standard TailwindCSS classes.
-- Stick with the DaisyUI color palette whenever possible.
+- Style with plain Tailwind utility classes and the default Tailwind palette (gray for neutrals, red/green/amber/blue for status).
+- The only shared component classes are the button (`btn`, `btn-primary`, `btn-outline`, `btn-ghost`, `btn-danger`, `btn-xs`/`btn-sm`/`btn-lg`),
+  form control (`form-input`, `form-checkbox`) and sidebar nav (`nav-title`, `nav-link`, `nav-link-active`) classes defined in
+  `assets/styles/app/tailwind/app-components.css`. Do not add a component library; keep the CSS setup minimal.
 
 ## JavaScript Code Guidelines
 
@@ -195,8 +201,7 @@ make uv run 'pegasus startapp <app_name> <Model1> <Model2Name>'  # Start a new D
 - End statements with semicolons.
 - Use camelCase for variable and function names.
 - Use PascalCase for component names (React).
-- Use explicit type annotations in TypeScript files.
-- Use ES6 import/export syntax for module management.
+- There is no bundler: scripts are plain browser JavaScript wrapped in an IIFE, not ES modules.
 
 ### Preferred Practices
 - When using HTMX, follow progressive enhancement patterns.
@@ -207,4 +212,4 @@ make uv run 'pegasus startapp <app_name> <Model1> <Model2Name>'  # Start a new D
 
 ### Build System
 
-- Code is bundled using vite and served with `django-vite`.
+- There is no JavaScript build. `npm run build` compiles the Tailwind CSS and copies vendored libraries into `static/`.

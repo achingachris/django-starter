@@ -1,4 +1,4 @@
-<select class="select w-full {{ widget.attrs.class }}"
+<select class="form-input {{ widget.attrs.class }}"
         name="{{ widget.name }}"
         {% include "django/forms/widgets/attrs.html" %}>
   {% for group_name, group_choices, group_index in widget.optgroups %}

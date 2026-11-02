@@ -7,7 +7,7 @@
 {% if attrs.name %}name="{{ attrs.name }}"{% endif %}
 {% if attrs.value %}value="{{ attrs.value }}"{% endif %}
 {% if attrs.type %}type="{{ attrs.type }}"{% endif %}
-class="{% if "danger" in attrs.tags %}btn btn-outline btn-error{% elif "secondary" in attrs.tags %}btn btn-outline{% else %}btn btn-primary{% endif %} mt-2"
+class="{% if "danger" in attrs.tags %}btn btn-danger{% elif "secondary" in attrs.tags %}btn btn-outline{% else %}btn btn-primary{% endif %} mt-2"
 >
 {% slot %}
 {% endslot %}

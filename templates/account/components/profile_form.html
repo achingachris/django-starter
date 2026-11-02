@@ -21,7 +21,7 @@
       {% csrf_token %}
       {% render_text_input form.email %}
       {% if user.emailaddress_set.count > 1 %}
-        <div class="text-sm text-base-content/70"><a href="{% url "account_email" %}" class="link">{% translate "Manage email addresses" %}</a></div>
+        <div class="text-sm text-gray-500"><a href="{% url "account_email" %}" class="underline">{% translate "Manage email addresses" %}</a></div>
       {% endif %}
       {% render_text_input form.first_name %}
       {% render_text_input form.last_name %}

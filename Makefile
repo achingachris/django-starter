@@ -8,10 +8,6 @@ include custom.mk
 export MY_UID := 1000
 export MY_GID := 1000
 
-# Pin the OpenAPI Generator version used to build the TypeScript API client (see `generate-api-client`).
-# Keep this in sync with api-client/.openapi-generator/VERSION.
-OPENAPI_GENERATOR_VERSION := 7.9.0
-
 setup-env:
 	@[ ! -f ./.env ] && cp ./.env.example ./.env || echo ".env file already exists."
 
@@ -22,13 +18,14 @@ setup-env:
 init: setup-env ## Quickly get up and running (install deps and bootstrap the SQLite DB)
 	@echo "Installing Python dependencies"
 	@uv sync
-	@echo "Installing front-end dependencies"
+	@echo "Installing front-end dependencies and building the CSS"
 	@npm install
+	@npm run build
 	@$(MAKE) migrate
 	@echo ""
 	@echo "✅ Project setup complete!"
 	@echo "   Run 'make start' to launch the Django dev server at http://localhost:8000/"
-	@echo "   Run 'make npm-dev' in a second terminal for the Vite front-end pipeline."
+	@echo "   Run 'make npm-dev' in a second terminal to rebuild the CSS as you edit templates."
 
 start: ## Run the Django development server
 	@uv run python manage.py runserver
@@ -50,9 +47,6 @@ migrate: ## Run DB migrations
 
 test: ## Run Django tests (uses config/settings/test.py)
 	@uv run python manage.py test --settings=config.settings.test ${ARGS}
-
-celery: ## Run a Celery worker with beat (requires a running Redis broker)
-	@uv run celery -A config worker -l INFO --beat --pool=solo
 
 # -----------------------------------------------------------------------------
 # Python tooling
@@ -88,38 +82,18 @@ npm-install: ## Runs npm install (optionally accepting package names)
 npm-uninstall: ## Runs npm uninstall (takes package name(s))
 	@npm uninstall $(filter-out $@,$(MAKECMDGOALS))
 
-npm-build: ## Runs npm build (for production assets)
+npm-build: ## Build the CSS and copy vendored JS/fonts into static/ (production assets)
 	@npm run build
 
-npm-dev: ## Runs the Vite dev server
+npm-dev: ## Rebuild the CSS whenever templates change (optional second terminal)
 	@npm run dev
 
-npm-type-check: ## Runs the type checker on the front end TypeScript code
-	@npm run type-check
-
-upgrade: requirements migrations migrate npm-install npm-dev  ## Run after a Pegasus upgrade to update requirements, migrate the database, and rebuild the front end
-
-# -----------------------------------------------------------------------------
-# API client code generation
-# -----------------------------------------------------------------------------
-
-generate-api-client: ## Regenerate the TypeScript API client (api-client/) from the OpenAPI schema
-	@echo "Exporting OpenAPI schema from Django..."
-	@uv run python manage.py spectacular --file schema.yaml --validate
-	@echo "Pinning openapi-generator $(OPENAPI_GENERATOR_VERSION)..."
-	@npx --yes @openapitools/openapi-generator-cli version-manager set $(OPENAPI_GENERATOR_VERSION) >/dev/null
-	@echo "Generating TypeScript client into api-client/..."
-	@npx --yes @openapitools/openapi-generator-cli generate \
-		-i schema.yaml \
-		-g typescript-fetch \
-		-o api-client
-	@rm -f schema.yaml
-	@echo "✅ api-client regenerated. Review the diff before committing."
+upgrade: requirements migrations migrate npm-install npm-build  ## Run after a Pegasus upgrade to update requirements, migrate the database, and rebuild the front end
 
 # -----------------------------------------------------------------------------
 # Production (Docker / docker compose)
 # -----------------------------------------------------------------------------
-# The stack (gunicorn web + Celery + Postgres + Redis) reads secrets from .env.prod
+# The stack (gunicorn web + Postgres + Redis) reads secrets from .env.prod
 # and runs with DJANGO_SETTINGS_MODULE=config.settings.prod.
 
 setup-env-prod: ## Create .env.prod from the template if it doesn't exist

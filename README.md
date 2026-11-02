@@ -9,10 +9,10 @@
 
 This project runs in **two distinct modes**:
 
-| Mode | How it runs | Database | Cache / broker | Celery | Used for |
-|------|-------------|----------|----------------|--------|----------|
-| **Local** | Natively on your machine via [uv](https://docs.astral.sh/uv/) + `npm` | SQLite (`db.sqlite3`) | DummyCache (no Redis needed) | Eager (synchronous) | Day-to-day development |
-| **Production** | Docker Compose (Postgres + Redis + web + Vite + Celery) | Postgres | Redis | Real worker + beat | Containerized / deployed stack |
+| Mode | How it runs | Database | Cache | Used for |
+|------|-------------|----------|-------|----------|
+| **Local** | Natively on your machine via [uv](https://docs.astral.sh/uv/) (+ `npm` for the CSS build) | SQLite (`db.sqlite3`) | DummyCache (no Redis needed) | Day-to-day development |
+| **Production** | Docker Compose (Postgres + Redis + web) | Postgres | Redis | Containerized / deployed stack |
 
 The split is driven by `DEBUG` and a few environment variables — see [Configuration](#configuration). You do
 **not** need Docker for everyday development.
@@ -25,13 +25,12 @@ The split is driven by `DEBUG` and a few environment variables — see [Configur
   - [Prerequisites](#prerequisites)
   - [1. Bootstrap](#1-bootstrap-make-init)
   - [2. Admin user](#2-admin-user-automatic)
-  - [3. Run the app (two processes)](#3-run-the-app-two-processes)
+  - [3. Run the app](#3-run-the-app)
   - [4. Open it](#4-open-it)
 - [Everyday commands](#everyday-commands)
 - [Database](#database)
 - [Front end](#front-end)
-- [Generating the API client](#generating-the-api-client)
-- [Celery & background tasks](#celery--background-tasks)
+- [Background tasks](#background-tasks)
 - [Testing](#testing)
 - [Code quality & git hooks](#code-quality--git-hooks)
 - [Configuration](#configuration)
@@ -92,19 +91,14 @@ With `ENABLE_DEBUG_TOOLBAR=True`, the toolbar's **"Login / out"** panel
 superuser and an anonymous session in one click — handy for checking logged-out views. Its endpoints
 are POST-only, CSRF-protected, and 404 unless `DEBUG` is on and the toolbar is visible.
 
-### 3. Run the app (two processes)
-
-Local development needs **two terminals running simultaneously** — the Django server *and* the Vite
-front-end server. In `DEBUG`, CSS/JS are served by Vite, so **if you skip the second process the page
-loads unstyled.**
-
-**Terminal 1 — Django backend (port 8000):**
+### 3. Run the app
 
 ```bash
 make start
 ```
 
-**Terminal 2 — Vite front end (port 5173):**
+`make init` already built the CSS once. While you edit templates or styles, run the Tailwind watcher in a
+second terminal so new utility classes get compiled:
 
 ```bash
 make npm-dev
@@ -116,8 +110,8 @@ Visit **[http://localhost:8000](http://localhost:8000/)** — you should see a f
 Django admin is at [http://localhost:8000/admin/](http://localhost:8000/admin/) (log in with the
 auto-created dev superuser from step 2).
 
-> **Styles not loading?** It almost always means the Vite dev server (step 3, Terminal 2) isn't
-> running, or `node_modules` is missing. Run `make npm-install` then `make npm-dev` and refresh.
+> **Styles not loading?** `static/css/site.css` and `static/vendor/` are build outputs. Run
+> `make npm-build` (or `make init`) to create them.
 
 New to Pegasus? [Try these next steps](https://docs.saaspegasus.com/getting-started/#post-installation-steps).
 
@@ -138,8 +132,8 @@ Run `make` with no arguments to list every available target. Local targets (`sta
 | `make migrate` | Apply migrations |
 | `make test` | Run the test suite |
 | `make ruff` | Format **and** lint Python with Ruff |
-| `make npm-dev` | Run the Vite dev server |
-| `make npm-build` | Build production front-end assets |
+| `make npm-dev` | Rebuild the CSS as templates change |
+| `make npm-build` | Build the minified CSS and vendored JS/fonts |
 
 Management commands can also be run directly: `uv run python manage.py <command>`.
 
@@ -162,64 +156,36 @@ precedence over SQLite automatically.
 
 ## Front end
 
-JavaScript/TypeScript lives in `assets/` and is bundled by [Vite](https://vitejs.dev/) and served
-through [`django-vite`](https://github.com/MrBin99/django-vite). Tailwind v4 + DaisyUI provide styling.
+There is no JavaScript bundler. Styling is Tailwind v4 (plain utility classes, no component library)
+compiled by the [Tailwind CLI](https://tailwindcss.com/docs/installation/tailwind-cli) from
+`assets/styles/site.css` into `static/css/site.css`. htmx, Alpine.js and Font Awesome are npm
+packages copied as-is into `static/vendor/` by the same build, and the site's own JavaScript is a
+plain script at `static/javascript/site.js`. Templates load everything with `{% static %}`.
 
 ```bash
 make npm-install            # install all npm packages
 make npm-install <package>  # install a specific package
-make npm-dev                # Vite dev server with hot reload (local development)
-make npm-build              # build optimized assets (production)
-make npm-type-check         # TypeScript type checking
+make npm-dev                # rebuild the CSS whenever templates change (local development)
+make npm-build              # minified CSS + vendored libraries (production)
 ```
 
-In `DEBUG`, `DJANGO_VITE["default"]["dev_mode"]` is `True`, so assets are served live from the Vite
-dev server. With `DEBUG=False`, Django serves the built manifest from `npm-build` instead.
+`static/css/` and `static/vendor/` are git-ignored build outputs; the Docker image builds them in its
+first stage.
 
 ---
 
-## Generating the API client
+## Background tasks
 
-The REST API (Django Rest Framework) publishes an OpenAPI schema via `drf-spectacular` at
-`/api/schema/`. The TypeScript client in `api-client/` is **generated from that schema** and consumed
-by the front end (see `assets/javascript/api.js`). It is generated code — don't edit it by hand.
+Background work uses Django's built-in tasks framework
+([`django.tasks`](https://docs.djangoproject.com/en/stable/topics/tasks/)). Define a task with the
+`@task` decorator and call `.enqueue()` on it. The configured backend is the **immediate** one, so
+tasks run synchronously in the calling process: no broker, no worker, nothing extra to run locally
+or in production.
 
-Whenever you add or change API endpoints, regenerate the client:
-
-```bash
-make generate-api-client
-```
-
-This target:
-
-1. Exports the OpenAPI schema from Django (`manage.py spectacular`).
-2. Runs [OpenAPI Generator](https://openapi-generator.tech) (`typescript-fetch`), pinned to the
-   version in `OPENAPI_GENERATOR_VERSION` (kept in sync with `api-client/.openapi-generator/VERSION`),
-   via `npx @openapitools/openapi-generator-cli`.
-3. Writes the result into `api-client/` and cleans up the temporary schema file.
-
-**Requirements:** `node`/`npx` and a Java runtime (the generator runs on the JVM). Review the diff
-before committing.
-
----
-
-## Celery & background tasks
-
-Celery runs background and scheduled tasks. **Locally, tasks run eagerly (synchronously)** by default
-(`CELERY_TASK_ALWAYS_EAGER` defaults to `DEBUG`), so **no broker is required**.
-
-To exercise the real worker locally, run a Redis instance, set `REDIS_URL` in `.env`, then:
-
-```bash
-make celery
-# or directly:
-uv run celery -A config worker -l INFO --beat --pool=solo
-```
-
-> The `solo` pool is fine for development but **not** for production.
-
-In production (`DEBUG=False`) tasks dispatch to the Redis broker and are processed by the dedicated
-`celery` container (see [Production](#production)).
+When a real queue is needed, point `TASKS["default"]["BACKEND"]` in `config/settings/base.py` at a
+worker-backed backend (for example the `DatabaseBackend` from the `django-tasks` package) and add
+its worker as a Compose service. Django ships no scheduler; run periodic work as management
+commands from cron.
 
 ---
 
@@ -270,15 +236,14 @@ Configuration is read from environment variables (via `.env` locally). `make ini
 | `DEBUG` | `True` | Debug mode. **Must be `False` in production** (or use `config.settings.prod`). |
 | `ALLOWED_HOSTS` | `*` | Comma-separated allowed hosts. Restrict in production. |
 | `DATABASE_URL` | *(unset → SQLite)* | Postgres connection string in production. |
-| `REDIS_URL` | *(unset → `redis://localhost:6379/0`)* | Cache + Celery broker. Required in production. |
-| `CELERY_TASK_ALWAYS_EAGER` | `= DEBUG` | Run tasks synchronously when true. |
+| `REDIS_URL` | *(unset → `redis://localhost:6379/0`)* | Cache. Required in production. |
 | `DEV_SUPERUSER_EMAIL` / `DEV_SUPERUSER_PASSWORD` | `admin@example.com` / `admin` | Auto-created dev superuser (DEBUG only). |
 | `ENABLE_DEBUG_TOOLBAR` | `False`¹ | Django Debug Toolbar (disabled during tests). |
 | `LOGINOUT_SERVER` | *(unset)* | Restrict the toolbar's "Login / out" panel to one client IP (optional). |
 | `EMAIL_BACKEND` | console in `DEBUG`, else SMTP | Override to force a specific backend. |
 | `RESEND_API_KEY` | *(empty)* | Resend API key, used as the SMTP password. Required to send real mail. |
 | `EMAIL_HOST` / `EMAIL_PORT` / `EMAIL_HOST_USER` | `smtp.resend.com` / `587` / `resend` | Override to use another SMTP provider. |
-| `DJANGO_PORT` / `DJANGO_VITE_PORT` | `8000` / `5173` | Dev server ports. |
+| `DJANGO_PORT` | `8000` | Dev server port. |
 | `POSTGRES_PORT` / `REDIS_PORT` | `5432` / `6379` | Docker service ports. |
 | `UMAMI_WEBSITE_ID` | *(empty)* | Umami website ID for site analytics (optional). |
 | `TURNSTILE_KEY` / `TURNSTILE_SECRET` | *(empty)* | Cloudflare Turnstile keys (optional). |
@@ -312,9 +277,9 @@ and `RESEND_API_KEY` in `.env`.
 
 ## Production
 
-Docker Compose runs a production-ready stack — **Postgres, Redis, a gunicorn web server, and a
-Celery worker (with beat)**. The web and Celery services share one image built from `Dockerfile`
-(a multi-stage build that compiles the front-end assets with Vite, then installs the production
+Docker Compose runs a production-ready stack — **Postgres, Redis, and a gunicorn web server**.
+The web service runs from one image built from `Dockerfile`
+(a multi-stage build that compiles the CSS with the Tailwind CLI, then installs the production
 Python dependencies) and run with `DJANGO_SETTINGS_MODULE=config.settings.prod`.
 
 **Requirements:** [Docker](https://www.docker.com/get-started) and
@@ -356,9 +321,8 @@ TLS-terminating reverse proxy in front for HTTPS; the production settings honour
 | Service | Image / build | Role |
 |---------|---------------|------|
 | `db` | `postgres:17` | Postgres database (persisted in the `postgres_data` volume) |
-| `redis` | `redis:7` | Cache + Celery broker (persisted in `redis_data`) |
+| `redis` | `redis:7` | Cache (persisted in `redis_data`) |
 | `web` | `Dockerfile` | Django app under gunicorn on port `8000` (runs migrate + collectstatic on boot) |
-| `celery` | `Dockerfile` | Celery worker + beat |
 
 Uploaded media persists in the `media_files` volume. `MY_UID` / `MY_GID` (in the `Makefile`) set the
 container user/group so files created in mounted volumes belong to your host user rather than `root`.

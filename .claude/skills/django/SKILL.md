@@ -1,11 +1,11 @@
 ---
 name: django
-description: House conventions for writing code in this Django project (django-starter): ruff formatting and linting compliance, imports at module top with real refactors for circular imports, docstrings over comment blocks, maintained libraries over hand-rolled code, new code arrives with its tests, permission gating through has_perm, secrets in env vars and encrypted at rest, templates with no inline style blocks, allauth-based email templates, and the native-dev / Docker-prod split. Use this whenever writing, editing, or reviewing Python, templates, tests, settings, or deployment config in this project, even when the request is just "add a view" or "fix this bug" and says nothing about style. CLAUDE.md takes precedence where they differ.
+description: House conventions for writing code in this Django project (django-starter): ruff formatting and linting compliance, imports at module top with real refactors for circular imports, docstrings over comment blocks, maintained libraries over hand-rolled code, new code arrives with its tests, permission gating through has_perm, secrets in env vars and encrypted at rest, templates with no inline style blocks, allauth-based email templates, and the native-dev / Docker-prod split. Use this whenever writing, editing, or reviewing Python, templates, tests, settings, or deployment config in this project, even when the request is just "add a view" or "fix this bug" and says nothing about style. AGENTS.md takes precedence where they differ.
 ---
 
 # Django conventions for django-starter
 
-House rules for this project. Where `CLAUDE.md` speaks, it wins; these conventions
+House rules for this project. Where `AGENTS.md` speaks, it wins; these conventions
 fill in the practices it does not spell out, with the portable principle first and
 this project's concrete values second.
 
@@ -30,7 +30,7 @@ make type-check    # mypy (django-stubs + drf-stubs); advisory, not a merge gate
 
 Import sorting is ruff's isort rules (`I`), so there is no separate isort config and
 no profile mismatch to worry about. There is no djlint: Django templates are indented
-with two spaces and follow the template guidelines in `CLAUDE.md`.
+with two spaces and follow the template guidelines in `AGENTS.md`.
 
 ### Imports go at the top of the module
 
@@ -70,8 +70,8 @@ or awesome-django for a maintained package (a release within roughly two years,
 supporting the Django version in use). Dependencies are cheap; custom code compounds.
 
 **This project.** Add packages with `make uv add '<package>'`. The codebase already
-leans this way: django-allauth, django-htmx, django-waffle, django-celery-beat,
-django-anymail, django-vite. When the ecosystem is abandoned or every option is
+leans this way: django-allauth, django-htmx, django-allauth's social providers.
+When the ecosystem is abandoned or every option is
 awkward, say so openly and explain the trade-off; rolling custom code silently is not
 allowed.
 
@@ -119,19 +119,20 @@ encrypt later" creates the rows that leak.
 
 **This project.** Configuration secrets come from env vars via django-environ:
 `.env` locally, `.env.prod` for the Docker stack. **Never overwrite `.env` without
-asking first** (see `CLAUDE.md`). There is no encrypted field class yet; when the
+asking first** (see `AGENTS.md`). There is no encrypted field class yet; when the
 first secret-holding field arrives, adopt a maintained encrypted-field library in
 that same commit rather than hand-rolling one. When work produces a secret the human
 has to keep, point them at a password manager, not a wiki, notes app, or repo file.
 
 ### Templates and frontend
 
-`CLAUDE.md` owns the template and frontend rules (two-space indent, DaisyUI first
-then Tailwind, HTMX for server-backed interactions, Alpine.js for browser-only,
-components via `{% include %}`, assets built by Vite and loaded with
-`{% vite_asset %}`). The one rule worth restating because it is easy to violate
-casually: **no inline `<style>` blocks in templates** — styling comes from DaisyUI
-and Tailwind utilities, and anything genuinely custom goes in `assets/styles/`.
+`AGENTS.md` owns the template and frontend rules (two-space indent, plain Tailwind
+utilities, HTMX for server-backed interactions, Alpine.js for browser-only,
+components via `{% include %}`, CSS compiled by the Tailwind CLI and loaded with
+`{% static %}`). The one rule worth restating because it is easy to violate
+casually: **no inline `<style>` blocks in templates** — styling comes from Tailwind
+utilities (plus the few component classes in `assets/styles/app/tailwind/`), and anything
+genuinely custom goes in `assets/styles/`.
 
 ### Running commands and finishing a change
 
@@ -161,9 +162,9 @@ that drift.
 **Principle.** Everything host-specific stays in one seam, so moving hosts is a
 config change rather than a rewrite.
 
-**This project.** Local development runs natively (uv + SQLite + DummyCache + eager
-Celery — no services needed). Production is the Docker Compose stack: gunicorn web,
-Celery worker, Postgres, Redis, `config.settings.prod`, secrets from `.env.prod`,
+**This project.** Local development runs natively (uv + SQLite + DummyCache + Django's
+immediate task backend — no services needed). Production is the Docker Compose stack: gunicorn
+web, Postgres, Redis, `config.settings.prod`, secrets from `.env.prod`,
 static files served by whitenoise. The seam is `docker-compose.yml` + `.env.prod`.
-See `README.md` and `CLAUDE.md → Local vs production` before touching the
+See `README.md` and `AGENTS.md → Local vs production` before touching the
 Dockerfile, compose file, or settings modules.

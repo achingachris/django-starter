@@ -5,7 +5,6 @@ allowed-tools: [
     Bash(npx npm-check-updates *),
     Bash(make npm-install *),
     Bash(make npm-build *),
-    Bash(make npm-type-check *),
     Bash(make test *),
 ]
 ---
@@ -31,15 +30,13 @@ Run `make npm-install` to install the upgraded dependencies and update `package-
 
 Run these checks sequentially, stopping if any step fails:
 
-1. **TypeScript type checking**: Run `make npm-type-check` and report any new type errors.
-2. **Build**: Run `make npm-build` to verify the production build still works.
-3. **Tests**: Run `make test` to verify the test suite still passes.
+1. **Build**: Run `make npm-build` to verify the CSS build and vendor copy still work.
+2. **Tests**: Run `make test` to verify the test suite still passes.
 
 ### Step 5: Summarize and commit
 
 Summarize what was done:
 - Which packages were upgraded (notable version changes)
-- Whether any type errors were introduced
 - Whether the build succeeded
 - Whether all tests passed
 - Any issues that need manual attention

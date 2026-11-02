@@ -1,0 +1,51 @@
+/*
+  Single stylesheet entry, built by the Tailwind CLI (see package.json "build" / "dev")
+  into static/css/site.css. Font Awesome is linked separately from static/vendor/.
+*/
+@import 'tailwindcss';
+
+/* Small set of project component classes (buttons, form controls, nav). */
+@import './app/tailwind/app-components.css';
+
+/* Plain CSS that is not Tailwind: Alpine cloak, loaders, profile picture. */
+@import './app/utilities.css';
+@import './app/progress.css';
+@import './app/profile.css';
+
+@plugin "@tailwindcss/typography";
+
+/* Use IBM Plex Mono as the default (sans + mono) font across the app. */
+@theme {
+  --font-sans: "IBM Plex Mono", monospace;
+  --font-mono: "IBM Plex Mono", monospace;
+}
+
+/* Tailwind v4 no longer centers `container` by default. */
+@utility container {
+  margin-inline: auto;
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
+
+/* Colors used by the plain CSS files above. */
+:root {
+  --primary: var(--color-gray-900);
+  --danger: var(--color-red-600);
+  --success: var(--color-green-600);
+}

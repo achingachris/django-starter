@@ -1,11 +1,11 @@
 {% load i18n %}
 
-<footer class="p-6 mt-16 border-t footer footer-center border-base-300 text-base-content/60">
+<footer class="mt-16 border-t border-gray-200 p-6 text-center text-gray-500">
   <div x-data>
     <p>{{ project_meta.NAME }} — {% translate "Copyright" %} <span x-text="new Date().getFullYear()">2024</span></p>
     <p class="text-sm">
       {% blocktranslate trimmed %}
-        adapted from 🦄 Built with <a class="link link-hover"
+        adapted from 🦄 Built with <a class="hover:underline"
     href="https://www.saaspegasus.com/"
     target="_blank">SaaS Pegasus</a> by chris achinga
       {% endblocktranslate %}

@@ -61,19 +61,6 @@ services:
       redis:
         condition: service_healthy
 
-  celery:
-    <<: *app
-    command: celery -A config worker --beat -l INFO
-    volumes:
-      - media_files:/code/media
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      web:
-        condition: service_started
-
 volumes:
   postgres_data:
   redis_data:

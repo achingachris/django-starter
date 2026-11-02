@@ -1,17 +1,17 @@
 {% load i18n %}
 {% load static %}
 
-<section class="hero">
-  <div class="hero-content flex-col gap-10 px-4 py-16 mx-auto max-w-(--breakpoint-xl) lg:flex-row-reverse lg:py-24">
+<section>
+  <div class="mx-auto flex max-w-(--breakpoint-xl) flex-col items-center gap-10 px-4 py-16 lg:flex-row-reverse lg:py-24">
     <img src="{% static 'images/web/cdc_logo.jpg' %}"
          alt="{% translate "ChrisDevCode Technologies logo" %}"
          class="hidden w-full max-w-sm lg:block" />
     <div class="max-w-xl">
       <h1 class="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">{{ project_meta.NAME }}</h1>
-      <p class="py-6 text-lg text-base-content/70">{{ project_meta.DESCRIPTION }}</p>
+      <p class="py-6 text-lg text-gray-600">{{ project_meta.DESCRIPTION }}</p>
       <div class="flex flex-col gap-3 sm:flex-row">
         <a href="{% url 'account_signup' %}" class="btn btn-primary btn-lg">{% translate "Get started" %}</a>
-        <a href="{% url 'account_login' %}" class="btn btn-lg">{% translate "Sign in" %}</a>
+        <a href="{% url 'account_login' %}" class="btn btn-outline btn-lg">{% translate "Sign in" %}</a>
       </div>
     </div>
   </div>

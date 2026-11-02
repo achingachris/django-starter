@@ -1,12 +1,73 @@
-.section {
-  @apply m-4;
-}
+/*
+  The only reusable component classes in the project. Everything else in the
+  templates is written with plain Tailwind utilities.
+*/
+@layer components {
+  .section {
+    @apply m-4;
+  }
 
-.help {
-  /* forms */
-  @apply text-xs text-base-content/60;
-}
+  .app-card {
+    @apply mt-2 mb-2 p-4 lg:mt-0 lg:p-8 lg:shadow-md;
+  }
 
-.app-card {
-  @apply lg:shadow-md p-4 mb-2 mt-2 lg:mt-0 lg:p-8;
+  /* buttons */
+  .btn {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border border-transparent px-4 py-2 text-sm font-medium transition-colors;
+
+    &:disabled,
+    &[disabled] {
+      @apply pointer-events-none opacity-50;
+    }
+  }
+
+  .btn-primary {
+    @apply bg-gray-900 text-white hover:bg-gray-700;
+  }
+
+  .btn-outline {
+    @apply border-gray-300 bg-white text-gray-900 hover:bg-gray-50;
+  }
+
+  .btn-ghost {
+    @apply text-gray-700 hover:bg-gray-100 hover:text-gray-900;
+  }
+
+  .btn-danger {
+    @apply border-red-300 bg-white text-red-600 hover:bg-red-50;
+  }
+
+  .btn-xs {
+    @apply px-2 py-1 text-xs;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-base;
+  }
+
+  /* form controls */
+  .form-input {
+    @apply block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none disabled:bg-gray-50 disabled:text-gray-500;
+  }
+
+  .form-checkbox {
+    @apply size-4 accent-gray-900;
+  }
+
+  /* sidebar and mobile drawer navigation */
+  .nav-title {
+    @apply px-3 pt-4 pb-1 text-xs font-semibold tracking-wider text-gray-400 uppercase;
+  }
+
+  .nav-link {
+    @apply flex items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900;
+  }
+
+  .nav-link-active {
+    @apply bg-gray-100 font-medium text-gray-900;
+  }
 }

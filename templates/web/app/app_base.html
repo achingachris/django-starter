@@ -8,13 +8,15 @@
 {% block body %}
   {% block notifications %}{% endblock %}
   <div id="htmx-error"
-       class="alert alert-error alert-soft flex justify-between rounded-none! hidden"
+       class="hidden border-b border-red-200 bg-red-50 text-sm text-red-700"
        role="alert">
-    <span>{% translate "An error occurred while loading the content. Please try again." %}</span>
-    <button class="btn btn-sm btn-ghost"
-            onclick="this.parentElement.classList.add('hidden')">
-      <i class="fa fa-times"></i>
-    </button>
+    <div class="flex items-center justify-between px-4 py-3">
+      <span>{% translate "An error occurred while loading the content. Please try again." %}</span>
+      <button class="btn btn-ghost btn-sm"
+              onclick="this.closest('[role=alert]').classList.add('hidden')">
+        <i class="fa fa-times"></i>
+      </button>
+    </div>
   </div>
   <section class="section"
            hx-on::response-error="document.getElementById('htmx-error').classList.remove('hidden')">

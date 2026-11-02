@@ -1,82 +1,73 @@
 {% extends "web/app/app_base.html" %}
+
 {% load i18n %}
+
 {% block app %}
-<section class="app-card">
-  <h1 class="text-2xl font-bold mb-4">{% translate "Admin Dashboard" %}</h1>
-  <p class="mb-6 text-sm opacity-70">
-    {% translate "This page is only visible to users with the Admin role." %}
-  </p>
-
-  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-    <div class="stat bg-base-200 rounded-box">
-      <div class="stat-title">{% translate "Total Members" %}</div>
-      <div class="stat-value">{{ member_count }}</div>
+  <section class="app-card">
+    <h1 class="text-2xl font-bold mb-4">{% translate "Admin Dashboard" %}</h1>
+    <p class="mb-6 text-sm text-gray-500">{% translate "This page is only visible to users with the Admin role." %}</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+      <div class="rounded-lg bg-gray-50 p-4">
+        <div class="text-sm text-gray-500">{% translate "Total Members" %}</div>
+        <div class="text-3xl font-bold">{{ member_count }}</div>
+      </div>
+      <div class="rounded-lg bg-gray-50 p-4">
+        <div class="text-sm text-gray-500">{% translate "Total Admins" %}</div>
+        <div class="text-3xl font-bold">{{ admin_count }}</div>
+      </div>
     </div>
-    <div class="stat bg-base-200 rounded-box">
-      <div class="stat-title">{% translate "Total Admins" %}</div>
-      <div class="stat-value">{{ admin_count }}</div>
+    <h2 class="text-lg font-semibold mb-2">{% translate "All Users" %}</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead>
+          <tr class="border-b border-gray-200 text-xs uppercase text-gray-500">
+            <th class="px-3 py-2"></th>
+            <th class="px-3 py-2">{% translate "Name" %}</th>
+            <th class="px-3 py-2">{% translate "Email" %}</th>
+            <th class="px-3 py-2">{% translate "Role" %}</th>
+            <th class="px-3 py-2">{% translate "Joined" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+            <tr class="border-b border-gray-100">
+              <td class="px-3 py-2">
+                <img class="w-8 h-8 rounded-full" src="{{ u.avatar_url }}" alt="" />
+              </td>
+              <td class="px-3 py-2">{{ u.get_display_name }}</td>
+              <td class="px-3 py-2">{{ u.email }}</td>
+              <td class="px-3 py-2">
+                {% if u.pk == request.user.pk %}
+                  <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium {% if u.role == 'admin' %}border-gray-900 bg-gray-900 text-white{% else %}border-gray-200 bg-gray-100 text-gray-700{% endif %}">
+                    {{ u.role_display }}
+                  </span>
+                  <span class="text-xs text-gray-500 ml-1"
+                        title="{% translate "You can't change your own role." %}">
+                    <i class="fa fa-lock"></i>
+                  </span>
+                {% else %}
+                  <form method="post" class="inline-flex items-center gap-1 flex-nowrap">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_id" value="{{ u.pk }}" />
+                    <span class="mr-1 text-xs text-gray-500">{% translate "now:" %} {{ u.role }}</span>
+                    <button type="submit"
+                            name="role"
+                            value="member"
+                            class="btn btn-sm {% if u.role == 'member' %}btn-primary{% else %}btn-outline{% endif %}"
+                            {% if u.role == 'member' %}disabled{% endif %}>{% translate "Member" %}</button>
+                    <button type="submit"
+                            name="role"
+                            value="admin"
+                            class="btn btn-sm {% if u.role == 'admin' %}btn-primary{% else %}btn-outline{% endif %}"
+                            {% if u.role == 'admin' %}disabled{% endif %}>{% translate "Admin" %}</button>
+                  </form>
+                {% endif %}
+              </td>
+              <td class="px-3 py-2">{{ u.date_joined|date:"M j, Y" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
-  </div>
-
-  <h2 class="text-lg font-semibold mb-2">{% translate "All Users" %}</h2>
-  <div class="overflow-x-auto">
-    <table class="table">
-      <thead>
-        <tr>
-          <th></th>
-          <th>{% translate "Name" %}</th>
-          <th>{% translate "Email" %}</th>
-          <th>{% translate "Role" %}</th>
-          <th>{% translate "Joined" %}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for u in users %}
-        <tr>
-          <td><img class="w-8 h-8 rounded-full" src="{{ u.avatar_url }}" alt=""></td>
-          <td>{{ u.get_display_name }}</td>
-          <td>{{ u.email }}</td>
-          <td>
-            {% if u.pk == request.user.pk %}
-              <span class="badge {% if u.role == 'admin' %}badge-primary{% else %}badge-ghost{% endif %}">
-                {{ u.role_display }}
-              </span>
-              <span class="text-xs text-base-content/50 ml-1" title="{% translate "You can't change your own role." %}">
-                <i class="fa fa-lock"></i>
-              </span>
-            {% else %}
-              <form method="post" class="inline-flex items-center gap-1 flex-nowrap">
-                {% csrf_token %}
-                <input type="hidden" name="user_id" value="{{ u.pk }}">
-                <span style="font-family: monospace; font-size: 11px; margin-right: 4px;">
-                  {% translate "now:" %} {{ u.role }}
-                </span>
-                <button
-                  type="submit"
-                  name="role"
-                  value="member"
-                  class="btn btn-sm {% if u.role == 'member' %}btn-primary{% else %}btn-outline{% endif %}"
-                  {% if u.role == 'member' %}disabled{% endif %}
-                >
-                  {% translate "Member" %}
-                </button>
-                <button
-                  type="submit"
-                  name="role"
-                  value="admin"
-                  class="btn btn-sm {% if u.role == 'admin' %}btn-primary{% else %}btn-outline{% endif %}"
-                  {% if u.role == 'admin' %}disabled{% endif %}
-                >
-                  {% translate "Admin" %}
-                </button>
-              </form>
-            {% endif %}
-          </td>
-          <td>{{ u.date_joined|date:"M j, Y" }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</section>
+  </section>
 {% endblock %}

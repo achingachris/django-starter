@@ -36,7 +36,6 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("users/", include("apps.users.urls")),
     path("", include("apps.web.urls")),
-    path("celery-progress/", include("celery_progress.urls")),
     # API docs.
     # These endpoints are public by default. To restrict access, pass `permission_classes`
     # to the views below (e.g. `[permissions.IsAdminUser]`), gate on `settings.DEBUG`,

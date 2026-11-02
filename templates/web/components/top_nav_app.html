@@ -1,9 +1,7 @@
 {% extends 'web/components/top_nav.html' %}
 
 {% block mobile_nav %}
-  <li class="menu-title">
-    <span>Site</span>
-  </li>
+  <li class="nav-title">Site</li>
   {{ block.super }}
   {% include 'web/components/app_nav_menu_items.html' %}
 {% endblock %}
