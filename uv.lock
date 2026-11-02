@@ -188,15 +188,6 @@ redis = [
 ]
 
 [[package]]
-name = "celery-progress"
-version = "0.5"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/4b/1a/1e66f578556698d4bd47d14b099b46cafd9aef2f62a881bdfc51e3643c3c/celery_progress-0.5.tar.gz", hash = "sha256:ca345b8c86c35f6deb32a4b0df9a984f3f5aa9248a152eace9e04363367e848a", size = 15939, upload-time = "2025-01-30T07:18:54.984Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/fb/84/31a409b57d544040244c130a44fadb4c43afafa69ddd0d8ac3018ccd8492/celery_progress-0.5-py3-none-any.whl", hash = "sha256:a02aaacc9dc8b97d975f3186ba2de08a8afef00457dadc3832b463b06b5316fa", size = 17328, upload-time = "2025-01-30T07:18:52.589Z" },
-]
-
-[[package]]
 name = "certifi"
 version = "2026.5.20"
 source = { registry = "https://pypi.org/simple" }
@@ -295,19 +286,17 @@ source = { virtual = "." }
 dependencies = [
     { name = "argon2-cffi" },
     { name = "celery", extra = ["redis"] },
-    { name = "celery-progress" },
     { name = "django" },
     { name = "django-allauth", extra = ["socialaccount"] },
-    { name = "django-anymail" },
     { name = "django-celery-beat" },
     { name = "django-environ" },
     { name = "django-htmx" },
     { name = "django-vite" },
-    { name = "django-waffle" },
     { name = "djangorestframework" },
     { name = "drf-spectacular" },
     { name = "psycopg" },
     { name = "redis" },
+    { name = "requests" },
 ]
 
 [package.dev-dependencies]
@@ -323,7 +312,6 @@ dev = [
     { name = "pre-commit" },
     { name = "psycopg", extra = ["binary"] },
     { name = "ruff" },
-    { name = "types-python-dateutil" },
     { name = "types-requests" },
 ]
 prod = [
@@ -336,21 +324,18 @@ prod = [
 [package.metadata]
 requires-dist = [
     { name = "argon2-cffi", specifier = ">=25.1.0" },
-    { name = "celery" },
     { name = "celery", extras = ["redis"] },
-    { name = "celery-progress" },
     { name = "django", specifier = ">=6.0" },
     { name = "django-allauth", extras = ["socialaccount"], specifier = ">=65.13.0" },
-    { name = "django-anymail", extras = ["mailgun"] },
     { name = "django-celery-beat" },
     { name = "django-environ" },
     { name = "django-htmx" },
     { name = "django-vite", specifier = ">=3.1.0" },
-    { name = "django-waffle" },
     { name = "djangorestframework" },
     { name = "drf-spectacular" },
     { name = "psycopg" },
     { name = "redis" },
+    { name = "requests" },
 ]
 
 [package.metadata.requires-dev]
@@ -366,7 +351,6 @@ dev = [
     { name = "pre-commit" },
     { name = "psycopg", extras = ["binary"] },
     { name = "ruff", specifier = ">=0.15.6" },
-    { name = "types-python-dateutil", specifier = ">=2.9.0.20251108" },
     { name = "types-requests", specifier = ">=2.32.4" },
 ]
 prod = [
@@ -559,21 +543,6 @@ socialaccount = [
 ]
 
 [[package]]
-name = "django-anymail"
-version = "15.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "django" },
-    { name = "idna" },
-    { name = "requests" },
-    { name = "urllib3" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/00/43/f0aadb31f2c58afcd9f001f4291998cbd6d289898167e79d908506fc6faf/django_anymail-15.0.tar.gz", hash = "sha256:23d8ab6589afe8cc1ae7665c26879814ad192f4c3ed837a2a1868b0a056869e0", size = 106985, upload-time = "2026-04-18T20:44:19.237Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/75/d1/daae99ec3b30886010a499975880ec20c32c622bee6b92c226b715e42f0c/django_anymail-15.0-py3-none-any.whl", hash = "sha256:64d33dd1084bfc8e4e12245f56629be40aa0b0498fc7fc7544d87b9b2048be1e", size = 147229, upload-time = "2026-04-18T20:44:17.323Z" },
-]
-
-[[package]]
 name = "django-browser-reload"
 version = "1.21.0"
 source = { registry = "https://pypi.org/simple" }
@@ -701,18 +670,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/23/fe/4be07f538bbf9bf8bf73b045552ec2a1b4fba67e3176abb30490b643368e/django_vite-3.1.0.tar.gz", hash = "sha256:8b4ffe4a9fa81ff568bfb195e74dde8694aaf13fd4b656ae60bf59cce08b85e8", size = 25434, upload-time = "2025-02-23T15:32:07.914Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/30/59/7df4b1077fa41b43b4e542696d75138dbb86a65f44248c607b3e0f1014ce/django_vite-3.1.0-py3-none-any.whl", hash = "sha256:4e46572bd6b1ce70784be129205dc2ffcbc7a3c19fea50bebfb72b327bbde5fc", size = 23579, upload-time = "2025-02-23T15:32:06.603Z" },
-]
-
-[[package]]
-name = "django-waffle"
-version = "5.0.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "django" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/22/e1/6f533da0d4ac89f427dfd9410e39bfc14ae3a23335ecd549d76be4b2a834/django_waffle-5.0.0.tar.gz", hash = "sha256:62f9d00eedf68dafb82657beab56e601bddedc1ea1ccfef91d83df8658708509", size = 37761, upload-time = "2025-06-12T07:38:54.895Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/7a/d2/6f0d664bd35a3fdd0403655c7c32ec290704923f11541ef356b180cd8fbf/django_waffle-5.0.0-py3-none-any.whl", hash = "sha256:3312851d9d926b76b9e90712355781700a383b82b5bf2b61e1f1be97532c0f3d", size = 48137, upload-time = "2025-06-12T07:38:53.698Z" },
 ]
 
 [[package]]
@@ -1418,15 +1375,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/ab/e2/e9a00f0ccb71718418230718b3d900e71a5d16e701a3dae079a21e9cd8f8/text-unidecode-1.3.tar.gz", hash = "sha256:bad6603bb14d279193107714b288be206cac565dfa49aa5b105294dd5c4aab93", size = 76885, upload-time = "2019-08-30T21:36:45.405Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a6/a5/c0b6468d3824fe3fde30dbb5e1f687b291608f9473681bbf7dabbf5a87d7/text_unidecode-1.3-py2.py3-none-any.whl", hash = "sha256:1311f10e8b895935241623731c2ba64f4c455287888b18189350b67134a822e8", size = 78154, upload-time = "2019-08-30T21:37:03.543Z" },
-]
-
-[[package]]
-name = "types-python-dateutil"
-version = "2.9.0.20260518"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/8d/e8/c01bdf0d7c3659428c091fbd693177093639565bcbc86bc20098e6d37cc6/types_python_dateutil-2.9.0.20260518.tar.gz", hash = "sha256:51f02dc03b61c7f6a07df45797d4dfe8a1aa47f0b7db9ad89f6fd3a1a70e1b51", size = 17082, upload-time = "2026-05-18T06:05:24.508Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/36/22/169273273ca34e9ab0ae2f387ba72ed7e09faaaf834da01d6b89c2bea71a/types_python_dateutil-2.9.0.20260518-py3-none-any.whl", hash = "sha256:d6a9c5bd0de61460c8fdef8ab2b400f956a1a1075cce08d4e2b4434e478c50b8", size = 18431, upload-time = "2026-05-18T06:05:23.641Z" },
 ]
 
 [[package]]

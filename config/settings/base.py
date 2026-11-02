@@ -64,8 +64,6 @@ THIRD_PARTY_APPS = [
     "django_vite",
     "rest_framework",
     "drf_spectacular",
-    "celery_progress",
-    "waffle",
     "django_celery_beat",
 ]
 
@@ -94,7 +92,6 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "waffle.middleware.WaffleMiddleware",
 ]
 
 if ENABLE_DEBUG_TOOLBAR:

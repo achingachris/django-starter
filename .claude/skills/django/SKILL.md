@@ -70,8 +70,8 @@ or awesome-django for a maintained package (a release within roughly two years,
 supporting the Django version in use). Dependencies are cheap; custom code compounds.
 
 **This project.** Add packages with `make uv add '<package>'`. The codebase already
-leans this way: django-allauth, django-htmx, django-waffle, django-celery-beat,
-django-anymail, django-vite. When the ecosystem is abandoned or every option is
+leans this way: django-allauth, django-htmx, django-celery-beat,
+django-vite. When the ecosystem is abandoned or every option is
 awkward, say so openly and explain the trade-off; rolling custom code silently is not
 allowed.
 
