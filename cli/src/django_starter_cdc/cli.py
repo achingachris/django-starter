@@ -118,7 +118,7 @@ def create_project(args: argparse.Namespace) -> int:
         stage = Path(tmp) / args.name
         if args.source:
             print(f"Copying {args.source.resolve()}")
-            copy_local(args.source, stage)
+            copy_local(args.source, stage, exclude=(Path(tmp), target))
         else:
             print(f"Downloading {archive_url(args.ref)}")
             download(stage, args.ref)

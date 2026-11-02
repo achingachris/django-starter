@@ -5,6 +5,7 @@ import tarfile
 import tempfile
 import urllib.error
 import urllib.request
+from collections.abc import Iterable
 from pathlib import Path
 
 from django_starter_cdc import __version__
@@ -55,18 +56,24 @@ def archive_url(ref: str | None = None) -> str:
     return f"{REPO_URL}/archive/refs/tags/v{__version__}.tar.gz"
 
 
-def copy_local(source: Path, dest: Path) -> None:
-    """Copy a local checkout into ``dest``, leaving out VCS data, dependencies, build output and secrets."""
+def copy_local(source: Path, dest: Path, exclude: Iterable[Path] = ()) -> None:
+    """Copy a local checkout into ``dest``, leaving out VCS data, dependencies, build output and secrets.
+
+    ``exclude`` lists further paths to skip. The CLI passes its staging directory and the target, which sit
+    inside the checkout when a project is generated there (e.g. ``new sample --source .``); copying them
+    would make the copy recurse into itself.
+    """
     source = source.resolve()
     if not (source / "manage.py").is_file():
         raise FetchError(f"{source} does not look like a django-starter checkout (no manage.py).")
+    excluded = {Path(p).resolve() for p in exclude}
 
     def ignore(directory: str, names: list[str]) -> set[str]:
         rel_dir = Path(directory).resolve().relative_to(source)
         ignored = set()
         for name in names:
             rel = (rel_dir / name).as_posix()
-            if name in IGNORED_NAMES or rel in IGNORED_PATHS:
+            if name in IGNORED_NAMES or rel in IGNORED_PATHS or (Path(directory) / name).resolve() in excluded:
                 ignored.add(name)
         return ignored
 

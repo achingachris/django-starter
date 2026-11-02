@@ -1,8 +1,10 @@
+import contextlib
+import io
 import tempfile
 import unittest
 from pathlib import Path
 
-from django_starter_cdc.cli import NAME_RE
+from django_starter_cdc.cli import NAME_RE, main
 from django_starter_cdc.fetch import archive_url, copy_local
 from django_starter_cdc.render import RenderError, process_text, prune, rename, render_project, write_env
 
@@ -210,6 +212,18 @@ class TreeTests(unittest.TestCase):
         self.assertFalse(any(p.startswith(("cli/", "node_modules/", "static/css/")) for p in copied))
         self.assertFalse(any("__pycache__" in p for p in copied))
         self.assertIn(".env.example", copied)
+
+    def test_new_project_inside_the_source_checkout(self):
+        # `new sample --source .` with the default `--dir .`: the staging directory and the target both
+        # live inside the checkout being copied, and must not be copied into the project.
+        with contextlib.redirect_stdout(io.StringIO()):
+            args = ["new", "sample", "--source", str(self.root), "--dir", str(self.root), "--no-git", "--no-install"]
+            code = main(args)
+        self.assertEqual(code, 0)
+        project = self.root / "sample"
+        self.assertTrue((project / "manage.py").is_file())
+        self.assertEqual([p.name for p in project.iterdir() if p.name == "sample" or p.name.startswith(".sample-")], [])
+        self.assertEqual([p.name for p in self.root.iterdir() if p.name.startswith(".sample-")], [])
 
 
 class CLITests(unittest.TestCase):
