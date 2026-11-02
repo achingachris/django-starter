@@ -36,6 +36,11 @@ Issues = "https://github.com/achingachris/django-starter/issues"
 [tool.hatch.build.targets.wheel]
 packages = ["src/django_starter_cdc"]
 
+[tool.uv]
+# uv rebuilds a local path package only when its cache keys change (pyproject.toml by default), so
+# `uvx --from ./cli` would keep running a stale build after edits to the source. Include the source.
+cache-keys = [{ file = "pyproject.toml" }, { file = "README.md" }, { file = "src/**/*.py" }]
+
 [tool.ruff]
 line-length = 120
 target-version = "py314"
