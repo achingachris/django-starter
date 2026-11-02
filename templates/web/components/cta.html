@@ -1,11 +1,11 @@
 {% load i18n %}
 
 <section class="px-4 py-16">
-  <div class="mx-auto max-w-(--breakpoint-xl) card bg-base-200">
-    <div class="items-center gap-6 text-center card-body lg:flex-row lg:justify-between lg:text-left">
+  <div class="mx-auto max-w-(--breakpoint-xl) rounded-lg bg-gray-50">
+    <div class="flex flex-col items-center gap-6 p-8 text-center lg:flex-row lg:justify-between lg:text-left">
       <div>
         <h2 class="text-2xl font-bold tracking-tight md:text-3xl">Ready to dive in?</h2>
-        <p class="text-base-content/70">Get your first customer in minutes.</p>
+        <p class="text-gray-600">Get your first customer in minutes.</p>
       </div>
       <a href="{% url 'account_signup' %}" class="btn btn-primary btn-lg">{% translate "Get started" %}</a>
     </div>

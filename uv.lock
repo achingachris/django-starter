@@ -291,7 +291,6 @@ dependencies = [
     { name = "django-celery-beat" },
     { name = "django-environ" },
     { name = "django-htmx" },
-    { name = "django-vite" },
     { name = "djangorestframework" },
     { name = "drf-spectacular" },
     { name = "psycopg" },
@@ -330,7 +329,6 @@ requires-dist = [
     { name = "django-celery-beat" },
     { name = "django-environ" },
     { name = "django-htmx" },
-    { name = "django-vite", specifier = ">=3.1.0" },
     { name = "djangorestframework" },
     { name = "drf-spectacular" },
     { name = "psycopg" },
@@ -658,18 +656,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/da/05/9b93a66452cdb8a08ab26f08d5766d2332673e659a8b2aeb73f2a904d421/django_timezone_field-7.2.1.tar.gz", hash = "sha256:def846f9e7200b7b8f2a28fcce2b78fb2d470f6a9f272b07c4e014f6ba4c6d2e", size = 13096, upload-time = "2025-12-06T23:50:44.591Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/41/7f/d885667401515b467f84569c56075bc9add72c9fd425fca51a25f4c997e1/django_timezone_field-7.2.1-py3-none-any.whl", hash = "sha256:276915b72c5816f57c3baf9e43f816c695ef940d1b21f91ebf6203c09bf4ad44", size = 13284, upload-time = "2025-12-06T23:50:43.302Z" },
-]
-
-[[package]]
-name = "django-vite"
-version = "3.1.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "django" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/23/fe/4be07f538bbf9bf8bf73b045552ec2a1b4fba67e3176abb30490b643368e/django_vite-3.1.0.tar.gz", hash = "sha256:8b4ffe4a9fa81ff568bfb195e74dde8694aaf13fd4b656ae60bf59cce08b85e8", size = 25434, upload-time = "2025-02-23T15:32:07.914Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/30/59/7df4b1077fa41b43b4e542696d75138dbb86a65f44248c607b3e0f1014ce/django_vite-3.1.0-py3-none-any.whl", hash = "sha256:4e46572bd6b1ce70784be129205dc2ffcbc7a3c19fea50bebfb72b327bbde5fc", size = 23579, upload-time = "2025-02-23T15:32:06.603Z" },
 ]
 
 [[package]]

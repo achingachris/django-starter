@@ -1,8 +1,8 @@
 {% if messages %}
   {% for message in messages %}
-    <div class="notification flex w-full justify-between alert {% if message.tags %}alert-{{ message.level_tag }}{% endif %} shadow-md rounded-none! {{ message.extra_tags }} mb-1">
+    <div class="notification mb-1 flex w-full justify-between border-l-4 px-4 py-3 text-sm shadow-md {% if message.level_tag == 'success' %}border-green-500 bg-green-50 text-green-800{% elif message.level_tag == 'error' %}border-red-500 bg-red-50 text-red-800{% elif message.level_tag == 'warning' %}border-amber-500 bg-amber-50 text-amber-800{% else %}border-blue-500 bg-blue-50 text-blue-800{% endif %} {{ message.extra_tags }}">
       <div>{{ message }}</div>
-      <button class="delete">
+      <button class="delete cursor-pointer">
         <i class="fa fa-times"></i>
       </button>
     </div>

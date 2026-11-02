@@ -4,7 +4,6 @@
 *.pyc
 *~
 .venv
-/.vite/
 venv
 db.sqlite3
 .sass-cache/
@@ -16,9 +15,6 @@ node_modules/
 # ai assistants
 .playwright-mcp/
 .claude/settings.local.json
-openapitools.json
-# transient OpenAPI schema written by `make generate-api-client`
-schema.yaml
 media/
 docs/_build
 _dist/
@@ -28,8 +24,6 @@ _dist/
 .DS_Store
 .direnv
 .envrc
-# compiled static files are built in dev/deploy
-static/assets/
+# built CSS and vendored JS/fonts (npm run build)
 static/css/
-static/js/
-static/.vite/
+static/vendor/

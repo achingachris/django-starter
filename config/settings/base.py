@@ -61,7 +61,6 @@ THIRD_PARTY_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "django_htmx",
-    "django_vite",
     "rest_framework",
     "drf_spectacular",
     "django_celery_beat",
@@ -297,16 +296,6 @@ STORAGES = {
 
 MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"
-
-# Vite Integration
-DJANGO_VITE = {
-    "default": {
-        "dev_mode": env.bool("DJANGO_VITE_DEV_MODE", default=DEBUG),
-        "dev_server_host": env("DJANGO_VITE_HOST", default="localhost"),
-        "dev_server_port": env.int("DJANGO_VITE_PORT", default=5173),
-        "manifest_path": BASE_DIR / "static" / ".vite" / "manifest.json",
-    }
-}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/stable/ref/settings/#default-auto-field

@@ -1,7 +1,6 @@
 {% extends "web/app/app_base.html" %}
 
 {% load static %}
-{% load django_vite %}
 
 {% block app %}
   <section class="app-card">
@@ -9,10 +8,8 @@
   </section>
 {% endblock %}
 {% block page_js %}
-  {% vite_asset 'assets/javascript/app.js' %}
   <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const App = SiteJS.app;
     const uploadUrl = '{% url "users:upload_profile_image" %}';
     document.getElementById("profile-upload").onchange = function() {
       let files = document.getElementById("profile-upload").files;
@@ -42,7 +39,7 @@
       function showError(message) {
         uploadlabel.innerHTML = '<span title="' + message + '"><span class="w-6 h-6 inline-flex justify-center items-center"><i class="fa fa-times"></i></span><span>Upload failed!</span></span>';
         uploadlabel.classList.remove('is-active');
-        uploadlabel.classList.add('text-error');
+        uploadlabel.classList.add('text-red-600');
       }
       function genericError(status) {
         if (status === 403) {
@@ -53,7 +50,7 @@
       // upload to server
       let formData = new FormData();
       formData.append("avatar", file);
-      formData.append('csrfmiddlewaretoken', App.getCsrfToken());
+      formData.append('csrfmiddlewaretoken', SiteJS.getCsrfToken());
       fetch(uploadUrl, {method: "POST", body: formData, credentials: 'same-origin'}).then(
         function (response) {
           if (response.redirected) {
@@ -66,7 +63,7 @@
               // update UI
               uploadlabel.innerHTML = '<span class="w-6 h-6 inline-flex justify-center items-center"><i class="fa fa-check"></i></span><span>' + text + '</span>';
               uploadlabel.classList.remove('is-active');
-              uploadlabel.classList.add('text-success');
+              uploadlabel.classList.add('text-green-600');
             });
           } else {
             // the server returns JSON validation errors, but a 403/500 is an HTML page that

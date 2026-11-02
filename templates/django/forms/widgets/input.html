@@ -1,4 +1,4 @@
-<input {% if widget.type in 'text,password,email,tel,number,url,date,time,datetime-local' %} class="input w-full {{ widget.attrs.class }}" {% elif widget.type == 'checkbox' %} class="checkbox {{ widget.attrs.class }}" {% elif widget.type == 'file' %} class="file-input w-full {{ widget.attrs.class }}" {% else %} class="w-full {{ widget.attrs.class }}" {% endif %}
+<input {% if widget.type in 'text,password,email,tel,number,url,date,time,datetime-local' %} class="form-input {{ widget.attrs.class }}" {% elif widget.type == 'checkbox' %} class="form-checkbox {{ widget.attrs.class }}" {% elif widget.type == 'file' %} class="block w-full text-sm text-gray-500 file:mr-3 file:rounded-md file:border-0 file:bg-gray-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-gray-900 hover:file:bg-gray-200 {{ widget.attrs.class }}" {% else %} class="w-full {{ widget.attrs.class }}" {% endif %}
        type="{{ widget.type }}"
        name="{{ widget.name }}"
        {% if widget.value != None %} value="{{ widget.value|stringformat:'s' }}" {% endif %}

@@ -19,5 +19,3 @@ venv
 *.py[cod]
 # Local SQLite dev database
 db.sqlite3
-# Generated at build/runtime
-schema.yaml

@@ -30,7 +30,7 @@
   document.addEventListener("DOMContentLoaded", () => {
     const button = document.getElementById("email-confirm-button");
     button.disabled = true;
-    button.innerHTML = '<span class="loading loading-spinner loading-sm align-middle"></span> ' + button.dataset.loadingText;
+    button.innerHTML = '<span class="inline-block size-4 animate-spin rounded-full border-2 border-current border-t-transparent align-middle"></span> ' + button.dataset.loadingText;
     document.getElementById("email-confirm-form").submit();
   });
     </script>

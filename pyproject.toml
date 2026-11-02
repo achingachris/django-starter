@@ -80,7 +80,6 @@ dependencies = [
     "django-celery-beat",
     "django-environ",
     "django-htmx",
-    "django-vite>=3.1.0",
     "djangorestframework",
     "drf-spectacular",
     "psycopg",

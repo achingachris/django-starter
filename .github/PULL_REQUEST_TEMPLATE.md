@@ -27,6 +27,6 @@
 - [ ] `pre-commit run --all-files` passes (code style)
 - [ ] `mypy .` passes (type checking)
 - [ ] `make test` passes (Django tests)
-- [ ] `make npm-build` and `make npm-type-check` pass (if front-end code changed)
+- [ ] `make npm-build` passes (if front-end code changed)
 - [ ] I added tests covering my changes (if applicable)
 - [ ] I updated documentation (README, etc.) where needed

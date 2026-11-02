@@ -50,11 +50,11 @@ The rest of this guide shows `make` / `uv run` commands; if you're not using uv,
 underlying command directly inside your activated environment (e.g. `python manage.py test`
 instead of `make test`).
 
-Then run the app with **two processes in two terminals**:
+Then run the app (the CSS watcher is only needed while editing templates or styles):
 
 ```bash
 make start     # Terminal 1: Django dev server (http://localhost:8000)
-make npm-dev   # Terminal 2: Vite front-end dev server (hot-reloaded CSS/JS)
+make npm-dev   # Terminal 2 (optional): rebuild the CSS as templates change
 ```
 
 Run `make` with no arguments to list all available commands.
@@ -96,7 +96,7 @@ Every pull request must pass CI, which runs:
 | Code style (pre-commit: ruff + hygiene hooks) | `pre-commit run --all-files` |
 | Type checking (mypy) | `mypy .` |
 | Django tests (against Postgres + Redis in CI) | `make test` (or `python manage.py test`) |
-| Front-end build + TypeScript check | `make npm-build && make npm-type-check` |
+| Front-end build (CSS + vendored libraries) | `make npm-build` |
 
 (Run these inside your activated environment; with uv, prefix Python commands with `uv run`.)
 
@@ -105,7 +105,7 @@ Every pull request must pass CI, which runs:
 - **Python**: PEP 8 with a 120-character line limit, double quotes, isort-sorted imports — all
   enforced by [ruff](https://docs.astral.sh/ruff/). Run `make ruff` to format and lint.
 - **JavaScript/TypeScript**: ES6+, 2-space indentation, single quotes, semicolons.
-- **Django templates**: 2-space indentation, DaisyUI/Tailwind classes for styling.
+- **Django templates**: 2-space indentation, plain Tailwind utility classes for styling.
 - Prefer simple solutions and avoid duplicating existing functionality.
 - Use type hints in new Python code where practical.
 
@@ -131,7 +131,7 @@ New features and bug fixes should include tests covering the change.
 - The user model is `apps.users.models.CustomUser` — import it directly.
 - Prefer function-based views, except where a framework expects class-based views (e.g. DRF).
 - HTMX for server-backed interactivity, Alpine.js for browser-only interactivity.
-- Front-end assets live in `/assets/` and are built by Vite; load them in templates with
-  `{% vite_asset %}`.
+- CSS sources live in `/assets/styles/` and are compiled by the Tailwind CLI; JavaScript is plain
+  scripts under `/static/javascript/`. Load both in templates with `{% static %}`.
 - Use Django signals sparingly and document them well.
 - Always validate user input server-side.

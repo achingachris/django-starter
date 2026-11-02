@@ -15,7 +15,7 @@ they differ.
 - **Permissions** — gate on `has_perm`, never on group membership.
 - **Secrets** — env vars via django-environ; secret model fields encrypted in the
   same commit they appear in.
-- **Templates** — no inline `<style>` blocks; DaisyUI/Tailwind per `AGENTS.md`.
+- **Templates** — no inline `<style>` blocks; plain Tailwind per `AGENTS.md`.
 - **Session workflow** — `uv run` / make targets, run tests after changes, stage
   but never commit unasked.
 - **Email** — console backend in dev, Resend SMTP in prod, allauth templates.

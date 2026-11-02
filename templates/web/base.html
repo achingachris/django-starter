@@ -1,9 +1,8 @@
 {% load static %}
-{% load django_vite %}
 {% load meta_tags %}
 
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <!--IE compatibility-->
@@ -45,20 +44,21 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap"
           rel="stylesheet" />
     <link rel="stylesheet"
-          href="{% vite_asset_url 'assets/styles/site-base.css' %}" />
+          href="{% static 'vendor/fontawesome/css/all.min.css' %}" />
     <link rel="stylesheet"
-          href="{% vite_asset_url 'assets/styles/site-tailwind.css' %}" />
+          href="{% static 'vendor/fontawesome/css/v4-shims.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/site.css' %}" />
     {% if umami_website_id %}
       <script defer
               src="https://analytics.chrisdevcode.com/script.js"
               data-website-id="{{ umami_website_id }}"></script>
     {% endif %}
-    {% vite_asset 'assets/javascript/site.js' %}
-    {% vite_hmr_client %}
-    <script>__cssFramework = 'tailwind';</script>
+    <script defer src="{% static 'vendor/htmx.min.js' %}"></script>
+    <script defer src="{% static 'vendor/alpine.min.js' %}"></script>
+    <script defer src="{% static 'javascript/site.js' %}"></script>
     {% block page_head %}{% endblock %}
   </head>
-  <body class="bg-base-100" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+  <body class="bg-white text-gray-900" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     {% block body_wrapper %}
       {% block top_nav %}
         {% include 'web/components/top_nav.html' %}

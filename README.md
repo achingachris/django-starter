@@ -11,8 +11,8 @@ This project runs in **two distinct modes**:
 
 | Mode | How it runs | Database | Cache / broker | Celery | Used for |
 |------|-------------|----------|----------------|--------|----------|
-| **Local** | Natively on your machine via [uv](https://docs.astral.sh/uv/) + `npm` | SQLite (`db.sqlite3`) | DummyCache (no Redis needed) | Eager (synchronous) | Day-to-day development |
-| **Production** | Docker Compose (Postgres + Redis + web + Vite + Celery) | Postgres | Redis | Real worker + beat | Containerized / deployed stack |
+| **Local** | Natively on your machine via [uv](https://docs.astral.sh/uv/) (+ `npm` for the CSS build) | SQLite (`db.sqlite3`) | DummyCache (no Redis needed) | Eager (synchronous) | Day-to-day development |
+| **Production** | Docker Compose (Postgres + Redis + web + Celery) | Postgres | Redis | Real worker + beat | Containerized / deployed stack |
 
 The split is driven by `DEBUG` and a few environment variables — see [Configuration](#configuration). You do
 **not** need Docker for everyday development.
@@ -25,12 +25,11 @@ The split is driven by `DEBUG` and a few environment variables — see [Configur
   - [Prerequisites](#prerequisites)
   - [1. Bootstrap](#1-bootstrap-make-init)
   - [2. Admin user](#2-admin-user-automatic)
-  - [3. Run the app (two processes)](#3-run-the-app-two-processes)
+  - [3. Run the app](#3-run-the-app)
   - [4. Open it](#4-open-it)
 - [Everyday commands](#everyday-commands)
 - [Database](#database)
 - [Front end](#front-end)
-- [Generating the API client](#generating-the-api-client)
 - [Celery & background tasks](#celery--background-tasks)
 - [Testing](#testing)
 - [Code quality & git hooks](#code-quality--git-hooks)
@@ -92,19 +91,14 @@ With `ENABLE_DEBUG_TOOLBAR=True`, the toolbar's **"Login / out"** panel
 superuser and an anonymous session in one click — handy for checking logged-out views. Its endpoints
 are POST-only, CSRF-protected, and 404 unless `DEBUG` is on and the toolbar is visible.
 
-### 3. Run the app (two processes)
-
-Local development needs **two terminals running simultaneously** — the Django server *and* the Vite
-front-end server. In `DEBUG`, CSS/JS are served by Vite, so **if you skip the second process the page
-loads unstyled.**
-
-**Terminal 1 — Django backend (port 8000):**
+### 3. Run the app
 
 ```bash
 make start
 ```
 
-**Terminal 2 — Vite front end (port 5173):**
+`make init` already built the CSS once. While you edit templates or styles, run the Tailwind watcher in a
+second terminal so new utility classes get compiled:
 
 ```bash
 make npm-dev
@@ -116,8 +110,8 @@ Visit **[http://localhost:8000](http://localhost:8000/)** — you should see a f
 Django admin is at [http://localhost:8000/admin/](http://localhost:8000/admin/) (log in with the
 auto-created dev superuser from step 2).
 
-> **Styles not loading?** It almost always means the Vite dev server (step 3, Terminal 2) isn't
-> running, or `node_modules` is missing. Run `make npm-install` then `make npm-dev` and refresh.
+> **Styles not loading?** `static/css/site.css` and `static/vendor/` are build outputs. Run
+> `make npm-build` (or `make init`) to create them.
 
 New to Pegasus? [Try these next steps](https://docs.saaspegasus.com/getting-started/#post-installation-steps).
 
@@ -138,8 +132,8 @@ Run `make` with no arguments to list every available target. Local targets (`sta
 | `make migrate` | Apply migrations |
 | `make test` | Run the test suite |
 | `make ruff` | Format **and** lint Python with Ruff |
-| `make npm-dev` | Run the Vite dev server |
-| `make npm-build` | Build production front-end assets |
+| `make npm-dev` | Rebuild the CSS as templates change |
+| `make npm-build` | Build the minified CSS and vendored JS/fonts |
 
 Management commands can also be run directly: `uv run python manage.py <command>`.
 
@@ -162,44 +156,21 @@ precedence over SQLite automatically.
 
 ## Front end
 
-JavaScript/TypeScript lives in `assets/` and is bundled by [Vite](https://vitejs.dev/) and served
-through [`django-vite`](https://github.com/MrBin99/django-vite). Tailwind v4 + DaisyUI provide styling.
+There is no JavaScript bundler. Styling is Tailwind v4 (plain utility classes, no component library)
+compiled by the [Tailwind CLI](https://tailwindcss.com/docs/installation/tailwind-cli) from
+`assets/styles/site.css` into `static/css/site.css`. htmx, Alpine.js and Font Awesome are npm
+packages copied as-is into `static/vendor/` by the same build, and the site's own JavaScript is a
+plain script at `static/javascript/site.js`. Templates load everything with `{% static %}`.
 
 ```bash
 make npm-install            # install all npm packages
 make npm-install <package>  # install a specific package
-make npm-dev                # Vite dev server with hot reload (local development)
-make npm-build              # build optimized assets (production)
-make npm-type-check         # TypeScript type checking
+make npm-dev                # rebuild the CSS whenever templates change (local development)
+make npm-build              # minified CSS + vendored libraries (production)
 ```
 
-In `DEBUG`, `DJANGO_VITE["default"]["dev_mode"]` is `True`, so assets are served live from the Vite
-dev server. With `DEBUG=False`, Django serves the built manifest from `npm-build` instead.
-
----
-
-## Generating the API client
-
-The REST API (Django Rest Framework) publishes an OpenAPI schema via `drf-spectacular` at
-`/api/schema/`. The TypeScript client in `api-client/` is **generated from that schema** and consumed
-by the front end (see `assets/javascript/api.js`). It is generated code — don't edit it by hand.
-
-Whenever you add or change API endpoints, regenerate the client:
-
-```bash
-make generate-api-client
-```
-
-This target:
-
-1. Exports the OpenAPI schema from Django (`manage.py spectacular`).
-2. Runs [OpenAPI Generator](https://openapi-generator.tech) (`typescript-fetch`), pinned to the
-   version in `OPENAPI_GENERATOR_VERSION` (kept in sync with `api-client/.openapi-generator/VERSION`),
-   via `npx @openapitools/openapi-generator-cli`.
-3. Writes the result into `api-client/` and cleans up the temporary schema file.
-
-**Requirements:** `node`/`npx` and a Java runtime (the generator runs on the JVM). Review the diff
-before committing.
+`static/css/` and `static/vendor/` are git-ignored build outputs; the Docker image builds them in its
+first stage.
 
 ---
 
@@ -278,7 +249,7 @@ Configuration is read from environment variables (via `.env` locally). `make ini
 | `EMAIL_BACKEND` | console in `DEBUG`, else SMTP | Override to force a specific backend. |
 | `RESEND_API_KEY` | *(empty)* | Resend API key, used as the SMTP password. Required to send real mail. |
 | `EMAIL_HOST` / `EMAIL_PORT` / `EMAIL_HOST_USER` | `smtp.resend.com` / `587` / `resend` | Override to use another SMTP provider. |
-| `DJANGO_PORT` / `DJANGO_VITE_PORT` | `8000` / `5173` | Dev server ports. |
+| `DJANGO_PORT` | `8000` | Dev server port. |
 | `POSTGRES_PORT` / `REDIS_PORT` | `5432` / `6379` | Docker service ports. |
 | `UMAMI_WEBSITE_ID` | *(empty)* | Umami website ID for site analytics (optional). |
 | `TURNSTILE_KEY` / `TURNSTILE_SECRET` | *(empty)* | Cloudflare Turnstile keys (optional). |
@@ -314,7 +285,7 @@ and `RESEND_API_KEY` in `.env`.
 
 Docker Compose runs a production-ready stack — **Postgres, Redis, a gunicorn web server, and a
 Celery worker (with beat)**. The web and Celery services share one image built from `Dockerfile`
-(a multi-stage build that compiles the front-end assets with Vite, then installs the production
+(a multi-stage build that compiles the CSS with the Tailwind CLI, then installs the production
 Python dependencies) and run with `DJANGO_SETTINGS_MODULE=config.settings.prod`.
 
 **Requirements:** [Docker](https://www.docker.com/get-started) and

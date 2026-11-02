@@ -22,7 +22,7 @@
                type="email"
                value="{{ current_emailaddress.email }}"
                disabled
-               class="input input-ghost w-full" />
+               class="form-input" />
       </div>
     {% endif %}
     {% if new_emailaddress %}
@@ -38,18 +38,18 @@
                type="email"
                value="{{ new_emailaddress.email }}"
                disabled
-               class="input input-ghost w-full" />
-        <small class="text-base-content/70">{% blocktranslate %}Your email address is still pending verification.{% endblocktranslate %}</small>
+               class="form-input" />
+        <small class="text-gray-500">{% blocktranslate %}Your email address is still pending verification.{% endblocktranslate %}</small>
         <div class="flex gap-2 mt-2">
           <button form="pending-email"
                   type="submit"
                   name="action_send"
-                  class="btn btn-secondary btn-sm">{% trans 'Re-send Verification' %}</button>
+                  class="btn btn-outline btn-sm">{% trans 'Re-send Verification' %}</button>
           {% if current_emailaddress %}
             <button form="pending-email"
                     type="submit"
                     name="action_remove"
-                    class="btn btn-error btn-sm">{% trans 'Cancel Change' %}</button>
+                    class="btn btn-danger btn-sm">{% trans 'Cancel Change' %}</button>
           {% endif %}
         </div>
       </div>
