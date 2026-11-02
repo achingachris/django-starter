@@ -90,7 +90,6 @@ dev = [
     "django-watchfiles",
     "pre-commit",
     "ruff>=0.15.6",
-    "pegasus-cli>=0.15",
     "psycopg[binary]",
     "mypy>=1.18.2",
     "django-stubs>=5.0.0",

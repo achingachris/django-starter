@@ -99,11 +99,15 @@ make npm-build        # Build for production
 ```
 
 
-### Code generation
+### Creating a new app
 
 ```bash
-make uv run 'pegasus startapp <app_name> <Model1> <Model2Name>'  # Start a new Django app (models are optional)
+mkdir apps/<app_name>
+make manage ARGS='startapp <app_name> apps/<app_name>'
 ```
+
+Then set `name = "apps.<app_name>"` in the generated `apps.py`, add `"apps.<app_name>"` to `INSTALLED_APPS`,
+and extend `apps.utils.models.BaseModel` in its models.
 
 ## General Coding Preferences
 
