@@ -78,7 +78,7 @@ COPY --from=frontend --chown=django:django /code/static /code/static
 
 EXPOSE 8000
 
-# Default to gunicorn; compose overrides this for the web/celery services.
+# Default to gunicorn; compose overrides this for the web service.
 CMD ["gunicorn", "config.wsgi:application", \
      "--bind", "0.0.0.0:8000", \
      "--workers", "3", \

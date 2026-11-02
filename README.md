@@ -9,10 +9,10 @@
 
 This project runs in **two distinct modes**:
 
-| Mode | How it runs | Database | Cache / broker | Celery | Used for |
-|------|-------------|----------|----------------|--------|----------|
-| **Local** | Natively on your machine via [uv](https://docs.astral.sh/uv/) (+ `npm` for the CSS build) | SQLite (`db.sqlite3`) | DummyCache (no Redis needed) | Eager (synchronous) | Day-to-day development |
-| **Production** | Docker Compose (Postgres + Redis + web + Celery) | Postgres | Redis | Real worker + beat | Containerized / deployed stack |
+| Mode | How it runs | Database | Cache | Used for |
+|------|-------------|----------|-------|----------|
+| **Local** | Natively on your machine via [uv](https://docs.astral.sh/uv/) (+ `npm` for the CSS build) | SQLite (`db.sqlite3`) | DummyCache (no Redis needed) | Day-to-day development |
+| **Production** | Docker Compose (Postgres + Redis + web) | Postgres | Redis | Containerized / deployed stack |
 
 The split is driven by `DEBUG` and a few environment variables — see [Configuration](#configuration). You do
 **not** need Docker for everyday development.
@@ -30,7 +30,7 @@ The split is driven by `DEBUG` and a few environment variables — see [Configur
 - [Everyday commands](#everyday-commands)
 - [Database](#database)
 - [Front end](#front-end)
-- [Celery & background tasks](#celery--background-tasks)
+- [Background tasks](#background-tasks)
 - [Testing](#testing)
 - [Code quality & git hooks](#code-quality--git-hooks)
 - [Configuration](#configuration)
@@ -174,23 +174,18 @@ first stage.
 
 ---
 
-## Celery & background tasks
+## Background tasks
 
-Celery runs background and scheduled tasks. **Locally, tasks run eagerly (synchronously)** by default
-(`CELERY_TASK_ALWAYS_EAGER` defaults to `DEBUG`), so **no broker is required**.
+Background work uses Django's built-in tasks framework
+([`django.tasks`](https://docs.djangoproject.com/en/stable/topics/tasks/)). Define a task with the
+`@task` decorator and call `.enqueue()` on it. The configured backend is the **immediate** one, so
+tasks run synchronously in the calling process: no broker, no worker, nothing extra to run locally
+or in production.
 
-To exercise the real worker locally, run a Redis instance, set `REDIS_URL` in `.env`, then:
-
-```bash
-make celery
-# or directly:
-uv run celery -A config worker -l INFO --beat --pool=solo
-```
-
-> The `solo` pool is fine for development but **not** for production.
-
-In production (`DEBUG=False`) tasks dispatch to the Redis broker and are processed by the dedicated
-`celery` container (see [Production](#production)).
+When a real queue is needed, point `TASKS["default"]["BACKEND"]` in `config/settings/base.py` at a
+worker-backed backend (for example the `DatabaseBackend` from the `django-tasks` package) and add
+its worker as a Compose service. Django ships no scheduler; run periodic work as management
+commands from cron.
 
 ---
 
@@ -241,8 +236,7 @@ Configuration is read from environment variables (via `.env` locally). `make ini
 | `DEBUG` | `True` | Debug mode. **Must be `False` in production** (or use `config.settings.prod`). |
 | `ALLOWED_HOSTS` | `*` | Comma-separated allowed hosts. Restrict in production. |
 | `DATABASE_URL` | *(unset → SQLite)* | Postgres connection string in production. |
-| `REDIS_URL` | *(unset → `redis://localhost:6379/0`)* | Cache + Celery broker. Required in production. |
-| `CELERY_TASK_ALWAYS_EAGER` | `= DEBUG` | Run tasks synchronously when true. |
+| `REDIS_URL` | *(unset → `redis://localhost:6379/0`)* | Cache. Required in production. |
 | `DEV_SUPERUSER_EMAIL` / `DEV_SUPERUSER_PASSWORD` | `admin@example.com` / `admin` | Auto-created dev superuser (DEBUG only). |
 | `ENABLE_DEBUG_TOOLBAR` | `False`¹ | Django Debug Toolbar (disabled during tests). |
 | `LOGINOUT_SERVER` | *(unset)* | Restrict the toolbar's "Login / out" panel to one client IP (optional). |
@@ -283,8 +277,8 @@ and `RESEND_API_KEY` in `.env`.
 
 ## Production
 
-Docker Compose runs a production-ready stack — **Postgres, Redis, a gunicorn web server, and a
-Celery worker (with beat)**. The web and Celery services share one image built from `Dockerfile`
+Docker Compose runs a production-ready stack — **Postgres, Redis, and a gunicorn web server**.
+The web service runs from one image built from `Dockerfile`
 (a multi-stage build that compiles the CSS with the Tailwind CLI, then installs the production
 Python dependencies) and run with `DJANGO_SETTINGS_MODULE=config.settings.prod`.
 
@@ -327,9 +321,8 @@ TLS-terminating reverse proxy in front for HTTPS; the production settings honour
 | Service | Image / build | Role |
 |---------|---------------|------|
 | `db` | `postgres:17` | Postgres database (persisted in the `postgres_data` volume) |
-| `redis` | `redis:7` | Cache + Celery broker (persisted in `redis_data`) |
+| `redis` | `redis:7` | Cache (persisted in `redis_data`) |
 | `web` | `Dockerfile` | Django app under gunicorn on port `8000` (runs migrate + collectstatic on boot) |
-| `celery` | `Dockerfile` | Celery worker + beat |
 
 Uploaded media persists in the `media_files` volume. `MY_UID` / `MY_GID` (in the `Makefile`) set the
 container user/group so files created in mounted volumes belong to your host user rather than `root`.

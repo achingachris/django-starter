@@ -19,5 +19,5 @@ they differ.
 - **Session workflow** — `uv run` / make targets, run tests after changes, stage
   but never commit unasked.
 - **Email** — console backend in dev, Resend SMTP in prod, allauth templates.
-- **Deployment** — native local dev, Docker Compose (gunicorn + Celery + Postgres
+- **Deployment** — native local dev, Docker Compose (gunicorn + Postgres
   + Redis) for production.

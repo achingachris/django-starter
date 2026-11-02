@@ -14,8 +14,8 @@
 - APIs use Django Rest Framework with an OpenAPI schema from `drf-spectacular`.
 - The front end uses Tailwind (Version 4) with plain utility classes and no component library.
 - The main database is Postgres.
-- Celery is used for background jobs and scheduled tasks.
-- Redis is used as the default cache, and the message broker for Celery (if enabled).
+- Background jobs use Django's built-in tasks framework (`django.tasks`) with the immediate backend.
+- Redis is used as the default cache in production.
 
 ## Commands you can run
 

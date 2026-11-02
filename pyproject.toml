@@ -32,8 +32,6 @@ plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
 [[tool.mypy.overrides]]
 module = [
     "allauth.*",
-    "celery.*",
-    "django_celery_beat.*",
     "environ.*",
     "sentry_sdk.*",
 ]
@@ -75,9 +73,7 @@ requires-python = ">=3.14"
 dependencies = [
     "Django>=6.1",
     "argon2-cffi>=25.1.0",
-    "celery[redis]",
     "django-allauth[socialaccount]>=65.13.0",
-    "django-celery-beat",
     "django-environ",
     "django-htmx",
     "djangorestframework",
@@ -109,7 +105,3 @@ prod = [
     "whitenoise>=6.12.0",
 ]
 
-[tool.uv]
-# django-celery-beat 2.9.0 declares Django<6.1 although it runs on 6.1; lift that cap
-# so Django can be upgraded. Remove once a django-celery-beat release supports 6.1.
-override-dependencies = ["Django>=6.1"]

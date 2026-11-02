@@ -70,7 +70,7 @@ or awesome-django for a maintained package (a release within roughly two years,
 supporting the Django version in use). Dependencies are cheap; custom code compounds.
 
 **This project.** Add packages with `make uv add '<package>'`. The codebase already
-leans this way: django-allauth, django-htmx, django-celery-beat.
+leans this way: django-allauth, django-htmx, django-allauth's social providers.
 When the ecosystem is abandoned or every option is
 awkward, say so openly and explain the trade-off; rolling custom code silently is not
 allowed.
@@ -162,9 +162,9 @@ that drift.
 **Principle.** Everything host-specific stays in one seam, so moving hosts is a
 config change rather than a rewrite.
 
-**This project.** Local development runs natively (uv + SQLite + DummyCache + eager
-Celery — no services needed). Production is the Docker Compose stack: gunicorn web,
-Celery worker, Postgres, Redis, `config.settings.prod`, secrets from `.env.prod`,
+**This project.** Local development runs natively (uv + SQLite + DummyCache + Django's
+immediate task backend — no services needed). Production is the Docker Compose stack: gunicorn
+web, Postgres, Redis, `config.settings.prod`, secrets from `.env.prod`,
 static files served by whitenoise. The seam is `docker-compose.yml` + `.env.prod`.
 See `README.md` and `AGENTS.md → Local vs production` before touching the
 Dockerfile, compose file, or settings modules.

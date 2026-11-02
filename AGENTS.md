@@ -13,16 +13,17 @@
 - CSS is written in `assets/styles/site.css` and compiled by the Tailwind CLI into `static/css/site.css`.
 - APIs use Django Rest Framework with an OpenAPI schema from `drf-spectacular`.
 - The front end uses Tailwind (Version 4) with plain utility classes and no component library.
-- Celery is used for background jobs and scheduled tasks.
+- Background jobs use Django's built-in tasks framework (`django.tasks`) with the immediate backend;
+  there is no Celery, broker, or worker. Periodic work runs as management commands from cron.
 
 ### Local vs production
 
 The project runs in two modes, driven by `DEBUG` and a few env vars:
 
 - **Local development** runs **natively** (no Docker) via `uv` + `npm` and uses **SQLite**,
-  Django's `DummyCache`, and **eager (synchronous) Celery** — so no Postgres or Redis is required.
-- **Production** uses the Docker Compose stack with **Postgres** (database), **Redis** (cache +
-  Celery broker), and a dedicated Celery worker. Select `config.settings.prod` and set
+  Django's `DummyCache`, and the immediate task backend — so no Postgres or Redis is required.
+- **Production** uses the Docker Compose stack with **Postgres** (database) and **Redis** (cache).
+  Select `config.settings.prod` and set
   `DATABASE_URL` / `REDIS_URL` in the environment.
 
 Settings live in the `config/settings/` package: `base.py` (shared), `dev.py` (default, local
@@ -56,7 +57,7 @@ make start     # Terminal 1: Django dev server (http://localhost:8000)
 make npm-dev   # Terminal 2 (optional): rebuild static/css/site.css as templates change
 ```
 
-To run the production containerized stack instead (Postgres + Redis + gunicorn web + Celery),
+To run the production containerized stack instead (Postgres + Redis + gunicorn web),
 configure `.env.prod` first (`make setup-env-prod`), then:
 
 ```bash

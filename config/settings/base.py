@@ -14,7 +14,6 @@ https://docs.djangoproject.com/en/stable/ref/settings/
 import os
 import sys
 from pathlib import Path
-from typing import Any
 
 import environ
 from django.utils.translation import gettext_lazy
@@ -63,7 +62,6 @@ THIRD_PARTY_APPS = [
     "django_htmx",
     "rest_framework",
     "drf_spectacular",
-    "django_celery_beat",
 ]
 
 # Put your project-specific apps here
@@ -363,7 +361,7 @@ SPECTACULAR_SETTINGS = {
         "displayOperationId": True,
     },
 }
-# Redis, cache, and/or Celery setup
+# Redis and cache setup
 # `or` treats an empty REDIS_URL as unset so it falls back instead of yielding an empty URL
 REDIS_URL = env("REDIS_URL", default=None) or env("REDIS_TLS_URL", default=None)
 if not REDIS_URL:
@@ -382,39 +380,15 @@ CACHES = {
     "default": DUMMY_CACHE if DEBUG else REDIS_CACHE,
 }
 
-CELERY_BROKER_URL = CELERY_RESULT_BACKEND = REDIS_URL
-CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
-
-CELERY_TIMEZONE = TIME_ZONE
-CELERY_ACCEPT_CONTENT = ["json"]
-CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULT_SERIALIZER = "json"
-# Kill runaway tasks instead of letting them hold a worker forever: SoftTimeLimitExceeded is
-# raised at 4 minutes so a task can clean up, the hard limit kills it at 5. Tasks that
-# legitimately run longer should set their own limits via @shared_task(time_limit=...).
-CELERY_TASK_SOFT_TIME_LIMIT = 4 * 60
-CELERY_TASK_TIME_LIMIT = 5 * 60
-# Store task name/args on results, and retry storing results if the backend hiccups.
-CELERY_RESULT_EXTENDED = True
-CELERY_RESULT_BACKEND_ALWAYS_RETRY = True
-CELERY_RESULT_BACKEND_MAX_RETRIES = 10
-# Emit worker/task events so monitoring tools (e.g. Flower) can observe the queue.
-CELERY_WORKER_SEND_TASK_EVENTS = True
-CELERY_TASK_SEND_SENT_EVENT = True
-
-# Run tasks synchronously when there's no broker available (e.g. native local dev without Redis).
-# Defaults to eager in DEBUG so the app works out of the box; production (DEBUG=False) uses the broker.
-CELERY_TASK_ALWAYS_EAGER = env.bool("CELERY_TASK_ALWAYS_EAGER", default=DEBUG)
-CELERY_TASK_EAGER_PROPAGATES = True
-
-# Add tasks to this dict and run `python manage.py bootstrap_celery_tasks` to create them
-SCHEDULED_TASKS: dict[str, Any] = {
-    # Example of a crontab schedule
-    # from celery import schedules
-    # "daily-4am-task": {
-    #     "task": "some.task.path",
-    #     "schedule": schedules.crontab(minute=0, hour=4),
-    # },
+# Background tasks use Django's built-in tasks framework (django.tasks): define tasks with
+# `@django.tasks.task` and call `.enqueue()`. The immediate backend runs them synchronously in
+# the calling process, which needs no broker or worker. When real background work arrives,
+# swap in a worker-backed backend (e.g. django-tasks' DatabaseBackend) here. Django ships no
+# scheduler; run periodic work as management commands from cron.
+TASKS = {
+    "default": {
+        "BACKEND": "django.tasks.backends.immediate.ImmediateBackend",
+    },
 }
 
 
@@ -437,7 +411,6 @@ ADMINS = ["achinga.chris@gmail.com"]
 
 # Umami website ID used by the shared site analytics script.
 UMAMI_WEBSITE_ID = env("UMAMI_WEBSITE_ID", default="")
-
 
 
 LOGGING = {

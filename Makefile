@@ -48,9 +48,6 @@ migrate: ## Run DB migrations
 test: ## Run Django tests (uses config/settings/test.py)
 	@uv run python manage.py test --settings=config.settings.test ${ARGS}
 
-celery: ## Run a Celery worker with beat (requires a running Redis broker)
-	@uv run celery -A config worker -l INFO --beat --pool=solo
-
 # -----------------------------------------------------------------------------
 # Python tooling
 # -----------------------------------------------------------------------------
@@ -96,7 +93,7 @@ upgrade: requirements migrations migrate npm-install npm-build  ## Run after a P
 # -----------------------------------------------------------------------------
 # Production (Docker / docker compose)
 # -----------------------------------------------------------------------------
-# The stack (gunicorn web + Celery + Postgres + Redis) reads secrets from .env.prod
+# The stack (gunicorn web + Postgres + Redis) reads secrets from .env.prod
 # and runs with DJANGO_SETTINGS_MODULE=config.settings.prod.
 
 setup-env-prod: ## Create .env.prod from the template if it doesn't exist
