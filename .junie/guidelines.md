@@ -4,6 +4,8 @@
 
 - This is a Django project built on Python 3.14.
 - User authentication uses `django-allauth`.
+- APIs use Django Rest Framework with an OpenAPI schema from `drf-spectacular`.
+<!-- >>> web -->
 - The front end is mostly standard Django views and templates.
 - HTMX and Alpine.js are used to provide single-page-app user experience with Django templates.
   HTMX is used for interactions which require accessing the backend, and Alpine.js is used for
@@ -11,16 +13,31 @@
 - There is no JavaScript bundler. Site-wide JavaScript is a plain script at `static/javascript/site.js`;
   htmx, Alpine.js and Font Awesome are copied from `node_modules` into `static/vendor/` by `npm run build`.
 - CSS is written in `assets/styles/site.css` and compiled by the Tailwind CLI into `static/css/site.css`.
-- APIs use Django Rest Framework with an OpenAPI schema from `drf-spectacular`.
 - The front end uses Tailwind (Version 4) with plain utility classes and no component library.
-- The main database is Postgres.
-- Background jobs use Django's built-in tasks framework (`django.tasks`) with the immediate backend.
-- Redis is used as the default cache in production.
+<!-- <<< web -->
+- Background jobs use Django's built-in tasks framework (`django.tasks`) with the immediate backend;
+  there is no Celery, broker, or worker. Periodic work runs as management commands from cron.
+
+### Local vs production
+
+The project runs in two modes, driven by `DEBUG` and a few env vars:
+
+- **Local development** runs **natively** (no Docker) via `uv` + `npm` and uses **SQLite**,
+  Django's `DummyCache`, and the immediate task backend — so no Postgres or Redis is required.
+- **Production** uses the Docker Compose stack with **Postgres** (database) and **Redis** (cache).
+  Select `config.settings.prod` and set
+  `DATABASE_URL` / `REDIS_URL` in the environment.
+
+Settings live in the `config/settings/` package: `base.py` (shared), `dev.py` (default, local
+development), and `prod.py` (production). `DJANGO_SETTINGS_MODULE` defaults to `config.settings.dev`.
+
+See `README.md` for full setup details.
 
 ## Commands you can run
 
 The following commands can be used for various tools and workflows.
-A `Makefile` is provided to help centralize commands:
+A `Makefile` is provided to help centralize commands. Local-development targets run natively via
+`uv`; production targets are prefixed with `prod-` and use Docker.
 
 ```bash
 make  # List available commands
@@ -29,22 +46,33 @@ make  # List available commands
 ### First-time Setup
 
 ```bash
-make init
+make init  # copy .env, uv sync, npm install, create + migrate the SQLite DB
 ```
 
 ### Starting the Application
 
+Local development runs the Django dev server:
+
 ```bash
-make start     # Run in foreground with logs
-make start-bg  # Run in background
+make start     # Django dev server (http://localhost:8000)
 ```
 
-Access the app at http://localhost:8000
-
-### Stopping Services
+<!-- >>> web -->
+The CSS watcher is optional and only needed while editing templates or styles (`make init` builds the CSS once):
 
 ```bash
-make stop
+make npm-dev   # Second terminal: rebuild static/css/site.css as templates change
+```
+<!-- <<< web -->
+
+To run the production containerized stack instead (Postgres + Redis + gunicorn web),
+configure `.env.prod` first (`make setup-env-prod`), then:
+
+```bash
+make prod-build      # build the production image
+make prod-start      # foreground
+make prod-start-bg   # background
+make prod-stop       # stop the containers
 ```
 
 ## Common Commands
@@ -52,10 +80,10 @@ make stop
 ### Development
 
 ```bash
-make ssh              # SSH into web container
 make shell            # Open Python / Django shell
-make dbshell          # Open PostgreSQL shell
+make dbshell          # Open a database shell (SQLite locally)
 make manage ARGS='command'  # Run any Django management command
+make prod-ssh         # Shell into the running production web container (Docker)
 ```
 
 ### Database
@@ -84,10 +112,11 @@ make ruff             # Run both format and lint
 
 ```bash
 make uv add '<package>'         # Add a new package
-make requirements               # Rebuild and restart containers after updating packages
+make requirements               # Sync Python dependencies from the lockfile (uv sync --frozen)
 make uv run '<command> <args>'  # Run a Python command
 ```
 
+<!-- >>> web -->
 ### Frontend
 
 ```bash
@@ -95,10 +124,13 @@ make npm-install      # Install npm packages
 make npm-install package-name  # Install specific package
 make npm-uninstall package-name  # Uninstall package
 make npm-dev          # Rebuild the CSS whenever templates change (Tailwind CLI --watch)
-make npm-build        # Build for production
+make npm-build        # Build the minified CSS and copy vendored JS/fonts into static/
 ```
 
+Note: new Tailwind classes only show up after a rebuild, so run `make npm-dev` in a second
+terminal while editing templates. The last built CSS keeps serving when the watcher is off.
 
+<!-- <<< web -->
 ### Creating a new app
 
 ```bash
@@ -154,6 +186,15 @@ and extend `apps.utils.models.BaseModel` in its models.
 - All Django models should extend `apps.utils.models.BaseModel` (which adds `created_at` and `updated_at` fields).
 - The project's user model is `apps.users.models.CustomUser` and should be imported directly.
 
+## API
+
+- Authentication (signup, login, email verification, password reset) is `allauth.headless`, served under `/_allauth/`
+  (OpenAPI docs at `/_allauth/openapi.html` in DEBUG). App clients send the `X-Session-Token` it issues;
+  DRF accepts it via `XSessionTokenAuthentication`.
+- Project endpoints live under `/api/`, e.g. `GET /api/users/me/` in `apps/users/api.py`; their schema is at
+  `/api/schema/swagger-ui/`.
+
+<!-- >>> web -->
 ## Django Template Coding Guidelines for HTML files
 
 - Indent templates with two spaces.
@@ -191,3 +232,4 @@ and extend `apps.utils.models.BaseModel` in its models.
 ### Build System
 
 - There is no JavaScript build. `npm run build` compiles the Tailwind CSS and copies vendored libraries into `static/`.
+<!-- <<< web -->
