@@ -13,8 +13,7 @@ alwaysApply: false
 - End statements with semicolons.
 - Use camelCase for variable and function names.
 - Use PascalCase for component names (React).
-- Use explicit type annotations in TypeScript files.
-- Use ES6 import/export syntax for module management.
+- There is no bundler: scripts are plain browser JavaScript wrapped in an IIFE, not ES modules.
 
 ### Preferred Practices
 - When using HTMX, follow progressive enhancement patterns.
@@ -25,4 +24,4 @@ alwaysApply: false
 
 ### Build System
 
-- Code is bundled using vite and served with `django-vite`.
+- There is no JavaScript build. `npm run build` compiles the Tailwind CSS and copies vendored libraries into `static/`.
