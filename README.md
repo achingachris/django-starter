@@ -435,7 +435,7 @@ confident HTTPS works, and scaling `GUNICORN_WORKERS` in `.env.prod` to `(2 × C
 ## Credits
 
 This template was originally derived from [SaaS Pegasus][saas-pegasus], the Django SaaS
-boilerplate, and has since been reworked (no Celery, no Vite or DaisyUI, an API-only variant). It is
+boilerplate, and has since been reworked (no Celery or Vite, an API-only variant). It is
 released under the MIT license; see `LICENSE`.
 
 <!-- References -->
