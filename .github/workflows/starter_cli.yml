@@ -49,8 +49,8 @@ jobs:
       - name: Generate the ${{ matrix.variant }} project
         run: |
           # --dir is the parent directory: the project is created at $RUNNER_TEMP/demo, i.e. $DEMO_DIR.
-          uvx --from ./cli django-starter-cdc new demo --source . --dir "$RUNNER_TEMP" --no-git --no-install \
-            ${{ matrix.variant == 'api' && '--api' || '' }}
+          uvx --from ./cli django-starter-cdc demo --source . --dir "$RUNNER_TEMP" --no-git --no-install \
+            --${{ matrix.variant }}
       # Runs before any install so .venv and node_modules are not scanned.
       - name: Check for leftover personal names and variant markers
         working-directory: ${{ env.DEMO_DIR }}

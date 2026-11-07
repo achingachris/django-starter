@@ -28,9 +28,12 @@ Generate a fresh project from this template with the
 (needs [uv][]):
 
 ```bash
-uvx django-starter-cdc new myproject          # full setup: templates, HTMX, Alpine.js, Tailwind
-uvx django-starter-cdc new myproject --api    # API only: DRF + allauth headless, no templates or npm
+uvx django-starter-cdc
 ```
+
+It asks for the project name and the project type: full (templates, HTMX, Alpine.js, Tailwind) or
+API only (DRF + allauth headless with OpenAPI docs, no templates or npm). To skip the questions, pass
+them: `uvx django-starter-cdc myproject --api` (or `--full`).
 
 | | Full (default) | API only (`--api`) |
 |---|---|---|
@@ -42,7 +45,7 @@ uvx django-starter-cdc new myproject --api    # API only: DRF + allauth headless
 | SQLite locally, Docker Compose (Postgres + Redis) in production | ✅ | ✅ |
 
 Prefer pip? Install it into a Python 3.14 virtual environment with `python -m pip install django-starter-cdc`
-and run `django-starter-cdc new myproject`. The generated project still uses uv.
+and run `django-starter-cdc`. The generated project still uses uv.
 
 The project is renamed, gets a fresh `SECRET_KEY` in `.env` and a new git repository, and `make init` runs
 for you. See [`cli/README.md`][cli-readme-md] for all options and install methods. You can also clone this repository
