@@ -214,10 +214,10 @@ class TreeTests(unittest.TestCase):
         self.assertIn(".env.example", copied)
 
     def test_new_project_inside_the_source_checkout(self):
-        # `new sample --source .` with the default `--dir .`: the staging directory and the target both
+        # `sample --source .` with the default `--dir .`: the staging directory and the target both
         # live inside the checkout being copied, and must not be copied into the project.
         with contextlib.redirect_stdout(io.StringIO()):
-            args = ["new", "sample", "--source", str(self.root), "--dir", str(self.root), "--no-git", "--no-install"]
+            args = ["sample", "--full", "--source", str(self.root), "--dir", str(self.root), "--no-git", "--no-install"]
             code = main(args)
         self.assertEqual(code, 0)
         project = self.root / "sample"

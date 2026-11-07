@@ -15,7 +15,7 @@ the generator.
 install or upgrade, and uv fetches Python 3.14 for you if needed:
 
 ```bash
-uvx django-starter-cdc new myproject
+uvx django-starter-cdc
 ```
 
 **With pip and a virtual environment.** Following the
@@ -41,12 +41,27 @@ pipx install --python python3.14 django-starter-cdc
 
 ## Usage
 
-```bash
-django-starter-cdc new myproject          # full variant
-django-starter-cdc new myproject --api    # API-only variant
+Run the one command and answer two questions:
+
+```console
+$ django-starter-cdc
+Project name: myproject
+Project type:
+  1) Full: Django templates, HTMX, Alpine.js and Tailwind, plus the API
+  2) API only: DRF + allauth headless with OpenAPI docs, no templates or npm
+Choose 1 or 2 [1]:
 ```
 
-(With uv, prefix these with `uvx`.)
+(With uv, run `uvx django-starter-cdc`.) To skip the questions, for example in a script, pass the
+answers instead:
+
+```bash
+django-starter-cdc myproject --full   # full variant
+django-starter-cdc myproject --api    # API-only variant
+```
+
+Without a terminal there is no one to answer, so the name is required and the type defaults to full.
+Version 0.1.0 used a `new` subcommand (`django-starter-cdc new myproject`); that form still works.
 
 This downloads the django-starter release that matches the generator's version, renders the
 chosen variant into `./myproject`, writes a `.env` with a fresh `SECRET_KEY`, runs `git init`
@@ -62,14 +77,15 @@ and open <http://localhost:8000/admin/> and <http://localhost:8000/api/schema/sw
 ### Options
 
 ```
-django-starter-cdc new <name> [--api] [--email EMAIL] [--ref REF | --source PATH]
-                              [--no-install] [--no-git] [--dir PATH]
+django-starter-cdc [<name>] [--api | --full] [--email EMAIL] [--ref REF | --source PATH]
+                   [--no-install] [--no-git] [--dir PATH]
 ```
 
 | Option | What it does |
 | --- | --- |
-| `<name>` | Project name: a lowercase slug of letters, digits, `-` and `_` that starts with a letter. Used for the directory, the Python/npm package name and the `<NAME>_` env-var prefix. |
-| `--api` | Generate the API-only variant (see below). |
+| `<name>` | Project name: a lowercase slug of letters, digits, `-` and `_` that starts with a letter. Used for the directory, the Python/npm package name and the `<NAME>_` env-var prefix. Asked for if you leave it out. |
+| `--api` | Generate the API-only variant (see below) without asking. |
+| `--full` | Generate the full variant without asking. |
 | `--email EMAIL` | Address used for `ADMINS`, `DEFAULT_FROM_EMAIL` and the API contact (default `admin@example.com`). |
 | `--ref REF` | Download a branch, tag or commit instead of the matching release, e.g. `--ref main`. |
 | `--source PATH` | Copy a local django-starter checkout instead of downloading. `.git`, `node_modules`, `.venv`, `.env`, `db.sqlite3` and build output are left out. |
