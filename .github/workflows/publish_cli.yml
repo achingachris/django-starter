@@ -19,10 +19,10 @@ jobs:
       # The CLI downloads the release tarball of the tag matching its own version, so they must agree.
       - name: Check the tag matches the CLI version
         run: |
-          version=$(python -c "import tomllib; print(tomllib.load(open('cli/pyproject.toml', 'rb'))['project']['version'])")
+          version=$(sed -n 's/^__version__ = "\(.*\)"$/\1/p' cli/src/django_starter_cdc/__init__.py)
           tag="${GITHUB_REF_NAME#v}"
           if [ "$tag" != "$version" ]; then
-            echo "::error::Tag $GITHUB_REF_NAME does not match version $version in cli/pyproject.toml."
+            echo "::error::Tag $GITHUB_REF_NAME does not match __version__ $version in cli/src/django_starter_cdc/__init__.py."
             exit 1
           fi
       - name: Build the package

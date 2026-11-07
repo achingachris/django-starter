@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "django-starter-cdc"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Generate a new Django 6.1 project from django-starter: full-stack (HTMX, Alpine.js, Tailwind) or API-only."
 readme = "README.md"
 requires-python = ">=3.14"
@@ -32,6 +32,10 @@ django-starter-cdc = "django_starter_cdc.cli:main"
 Homepage = "https://github.com/achingachris/django-starter"
 Source = "https://github.com/achingachris/django-starter"
 Issues = "https://github.com/achingachris/django-starter/issues"
+
+# The version is read from __version__, which the CLI also uses to pick the release tarball to download.
+[tool.hatch.version]
+path = "src/django_starter_cdc/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/django_starter_cdc"]
