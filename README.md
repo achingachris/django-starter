@@ -41,8 +41,11 @@ uvx django-starter-cdc new myproject --api    # API only: DRF + allauth headless
 | DRF + OpenAPI schema, `/api/users/me/` | ✅ | ✅ |
 | SQLite locally, Docker Compose (Postgres + Redis) in production | ✅ | ✅ |
 
+Prefer pip? Install it into a Python 3.14 virtual environment with `python -m pip install django-starter-cdc`
+and run `django-starter-cdc new myproject`. The generated project still uses uv.
+
 The project is renamed, gets a fresh `SECRET_KEY` in `.env` and a new git repository, and `make init` runs
-for you. See [`cli/README.md`][cli-readme-md] for all options. You can also clone this repository
+for you. See [`cli/README.md`][cli-readme-md] for all options and install methods. You can also clone this repository
 directly; it is the full variant.
 
 ---
@@ -435,7 +438,7 @@ confident HTTPS works, and scaling `GUNICORN_WORKERS` in `.env.prod` to `(2 × C
 ## Credits
 
 This template was originally derived from [SaaS Pegasus][saas-pegasus], the Django SaaS
-boilerplate, and has since been reworked (no Celery, no Vite or DaisyUI, an API-only variant). It is
+boilerplate, and has since been reworked (no Celery or Vite, an API-only variant). It is
 released under the MIT license; see `LICENSE`.
 
 <!-- References -->

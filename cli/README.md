@@ -4,15 +4,49 @@ Generate a new Django 6.1 project from [django-starter](https://github.com/achin
 either a full-stack app (Django templates, HTMX, Alpine.js, Tailwind) or an API-only backend
 (Django REST Framework + allauth headless).
 
-The generator has no dependencies of its own. It needs Python 3.14, and the generated project uses
-[uv](https://docs.astral.sh/uv/) (plus npm for the full variant).
+The generator has no dependencies of its own. It needs **Python 3.14 or newer**: on an older Python,
+pip stops with "requires a different Python". The projects it creates are managed with
+[uv](https://docs.astral.sh/uv/) (plus npm for the full variant), so install uv however you install
+the generator.
+
+## Install
+
+**With uv (recommended).** `uvx` runs the generator in a throwaway environment, so there is nothing to
+install or upgrade, and uv fetches Python 3.14 for you if needed:
+
+```bash
+uvx django-starter-cdc new myproject
+```
+
+**With pip and a virtual environment.** Following the
+[Python Packaging User Guide](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/),
+create and activate a virtual environment with Python 3.14, then install the package into it:
+
+```bash
+python3.14 -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+python -m pip install --upgrade pip
+python -m pip install django-starter-cdc
+django-starter-cdc --version
+```
+
+Run `deactivate` when you're done. `python -m django_starter_cdc` works too, in place of the
+`django-starter-cdc` command. To upgrade later, run `python -m pip install --upgrade django-starter-cdc`.
+
+**With pipx**, to keep the command available everywhere without managing a virtual environment yourself:
+
+```bash
+pipx install --python python3.14 django-starter-cdc
+```
 
 ## Usage
 
 ```bash
-uvx django-starter-cdc new myproject          # full variant
-uvx django-starter-cdc new myproject --api    # API-only variant
+django-starter-cdc new myproject          # full variant
+django-starter-cdc new myproject --api    # API-only variant
 ```
+
+(With uv, prefix these with `uvx`.)
 
 This downloads the django-starter release that matches the generator's version, renders the
 chosen variant into `./myproject`, writes a `.env` with a fresh `SECRET_KEY`, runs `git init`

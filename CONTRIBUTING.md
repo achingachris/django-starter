@@ -157,8 +157,8 @@ and only ever *removes* code. Mark anything that belongs to the server-rendered 
 
 CI (`.github/workflows/starter_cli.yml`) generates both variants and runs their checks and tests.
 
-To release: bump `version` in `cli/pyproject.toml` and `__version__` in
-`cli/src/django_starter_cdc/__init__.py`, merge, then tag and push. The CLI downloads the tarball
+To release: bump `__version__` in `cli/src/django_starter_cdc/__init__.py` (the package version is
+read from it), merge, then tag and push. The CLI downloads the tarball
 of the tag matching its own version, and `publish_cli.yml` publishes the tag to PyPI.
 
 ```bash

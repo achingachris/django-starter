@@ -7,15 +7,39 @@ alwaysApply: true
 
 - This is a Django project built on Python 3.14.
 - User authentication uses `django-allauth`.
+- APIs use Django Rest Framework with an OpenAPI schema from `drf-spectacular`.
+<!-- >>> web -->
 - The front end is mostly standard Django views and templates.
 - HTMX and Alpine.js are used to provide single-page-app user experience with Django templates.
   HTMX is used for interactions which require accessing the backend, and Alpine.js is used for
   browser-only interactions.
-- JavaScript files are kept in the `/assets/` folder and built by vite.
-  JavaScript code is typically loaded via the static files framework inside Django templates using `django-vite`.
-- APIs use Django Rest Framework, and JavaScript code that interacts with APIs uses an
-  auto-generated OpenAPI-schema-baesd client.
-- The front end uses Tailwind (Version 4) and DaisyUI.
-- The main database is Postgres.
-- Celery is used for background jobs and scheduled tasks.
-- Redis is used as the default cache, and the message broker for Celery (if enabled).
+- There is no JavaScript bundler. Site-wide JavaScript is a plain script at `static/javascript/site.js`;
+  htmx, Alpine.js and Font Awesome are copied from `node_modules` into `static/vendor/` by `npm run build`.
+- CSS is written in `assets/styles/site.css` and compiled by the Tailwind CLI into `static/css/site.css`.
+- The front end uses Tailwind (Version 4) with plain utility classes and no component library.
+<!-- <<< web -->
+- Background jobs use Django's built-in tasks framework (`django.tasks`) with the immediate backend;
+  there is no Celery, broker, or worker. Periodic work runs as management commands from cron.
+
+### Local vs production
+
+The project runs in two modes, driven by `DEBUG` and a few env vars:
+
+- **Local development** runs **natively** (no Docker) via `uv` + `npm` and uses **SQLite**,
+  Django's `DummyCache`, and the immediate task backend — so no Postgres or Redis is required.
+- **Production** uses the Docker Compose stack with **Postgres** (database) and **Redis** (cache).
+  Select `config.settings.prod` and set
+  `DATABASE_URL` / `REDIS_URL` in the environment.
+
+Settings live in the `config/settings/` package: `base.py` (shared), `dev.py` (default, local
+development), and `prod.py` (production). `DJANGO_SETTINGS_MODULE` defaults to `config.settings.dev`.
+
+See `README.md` for full setup details.
+
+## API
+
+- Authentication (signup, login, email verification, password reset) is `allauth.headless`, served under `/_allauth/`
+  (OpenAPI docs at `/_allauth/openapi.html` in DEBUG). App clients send the `X-Session-Token` it issues;
+  DRF accepts it via `XSessionTokenAuthentication`.
+- Project endpoints live under `/api/`, e.g. `GET /api/users/me/` in `apps/users/api.py`; their schema is at
+  `/api/schema/swagger-ui/`.

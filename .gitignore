@@ -18,6 +18,7 @@ node_modules/
 media/
 docs/_build
 _dist/
+cli/dist/
 .env
 .env.prod
 .env.production
