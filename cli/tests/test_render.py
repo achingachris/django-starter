@@ -199,6 +199,22 @@ class TreeTests(unittest.TestCase):
         (self.root / ".env.example").unlink()
         self.assertFalse(write_env(self.root))
 
+    def test_write_env_email_verification_choice(self):
+        (self.root / ".env.example").write_text('SECRET_KEY="x"\nACCOUNT_EMAIL_VERIFICATION_ENABLED=True\n')
+        (self.root / ".env.prod.example").write_text("DEBUG=False\nACCOUNT_EMAIL_VERIFICATION_ENABLED=True\n")
+        for choice in (True, False):
+            with self.subTest(choice=choice):
+                self.assertTrue(write_env(self.root, email_verification=choice))
+                for name in (".env", ".env.prod.example"):
+                    text = (self.root / name).read_text()
+                    self.assertEqual(text.count("ACCOUNT_EMAIL_VERIFICATION_ENABLED="), 1)
+                    self.assertIn(f"ACCOUNT_EMAIL_VERIFICATION_ENABLED={choice}\n", text)
+
+    def test_write_env_defaults_to_verification_on_and_appends_the_line(self):
+        write_env(self.root)
+        self.assertTrue((self.root / ".env").read_text().endswith("ACCOUNT_EMAIL_VERIFICATION_ENABLED=True\n"))
+        self.assertFalse((self.root / ".env.prod.example").exists())
+
     def test_copy_local_skips_build_output_and_secrets(self):
         for rel in (".env", "db.sqlite3", "node_modules/x.js", "static/css/site.css", "apps/__pycache__/a.pyc"):
             path = self.root / rel
@@ -224,6 +240,26 @@ class TreeTests(unittest.TestCase):
         self.assertTrue((project / "manage.py").is_file())
         self.assertEqual([p.name for p in project.iterdir() if p.name == "sample" or p.name.startswith(".sample-")], [])
         self.assertEqual([p.name for p in self.root.iterdir() if p.name.startswith(".sample-")], [])
+
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+@unittest.skipUnless((REPO_ROOT / "templates/web/base.html").is_file(), "needs the django-starter checkout")
+class AnalyticsTemplateTests(unittest.TestCase):
+    def test_rendered_base_template_has_no_slug_derived_analytics_host(self):
+        """The CLI rename used to turn the hardcoded analytics.chrisdevcode.com into analytics.<slug>.com."""
+        text = (REPO_ROOT / "templates/web/base.html").read_text()
+        rendered = rename(process_text(text, api=False), "shop")
+        self.assertNotIn("analytics.shop.com", rendered)
+        self.assertNotIn("chrisdevcode", text)
+
+    def test_env_templates_leave_analytics_off(self):
+        for name in (".env.example", ".env.prod.example"):
+            with self.subTest(name=name):
+                text = (REPO_ROOT / name).read_text()
+                self.assertIn('UMAMI_WEBSITE_ID=""', text)
+                self.assertIn('UMAMI_SCRIPT_URL=""', text)
 
 
 class CLITests(unittest.TestCase):

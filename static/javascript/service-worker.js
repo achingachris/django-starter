@@ -2,7 +2,8 @@
 // PWA feature #1: caches key assets so the app still loads (with an offline
 // fallback page) when the network is unavailable.
 
-const CACHE_NAME = "chrisdevcode-cache-v1";
+// Bump the version to drop every cache an older worker created (see the activate handler).
+const CACHE_NAME = "chrisdevcode-cache-v2";
 const OFFLINE_URL = "/offline/";
 
 const PRECACHE_URLS = [OFFLINE_URL];
@@ -22,6 +23,9 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+// Only this site's own static files are cached; they are public and the same for every user.
+const isStaticAsset = (url) => url.origin === self.location.origin && url.pathname.startsWith("/static/");
+
 self.addEventListener("fetch", (event) => {
   const { request } = event;
 
@@ -38,17 +42,33 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Cache-first for static assets (CSS/JS/images) so the app shell loads instantly and offline.
-  if (request.url.includes("/static/")) {
+  // Stale-while-revalidate for static assets: answer from the cache when possible, and refresh the
+  // cached copy in the background so a deploy (e.g. a security fix to site.js) reaches returning
+  // browsers on their next visit. Only successful responses are stored.
+  if (isStaticAsset(new URL(request.url))) {
     event.respondWith(
-      caches.match(request).then((cached) => {
-        if (cached) return cached;
-        return fetch(request).then((response) => {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, responseClone));
-          return response;
-        }).catch(() => cached);
-      })
+      caches.open(CACHE_NAME).then((cache) =>
+        cache.match(request).then((cached) => {
+          // Chain the cache write into this promise so event.waitUntil() keeps the worker alive until the
+          // refreshed copy is stored. A failed write still hands back the network response.
+          const network = fetch(request)
+            .then((response) => {
+              if (!response.ok) {
+                return response;
+              }
+              return cache
+                .put(request, response.clone())
+                .catch(() => {})
+                .then(() => response);
+            })
+            .catch(() => cached);
+          if (cached) {
+            event.waitUntil(network);
+            return cached;
+          }
+          return network;
+        })
+      )
     );
   }
 });

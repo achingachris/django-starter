@@ -1,3 +1,4 @@
+from allauth.account.models import EmailAddress
 from django.test import TestCase
 from django.urls import reverse
 
@@ -10,7 +11,11 @@ class HeadlessAuthApiTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_app_login_issues_session_token_accepted_by_drf(self):
-        CustomUser.objects.create_user(username="api@example.com", email="api@example.com", password="s3cret-pass")
+        user = CustomUser.objects.create_user(
+            username="api@example.com", email="api@example.com", password="s3cret-pass"
+        )
+        # Email verification is mandatory by default, so the address must be confirmed to sign in.
+        EmailAddress.objects.create(user=user, email="api@example.com", verified=True, primary=True)
         response = self.client.post(
             "/_allauth/app/v1/auth/login",
             {"email": "api@example.com", "password": "s3cret-pass"},

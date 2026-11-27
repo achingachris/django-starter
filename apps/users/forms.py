@@ -1,47 +1,12 @@
-import logging
-
-import requests
 from allauth.account.forms import SignupForm
 from django import forms
-from django.conf import settings
 from django.contrib.auth.forms import UserChangeForm
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from .helpers import validate_profile_picture
+from .helpers import email_in_use_by_another_user, validate_profile_picture
 from .models import CustomUser
-
-
-class TurnstileSignupForm(SignupForm):
-    """
-    Sign up form that includes a turnstile captcha.
-    """
-
-    turnstile_token = forms.CharField(widget=forms.HiddenInput(), required=False)
-
-    def clean_turnstile_token(self):
-        if not settings.TURNSTILE_SECRET:
-            logging.info("No turnstile secret found, not checking captcha")
-            return
-
-        turnstile_token = self.cleaned_data.get("turnstile_token", None)
-        if not turnstile_token:
-            raise forms.ValidationError("Missing captcha. Please try again.")
-
-        turnstile_url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
-        payload = {
-            "secret": settings.TURNSTILE_SECRET,
-            "response": turnstile_token,
-        }
-        try:
-            response = requests.post(turnstile_url, data=payload, timeout=10).json()
-            if not response["success"]:
-                raise forms.ValidationError("Invalid captcha. Please try again.")
-        except requests.Timeout:
-            raise forms.ValidationError("Captcha verification timed out. Please try again.") from None
-
-        return turnstile_token
 
 
 class CustomUserChangeForm(UserChangeForm):
@@ -51,13 +16,20 @@ class CustomUserChangeForm(UserChangeForm):
         model = CustomUser
         fields = ("email", "first_name", "last_name")
 
+    def clean_email(self):
+        """Reject an address that already belongs to another account (ACCOUNT_UNIQUE_EMAIL)."""
+        email = self.cleaned_data["email"]
+        if email_in_use_by_another_user(email, self.instance):
+            raise forms.ValidationError(_("This email address is already in use."))
+        return email
+
 
 class UploadAvatarForm(forms.Form):
     avatar = forms.FileField(validators=[validate_profile_picture])
 
 
-class TermsSignupForm(TurnstileSignupForm):
-    """Custom signup form to add a checkbox for accepting the terms."""
+class TermsSignupForm(SignupForm):
+    """Signup form that adds a checkbox for accepting the terms."""
 
     terms_agreement = forms.BooleanField(required=True)
 

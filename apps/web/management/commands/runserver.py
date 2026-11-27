@@ -1,5 +1,6 @@
 import os
 
+from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.staticfiles.management.commands.runserver import Command as StaticfilesRunserverCommand
@@ -47,7 +48,9 @@ class Command(StaticfilesRunserverCommand):
             create_kwargs = {"email": email, "password": password}
             if username_field != "email":
                 create_kwargs[username_field] = email
-            user_model.objects.create_superuser(**create_kwargs)
+            user = user_model.objects.create_superuser(**create_kwargs)
+            # Mark the address verified so the account can sign in when email verification is on.
+            EmailAddress.objects.create(user=user, email=email, verified=True, primary=True)
         except OperationalError, ProgrammingError:
             # Database isn't migrated yet — skip quietly; `make migrate` will set it up.
             self.stdout.write(

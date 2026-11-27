@@ -171,22 +171,40 @@ def render_tree(root: Path, api: bool, slug: str, email: str = DEFAULT_EMAIL) ->
                 path.write_text(new, encoding="utf-8", newline="")
 
 
-def write_env(root: Path) -> bool:
-    """Create .env from .env.example with a fresh SECRET_KEY. Returns False if there is no .env.example."""
+def set_env_line(text: str, key: str, line: str) -> str:
+    """Replace the first ``KEY=...`` line in env-file text with ``line``, or append it if there is none."""
+    text, count = re.subn(rf"^{re.escape(key)}=[^\r\n]*", lambda _: line, text, count=1, flags=re.MULTILINE)
+    if not count:
+        text = text.rstrip("\n") + f"\n{line}\n"
+    return text
+
+
+def write_env(root: Path, email_verification: bool = True) -> bool:
+    """Create .env from .env.example with a fresh SECRET_KEY and the email-verification choice.
+
+    The choice is also written into .env.prod.example, so `make setup-env-prod` inherits it.
+    Returns False if there is no .env.example.
+    """
     example = root / ".env.example"
     if not example.is_file():
         return False
+    verification_line = f"ACCOUNT_EMAIL_VERIFICATION_ENABLED={email_verification}"
     text = example.read_bytes().decode("utf-8")
-    secret_line = f'SECRET_KEY="{secrets.token_urlsafe(50)}"'
-    text, count = re.subn(r"^SECRET_KEY=[^\r\n]*", lambda _: secret_line, text, count=1, flags=re.MULTILINE)
-    if not count:
-        text = text.rstrip("\n") + f"\n{secret_line}\n"
+    text = set_env_line(text, "SECRET_KEY", f'SECRET_KEY="{secrets.token_urlsafe(50)}"')
+    text = set_env_line(text, "ACCOUNT_EMAIL_VERIFICATION_ENABLED", verification_line)
     (root / ".env").write_text(text, encoding="utf-8", newline="")
+    prod_example = root / ".env.prod.example"
+    if prod_example.is_file():
+        prod_text = prod_example.read_bytes().decode("utf-8")
+        prod_text = set_env_line(prod_text, "ACCOUNT_EMAIL_VERIFICATION_ENABLED", verification_line)
+        prod_example.write_text(prod_text, encoding="utf-8", newline="")
     return True
 
 
-def render_project(root: Path, *, api: bool, slug: str, email: str = DEFAULT_EMAIL) -> None:
+def render_project(
+    root: Path, *, api: bool, slug: str, email: str = DEFAULT_EMAIL, email_verification: bool = True
+) -> None:
     """Turn a copied source tree into the chosen variant of a new project, in place."""
     prune(root, api)
     render_tree(root, api, slug, email)
-    write_env(root)
+    write_env(root, email_verification)

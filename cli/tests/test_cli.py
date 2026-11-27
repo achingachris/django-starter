@@ -3,7 +3,7 @@ import io
 import unittest
 from unittest import mock
 
-from django_starter_cdc.cli import CLIError, main, prompt_api, prompt_name
+from django_starter_cdc.cli import CLIError, main, prompt_api, prompt_email_verification, prompt_name
 
 
 def answer(prompt, answers):
@@ -54,6 +54,18 @@ class PromptAPITests(unittest.TestCase):
         self.assertIn("Please enter 1 or 2", errors)
 
 
+class PromptEmailVerificationTests(unittest.TestCase):
+    def test_choices(self):
+        for typed, expected in (("", True), ("y", True), ("YES", True), ("n", False), ("No", False)):
+            with self.subTest(typed=typed):
+                self.assertEqual(answer(prompt_email_verification, [typed]), (expected, 1, ""))
+
+    def test_asks_again_until_the_answer_is_valid(self):
+        required, asked, errors = answer(prompt_email_verification, ["maybe", "n"])
+        self.assertEqual((required, asked), (False, 2))
+        self.assertIn("Please answer y or n", errors)
+
+
 class ArgumentTests(unittest.TestCase):
     def parse(self, argv):
         with mock.patch("django_starter_cdc.cli.create_project", return_value=0) as create:
@@ -64,6 +76,10 @@ class ArgumentTests(unittest.TestCase):
         self.assertIsNone(self.parse(["shop"]).api)
         self.assertTrue(self.parse(["shop", "--api"]).api)
         self.assertFalse(self.parse(["shop", "--full"]).api)
+
+    def test_email_verification_flag(self):
+        self.assertIsNone(self.parse(["shop"]).email_verification)
+        self.assertFalse(self.parse(["shop", "--no-email-verification"]).email_verification)
 
     def test_accepts_the_old_new_subcommand(self):
         args = self.parse(["new", "shop", "--api"])

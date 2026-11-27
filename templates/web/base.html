@@ -48,10 +48,8 @@
     <link rel="stylesheet"
           href="{% static 'vendor/fontawesome/css/v4-shims.min.css' %}" />
     <link rel="stylesheet" href="{% static 'css/site.css' %}" />
-    {% if umami_website_id %}
-      <script defer
-              src="https://analytics.chrisdevcode.com/script.js"
-              data-website-id="{{ umami_website_id }}"></script>
+    {% if umami_website_id and umami_script_url %}
+      <script defer src="{{ umami_script_url }}" data-website-id="{{ umami_website_id }}"></script>
     {% endif %}
     <script defer src="{% static 'vendor/htmx.min.js' %}"></script>
     <script defer src="{% static 'vendor/alpine.min.js' %}"></script>

@@ -4,13 +4,6 @@
 {% load static %}
 {% load form_tags %}
 
-{% block page_head %}
-  {% if turnstile_key %}
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-            async
-            defer></script>
-  {% endif %}
-{% endblock %}
 {% block body %}
   <div class="flex justify-center my-8">
     <div class="w-96 max-w-full rounded-lg border border-gray-200 bg-white p-8">
@@ -26,12 +19,6 @@
           {% endif %}
           {% render_field form.terms_agreement %}
           <div class="relative overflow-hidden">{% render_field form.phone_number_x %}</div>
-          {% if turnstile_key %}
-            <div class="cf-turnstile"
-                 data-sitekey="{{ turnstile_key }}"
-                 data-response-field-name="turnstile_token"></div>
-            {{ form.turnstile_token.errors }}
-          {% endif %}
           <input class="btn btn-primary w-full"
                  type="submit"
                  value="{% translate "Sign Up" %}" />

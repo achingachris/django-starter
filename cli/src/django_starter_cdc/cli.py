@@ -29,7 +29,8 @@ def build_parser() -> argparse.ArgumentParser:
         prog="django-starter-cdc",
         description="Generate a new Django 6.1 project from django-starter. Run it with no arguments to be asked "
         "for the project name and type: full (templates, HTMX, Alpine.js and Tailwind) or API-only "
-        "(DRF + allauth headless with OpenAPI docs, no templates or npm).",
+        "(DRF + allauth headless with OpenAPI docs, no templates or npm), and whether users must confirm "
+        "their email address.",
     )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     parser.add_argument(
@@ -53,6 +54,14 @@ def build_parser() -> argparse.ArgumentParser:
         help=f"git ref (branch, tag or commit) to download instead of the v{__version__} release, e.g. main",
     )
     source.add_argument("--source", type=Path, metavar="PATH", help="copy a local django-starter checkout instead")
+    parser.add_argument(
+        "--no-email-verification",
+        dest="email_verification",
+        action="store_const",
+        const=False,
+        help="let users sign in without confirming their email address (also turns off sign-in by code); "
+        "asked for if omitted",
+    )
     parser.add_argument("--no-install", action="store_true", help="skip `make init` (dependencies and migrations)")
     parser.add_argument("--no-git", action="store_true", help="skip `git init`")
     parser.add_argument(
@@ -93,6 +102,17 @@ def prompt_api() -> bool:
         if answer == "2":
             return True
         print("Please enter 1 or 2.", file=sys.stderr)
+
+
+def prompt_email_verification() -> bool:
+    """Ask whether users must confirm their email address before signing in. Returns True to require it."""
+    while True:
+        answer = ask("Require users to confirm their email address before signing in? [Y/n]: ").lower()
+        if answer in ("", "y", "yes"):
+            return True
+        if answer in ("n", "no"):
+            return False
+        print("Please answer y or n.", file=sys.stderr)
 
 
 def validate(args: argparse.Namespace) -> Path:
@@ -156,6 +176,9 @@ def create_project(args: argparse.Namespace) -> int:
     if args.api is None:
         # Without a terminal there is no one to ask, so scripts get the full project as before.
         args.api = sys.stdin.isatty() and prompt_api()
+    if args.email_verification is None:
+        # Without a terminal, keep the secure default: verification on.
+        args.email_verification = not sys.stdin.isatty() or prompt_email_verification()
     target.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix=f".{args.name}-", dir=target.parent) as tmp:
         stage = Path(tmp) / args.name
@@ -166,7 +189,9 @@ def create_project(args: argparse.Namespace) -> int:
             print(f"Downloading {archive_url(args.ref)}")
             download(stage, args.ref)
         print(f"Rendering the {'API-only' if args.api else 'full'} variant")
-        render_project(stage, api=args.api, slug=args.name, email=args.email)
+        render_project(
+            stage, api=args.api, slug=args.name, email=args.email, email_verification=args.email_verification
+        )
         if target.exists():
             target.rmdir()
         stage.rename(target)

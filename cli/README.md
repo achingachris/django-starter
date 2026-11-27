@@ -78,7 +78,7 @@ and open <http://localhost:8000/admin/> and <http://localhost:8000/api/schema/sw
 
 ```
 django-starter-cdc [<name>] [--api | --full] [--email EMAIL] [--ref REF | --source PATH]
-                   [--no-install] [--no-git] [--dir PATH]
+                   [--no-email-verification] [--no-install] [--no-git] [--dir PATH]
 ```
 
 | Option | What it does |
@@ -89,6 +89,7 @@ django-starter-cdc [<name>] [--api | --full] [--email EMAIL] [--ref REF | --sour
 | `--email EMAIL` | Address used for `ADMINS`, `DEFAULT_FROM_EMAIL` and the API contact (default `admin@example.com`). |
 | `--ref REF` | Download a branch, tag or commit instead of the matching release, e.g. `--ref main`. |
 | `--source PATH` | Copy a local django-starter checkout instead of downloading. `.git`, `node_modules`, `.venv`, `.env`, `db.sqlite3` and build output are left out. |
+| `--no-email-verification` | Let users sign in without confirming their email address, which also turns off sign-in by code. Writes `ACCOUNT_EMAIL_VERIFICATION_ENABLED=False` to `.env` and `.env.prod.example`. Without the flag you are asked (default: verification on); without a terminal, verification stays on. |
 | `--no-install` | Skip `make init`; the manual setup steps are printed instead. |
 | `--no-git` | Skip `git init`. |
 | `--dir PATH` | Parent directory to create the project in (default: the current directory). |

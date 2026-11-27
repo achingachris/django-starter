@@ -29,6 +29,24 @@ def require_email_confirmation():
     return settings.ACCOUNT_EMAIL_VERIFICATION == app_settings.EmailVerificationMethod.MANDATORY
 
 
+def email_in_use_by_another_user(email, user) -> bool:
+    """True if ``email`` belongs to an account other than ``user``.
+
+    Matches case-insensitively on both CustomUser.email and allauth's EmailAddress rows, so one
+    member cannot attach another account's address (which would let a login code sent to that
+    address sign its owner into the wrong account). Uses ``__iexact`` rather than allauth's
+    ``filter_users_by_email()``, which lowercases the input but compares it exactly, and so misses
+    addresses stored with uppercase letters (e.g. by ``createsuperuser`` or an import).
+    """
+    # Imported here because apps.users.models imports this module.
+    from .models import CustomUser
+
+    return (
+        CustomUser.objects.filter(email__iexact=email).exclude(pk=user.pk).exists()
+        or EmailAddress.objects.filter(email__iexact=email).exclude(user_id=user.pk).exists()
+    )
+
+
 def user_has_confirmed_email_address(user, email):
     try:
         email_obj = EmailAddress.objects.get_for_user(user, email)

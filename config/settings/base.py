@@ -35,8 +35,9 @@ SECRET_KEY = env("SECRET_KEY", default="django-insecure-2iEsfxzHLTfdRLJ3rpxS5iaB
 DEBUG = env.bool("DEBUG", default=True)
 ENABLE_DEBUG_TOOLBAR = env.bool("ENABLE_DEBUG_TOOLBAR", default=False) and "test" not in sys.argv
 
-# Note: It is not recommended to set ALLOWED_HOSTS to "*" in production
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
+# Defaults to local addresses only. Set ALLOWED_HOSTS to reach the dev server from another device;
+# never use "*" in production (prod.py refuses it).
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1", "[::1]"])
 
 
 # Application definition
@@ -126,10 +127,10 @@ if ENABLE_DEBUG_TOOLBAR:
     # The account to log in as. Matched against CustomUser.USERNAME_FIELD, which
     # is where `apps/web` runserver stores the dev superuser's email.
     LOGINOUT_USERNAME = env("DEV_SUPERUSER_EMAIL", default="admin@example.com")
-    # Optional extra allowlist: restrict the endpoints to a single client IP.
-    # Left unset by default so the panel keeps working from a Docker gateway IP.
-    if env("LOGINOUT_SERVER", default=None):
-        LOGINOUT_SERVER = env("LOGINOUT_SERVER")
+    # Extra allowlist: the passwordless login only works from this client IP. INTERNAL_IPS above
+    # also admits gateway addresses (e.g. your LAN router), so keep this on loopback unless you run
+    # the dev server in Docker or a VM, then set LOGINOUT_SERVER to that gateway IP.
+    LOGINOUT_SERVER = env("LOGINOUT_SERVER", default="127.0.0.1")
 
 # >>> web
 # add browser reload only in debug mode
@@ -252,18 +253,22 @@ ACCOUNT_SIGNUP_FORM_HONEYPOT_FIELD = "phone_number_x"
 ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_LOGOUT_ON_GET = False
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
-ACCOUNT_LOGIN_BY_CODE_ENABLED = True
 ACCOUNT_USER_DISPLAY = lambda user: user.get_display_name()  # noqa: E731
+
+# Email verification: on by default, so users must confirm their address before signing in and an
+# unconfirmed address can never be used to log in to someone else's account. Set
+# ACCOUNT_EMAIL_VERIFICATION_ENABLED=False to let users sign in without confirming.
+ACCOUNT_EMAIL_VERIFICATION_ENABLED = env.bool("ACCOUNT_EMAIL_VERIFICATION_ENABLED", default=True)
+ACCOUNT_EMAIL_VERIFICATION = "mandatory" if ACCOUNT_EMAIL_VERIFICATION_ENABLED else "none"
+# "Sign in with a code" mails a one-time code to the address. It follows the verification toggle by
+# default, because without verified addresses a code could log someone into the wrong account.
+ACCOUNT_LOGIN_BY_CODE_ENABLED = env.bool("ACCOUNT_LOGIN_BY_CODE_ENABLED", default=ACCOUNT_EMAIL_VERIFICATION_ENABLED)
 
 # >>> web
 ACCOUNT_FORMS = {
     "signup": "apps.users.forms.TermsSignupForm",
 }
 # <<< web
-
-# User signup configuration: change to "mandatory" to require users to confirm email before signing in.
-# or "optional" to send confirmation emails but not require them
-ACCOUNT_EMAIL_VERIFICATION = env("ACCOUNT_EMAIL_VERIFICATION", default="none")
 
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
@@ -293,12 +298,6 @@ HEADLESS_FRONTEND_URLS = (
 )
 # Serves the auth API's OpenAPI spec at /_allauth/openapi.html (and .json/.yaml).
 HEADLESS_SERVE_SPECIFICATION = DEBUG
-# >>> web
-
-# For turnstile captchas
-TURNSTILE_KEY = env("TURNSTILE_KEY", default=None)
-TURNSTILE_SECRET = env("TURNSTILE_SECRET", default=None)
-# <<< web
 
 
 # Internationalization
@@ -387,8 +386,9 @@ SITE_ID = 1
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication",
-        # Lets app clients call DRF views with the X-Session-Token issued by allauth headless.
-        "allauth.headless.contrib.rest_framework.authentication.XSessionTokenAuthentication",
+        # Lets app clients call DRF views with the X-Session-Token issued by allauth headless,
+        # rejecting tokens whose session predates a password change or reset.
+        "apps.users.authentication.VerifiedXSessionTokenAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
@@ -455,8 +455,10 @@ USE_HTTPS_IN_ABSOLUTE_URLS = env.bool("USE_HTTPS_IN_ABSOLUTE_URLS", default=Fals
 ADMINS = ["achinga.chris@gmail.com"]
 # >>> web
 
-# Umami website ID used by the shared site analytics script.
+# Umami analytics is opt-in: the script loads only when both are set, to an Umami instance you control
+# (UMAMI_SCRIPT_URL is the full script URL, e.g. https://analytics.example.com/script.js).
 UMAMI_WEBSITE_ID = env("UMAMI_WEBSITE_ID", default="")
+UMAMI_SCRIPT_URL = env("UMAMI_SCRIPT_URL", default="")
 # <<< web
 
 

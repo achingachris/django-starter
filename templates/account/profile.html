@@ -33,11 +33,27 @@
 
     function uploadImage(file) {
       // update UI
-      let uploadlabel = document.getElementById("profile-upload-label")
-      uploadlabel.innerHTML = '<span class="w-6 h-6 inline-flex justify-center items-center"><i class="fa fa-refresh"></i></span><span>Uploading...</span>';
+      let uploadlabel = document.getElementById("profile-upload-label");
+      // Build the status with DOM nodes and textContent so server text is never parsed as HTML.
+      function setStatus(iconClass, text, title) {
+        const wrapper = document.createElement('span');
+        if (title) {
+          wrapper.setAttribute('title', title);
+        }
+        const iconBox = document.createElement('span');
+        iconBox.className = 'w-6 h-6 inline-flex justify-center items-center';
+        const icon = document.createElement('i');
+        icon.className = 'fa ' + iconClass;
+        iconBox.appendChild(icon);
+        const label = document.createElement('span');
+        label.textContent = text;
+        wrapper.append(iconBox, label);
+        uploadlabel.replaceChildren(wrapper);
+      }
+      setStatus('fa-refresh', 'Uploading...');
       uploadlabel.classList.add('is-active');
       function showError(message) {
-        uploadlabel.innerHTML = '<span title="' + message + '"><span class="w-6 h-6 inline-flex justify-center items-center"><i class="fa fa-times"></i></span><span>Upload failed!</span></span>';
+        setStatus('fa-times', 'Upload failed!', message);
         uploadlabel.classList.remove('is-active');
         uploadlabel.classList.add('text-red-600');
       }
@@ -61,7 +77,7 @@
           if (response.ok) {
             response.text().then(function (text) {
               // update UI
-              uploadlabel.innerHTML = '<span class="w-6 h-6 inline-flex justify-center items-center"><i class="fa fa-check"></i></span><span>' + text + '</span>';
+              setStatus('fa-check', text);
               uploadlabel.classList.remove('is-active');
               uploadlabel.classList.add('text-green-600');
             });
