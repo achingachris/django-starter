@@ -18,6 +18,7 @@ def project_meta(request):
         "page_image": "",
         "turnstile_key": getattr(settings, "TURNSTILE_KEY", None),
         "umami_website_id": settings.UMAMI_WEBSITE_ID,
+        "umami_script_url": settings.UMAMI_SCRIPT_URL,
     }
 
 

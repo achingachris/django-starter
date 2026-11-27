@@ -456,8 +456,10 @@ USE_HTTPS_IN_ABSOLUTE_URLS = env.bool("USE_HTTPS_IN_ABSOLUTE_URLS", default=Fals
 ADMINS = ["achinga.chris@gmail.com"]
 # >>> web
 
-# Umami website ID used by the shared site analytics script.
+# Umami analytics is opt-in: the script loads only when both are set, to an Umami instance you control
+# (UMAMI_SCRIPT_URL is the full script URL, e.g. https://analytics.example.com/script.js).
 UMAMI_WEBSITE_ID = env("UMAMI_WEBSITE_ID", default="")
+UMAMI_SCRIPT_URL = env("UMAMI_SCRIPT_URL", default="")
 # <<< web
 
 
