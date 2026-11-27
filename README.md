@@ -131,7 +131,8 @@ Override via `DEV_SUPERUSER_EMAIL` / `DEV_SUPERUSER_PASSWORD` in `.env`. This on
 With `ENABLE_DEBUG_TOOLBAR=True`, the toolbar's **"Login / out"** panel
 ([django-loginout-panel][]) toggles between this
 superuser and an anonymous session in one click — handy for checking logged-out views. Its endpoints
-are POST-only, CSRF-protected, and 404 unless `DEBUG` is on and the toolbar is visible.
+are POST-only, CSRF-protected, and 404 unless `DEBUG` is on and the toolbar is visible. They also only
+answer requests from `LOGINOUT_SERVER` (default `127.0.0.1`).
 
 ### 3. Run the app
 

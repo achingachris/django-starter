@@ -35,8 +35,9 @@ SECRET_KEY = env("SECRET_KEY", default="django-insecure-2iEsfxzHLTfdRLJ3rpxS5iaB
 DEBUG = env.bool("DEBUG", default=True)
 ENABLE_DEBUG_TOOLBAR = env.bool("ENABLE_DEBUG_TOOLBAR", default=False) and "test" not in sys.argv
 
-# Note: It is not recommended to set ALLOWED_HOSTS to "*" in production
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
+# Defaults to local addresses only. Set ALLOWED_HOSTS to reach the dev server from another device;
+# never use "*" in production (prod.py refuses it).
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1", "[::1]"])
 
 
 # Application definition
@@ -126,10 +127,10 @@ if ENABLE_DEBUG_TOOLBAR:
     # The account to log in as. Matched against CustomUser.USERNAME_FIELD, which
     # is where `apps/web` runserver stores the dev superuser's email.
     LOGINOUT_USERNAME = env("DEV_SUPERUSER_EMAIL", default="admin@example.com")
-    # Optional extra allowlist: restrict the endpoints to a single client IP.
-    # Left unset by default so the panel keeps working from a Docker gateway IP.
-    if env("LOGINOUT_SERVER", default=None):
-        LOGINOUT_SERVER = env("LOGINOUT_SERVER")
+    # Extra allowlist: the passwordless login only works from this client IP. INTERNAL_IPS above
+    # also admits gateway addresses (e.g. your LAN router), so keep this on loopback unless you run
+    # the dev server in Docker or a VM, then set LOGINOUT_SERVER to that gateway IP.
+    LOGINOUT_SERVER = env("LOGINOUT_SERVER", default="127.0.0.1")
 
 # >>> web
 # add browser reload only in debug mode

@@ -15,6 +15,13 @@ DEBUG = False
 SECRET_KEY = env("SECRET_KEY")
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
+# Refuse the placeholder and committed development keys, and short keys, rather than booting with a
+# signing key that is public or guessable.
+if SECRET_KEY.startswith(("change-me", "django-insecure")) or len(SECRET_KEY) < 50:
+    raise ImproperlyConfigured("SECRET_KEY must be a unique random value of at least 50 characters in production.")
+if "*" in ALLOWED_HOSTS:
+    raise ImproperlyConfigured('ALLOWED_HOSTS must list your domains explicitly in production, not "*".')
+
 # Production requires a PostgreSQL database via DATABASE_URL. There is no SQLite
 # fallback here: fail loudly at startup if it is missing or points elsewhere.
 if "DATABASE_URL" not in env:
