@@ -49,12 +49,17 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       caches.open(CACHE_NAME).then((cache) =>
         cache.match(request).then((cached) => {
+          // Chain the cache write into this promise so event.waitUntil() keeps the worker alive until the
+          // refreshed copy is stored. A failed write still hands back the network response.
           const network = fetch(request)
             .then((response) => {
-              if (response.ok) {
-                cache.put(request, response.clone());
+              if (!response.ok) {
+                return response;
               }
-              return response;
+              return cache
+                .put(request, response.clone())
+                .catch(() => {})
+                .then(() => response);
             })
             .catch(() => cached);
           if (cached) {
