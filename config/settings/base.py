@@ -268,9 +268,6 @@ ACCOUNT_LOGIN_BY_CODE_ENABLED = env.bool("ACCOUNT_LOGIN_BY_CODE_ENABLED", defaul
 ACCOUNT_FORMS = {
     "signup": "apps.users.forms.TermsSignupForm",
 }
-# The base of every allauth signup form, including the headless JSON API, so the Turnstile
-# captcha applies there too (ACCOUNT_FORMS only reaches the HTML signup page).
-ACCOUNT_SIGNUP_FORM_CLASS = "apps.users.signup_captcha.TurnstileFieldsForm"
 # <<< web
 
 AUTHENTICATION_BACKENDS = (
@@ -301,12 +298,6 @@ HEADLESS_FRONTEND_URLS = (
 )
 # Serves the auth API's OpenAPI spec at /_allauth/openapi.html (and .json/.yaml).
 HEADLESS_SERVE_SPECIFICATION = DEBUG
-# >>> web
-
-# For turnstile captchas
-TURNSTILE_KEY = env("TURNSTILE_KEY", default=None)
-TURNSTILE_SECRET = env("TURNSTILE_SECRET", default=None)
-# <<< web
 
 
 # Internationalization

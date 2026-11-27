@@ -35,13 +35,11 @@ API_REMOVED_PATHS = (
     "apps/users/views.py",
     "apps/users/urls.py",
     "apps/users/forms.py",
-    "apps/users/signup_captcha.py",
     "apps/web/tests/test_basic_views.py",
     "apps/web/tests/test_logged_in_views.py",
     "apps/web/tests/test_meta_tags.py",
     "apps/web/tests/test_admin_dashboard.py",
     "apps/users/tests/test_profile.py",
-    "apps/users/tests/test_signup_captcha.py",
     ".cursor/rules/django-templates.mdc",
     ".cursor/rules/javascript-guidelines.mdc",
 )

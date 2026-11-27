@@ -29,11 +29,7 @@ class UploadAvatarForm(forms.Form):
 
 
 class TermsSignupForm(SignupForm):
-    """Signup form that adds a checkbox for accepting the terms.
-
-    The Turnstile captcha comes from ACCOUNT_SIGNUP_FORM_CLASS (apps.users.signup_captcha), which
-    allauth uses as the base of every signup form, including the headless API.
-    """
+    """Signup form that adds a checkbox for accepting the terms."""
 
     terms_agreement = forms.BooleanField(required=True)
 

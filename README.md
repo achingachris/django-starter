@@ -345,10 +345,8 @@ Configuration is read from environment variables (via `.env` locally). `make ini
 ¹ `.env.example` ships with `ENABLE_DEBUG_TOOLBAR=True` for convenience.
 
 <!-- >>> web -->
-The web front end also reads optional variables: `UMAMI_WEBSITE_ID` and `UMAMI_SCRIPT_URL` (Umami site
-analytics, loaded only when both are set, pointing at an Umami instance you control) and
-`TURNSTILE_KEY` / `TURNSTILE_SECRET` (Cloudflare Turnstile on signup, for both the signup page and the
-`/_allauth/` signup API).
+The web front end also reads two optional variables: `UMAMI_WEBSITE_ID` and `UMAMI_SCRIPT_URL` (Umami site
+analytics, loaded only when both are set, pointing at an Umami instance you control).
 <!-- <<< web -->
 
 > Never commit `.env` — it's git-ignored. See `.env.example` for the full, annotated list.
