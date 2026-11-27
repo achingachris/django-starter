@@ -387,8 +387,9 @@ SITE_ID = 1
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication",
-        # Lets app clients call DRF views with the X-Session-Token issued by allauth headless.
-        "allauth.headless.contrib.rest_framework.authentication.XSessionTokenAuthentication",
+        # Lets app clients call DRF views with the X-Session-Token issued by allauth headless,
+        # rejecting tokens whose session predates a password change or reset.
+        "apps.users.authentication.VerifiedXSessionTokenAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
