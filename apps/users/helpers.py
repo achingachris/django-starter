@@ -3,7 +3,6 @@ from functools import wraps
 
 from allauth.account import app_settings
 from allauth.account.models import EmailAddress
-from allauth.account.utils import filter_users_by_email
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -35,9 +34,17 @@ def email_in_use_by_another_user(email, user) -> bool:
 
     Matches case-insensitively on both CustomUser.email and allauth's EmailAddress rows, so one
     member cannot attach another account's address (which would let a login code sent to that
-    address sign its owner into the wrong account).
+    address sign its owner into the wrong account). Uses ``__iexact`` rather than allauth's
+    ``filter_users_by_email()``, which lowercases the input but compares it exactly, and so misses
+    addresses stored with uppercase letters (e.g. by ``createsuperuser`` or an import).
     """
-    return any(other.pk != user.pk for other in filter_users_by_email(email))
+    # Imported here because apps.users.models imports this module.
+    from .models import CustomUser
+
+    return (
+        CustomUser.objects.filter(email__iexact=email).exclude(pk=user.pk).exists()
+        or EmailAddress.objects.filter(email__iexact=email).exclude(user_id=user.pk).exists()
+    )
 
 
 def user_has_confirmed_email_address(user, email):

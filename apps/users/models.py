@@ -5,6 +5,7 @@ from functools import cached_property
 from allauth.account.models import EmailAddress
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models.functions import Lower
 
 from apps.users.helpers import validate_profile_picture
 
@@ -28,6 +29,18 @@ class CustomUser(AbstractUser):
 
     avatar = models.FileField(upload_to=_get_avatar_filename, blank=True, validators=[validate_profile_picture])
     role = models.CharField(max_length=16, choices=UserRole, default=UserRole.MEMBER)
+
+    class Meta(AbstractUser.Meta):
+        constraints = [
+            # One account per address, ignoring case, enforced by the database so two concurrent
+            # requests cannot both claim the same address after passing email_in_use_by_another_user().
+            models.UniqueConstraint(
+                Lower("email"),
+                condition=~models.Q(email=""),
+                name="unique_user_email_ci",
+                violation_error_message="This email address is already in use.",
+            ),
+        ]
 
     def __str__(self):
         return f"{self.get_full_name()} <{self.email or self.username}>"
