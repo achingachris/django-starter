@@ -3,6 +3,7 @@ from functools import wraps
 
 from allauth.account import app_settings
 from allauth.account.models import EmailAddress
+from allauth.account.utils import filter_users_by_email
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -27,6 +28,16 @@ def admin_role_required(view_func):
 
 def require_email_confirmation():
     return settings.ACCOUNT_EMAIL_VERIFICATION == app_settings.EmailVerificationMethod.MANDATORY
+
+
+def email_in_use_by_another_user(email, user) -> bool:
+    """True if ``email`` belongs to an account other than ``user``.
+
+    Matches case-insensitively on both CustomUser.email and allauth's EmailAddress rows, so one
+    member cannot attach another account's address (which would let a login code sent to that
+    address sign its owner into the wrong account).
+    """
+    return any(other.pk != user.pk for other in filter_users_by_email(email))
 
 
 def user_has_confirmed_email_address(user, email):

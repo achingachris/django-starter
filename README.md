@@ -31,9 +31,11 @@ Generate a fresh project from this template with the
 uvx django-starter-cdc
 ```
 
-It asks for the project name and the project type: full (templates, HTMX, Alpine.js, Tailwind) or
-API only (DRF + allauth headless with OpenAPI docs, no templates or npm). To skip the questions, pass
-them: `uvx django-starter-cdc myproject --api` (or `--full`).
+It asks for the project name, the project type: full (templates, HTMX, Alpine.js, Tailwind) or
+API only (DRF + allauth headless with OpenAPI docs, no templates or npm), and whether users must
+confirm their email address before signing in (yes by default). To skip the questions, pass them:
+`uvx django-starter-cdc myproject --api` (or `--full`), plus `--no-email-verification` to turn
+verification off.
 
 | | Full (default) | API only (`--api`) |
 |---|---|---|
@@ -325,12 +327,14 @@ Configuration is read from environment variables (via `.env` locally). `make ini
 |----------|---------|---------|
 | `SECRET_KEY` | insecure dev key | Django secret key. **Set a strong value in production.** |
 | `DEBUG` | `True` | Debug mode. **Must be `False` in production** (or use `config.settings.prod`). |
-| `ALLOWED_HOSTS` | `*` | Comma-separated allowed hosts. Restrict in production. |
+| `ALLOWED_HOSTS` | `localhost,127.0.0.1,[::1]` | Comma-separated allowed hosts. Add your LAN IP to reach the dev server from another device. Production requires explicit domains (`*` is refused). |
+| `ACCOUNT_EMAIL_VERIFICATION_ENABLED` | `True` | Users must confirm their email address before signing in. `False` lets them sign in unconfirmed. |
+| `ACCOUNT_LOGIN_BY_CODE_ENABLED` | same as `ACCOUNT_EMAIL_VERIFICATION_ENABLED` | "Sign in with a code" by email. Off by default when verification is off, since unconfirmed addresses could then log someone into the wrong account. |
 | `DATABASE_URL` | *(unset → SQLite)* | Postgres connection string in production. |
 | `REDIS_URL` | *(unset → `redis://localhost:6379/0`)* | Cache. Required in production. |
 | `DEV_SUPERUSER_EMAIL` / `DEV_SUPERUSER_PASSWORD` | `admin@example.com` / `admin` | Auto-created dev superuser (DEBUG only). |
 | `ENABLE_DEBUG_TOOLBAR` | `False`¹ | Django Debug Toolbar (disabled during tests). |
-| `LOGINOUT_SERVER` | *(unset)* | Restrict the toolbar's "Login / out" panel to one client IP (optional). |
+| `LOGINOUT_SERVER` | `127.0.0.1` | The only client IP allowed to use the toolbar's "Login / out" panel. Set it to the gateway IP when running the dev server in Docker or a VM. |
 | `EMAIL_BACKEND` | console in `DEBUG`, else SMTP | Override to force a specific backend. |
 | `RESEND_API_KEY` | *(empty)* | Resend API key, used as the SMTP password. Required to send real mail. |
 | `EMAIL_HOST` / `EMAIL_PORT` / `EMAIL_HOST_USER` | `smtp.resend.com` / `587` / `resend` | Override to use another SMTP provider. |
@@ -341,8 +345,10 @@ Configuration is read from environment variables (via `.env` locally). `make ini
 ¹ `.env.example` ships with `ENABLE_DEBUG_TOOLBAR=True` for convenience.
 
 <!-- >>> web -->
-The web front end also reads two optional variables: `UMAMI_WEBSITE_ID` (Umami site analytics) and
-`TURNSTILE_KEY` / `TURNSTILE_SECRET` (Cloudflare Turnstile on the signup form).
+The web front end also reads optional variables: `UMAMI_WEBSITE_ID` and `UMAMI_SCRIPT_URL` (Umami site
+analytics, loaded only when both are set, pointing at an Umami instance you control) and
+`TURNSTILE_KEY` / `TURNSTILE_SECRET` (Cloudflare Turnstile on signup, for both the signup page and the
+`/_allauth/` signup API).
 <!-- <<< web -->
 
 > Never commit `.env` — it's git-ignored. See `.env.example` for the full, annotated list.

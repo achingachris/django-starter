@@ -1,7 +1,10 @@
 from allauth.account import app_settings
 from allauth.account.adapter import DefaultAccountAdapter
 from allauth.account.utils import user_email, user_field
+from django import forms
 from django.utils.translation import gettext_lazy as _
+
+from .helpers import email_in_use_by_another_user
 
 
 class EmailAsUsernameAdapter(DefaultAccountAdapter):
@@ -13,6 +16,19 @@ class EmailAsUsernameAdapter(DefaultAccountAdapter):
         super().__init__(request)
         # Prevent leaking whether someone is already signed up.
         self.error_messages["email_taken"] = _("There was an issue creating the account. Please contact support.")
+
+    def clean_email(self, email):
+        """Stop a signed-in user from attaching an address that belongs to another account.
+
+        allauth calls this from its add-email form (the /accounts/email/ page and the headless
+        account/email API). With enumeration prevention on, that form would otherwise store another
+        account's address as an unverified row on the current user.
+        """
+        email = super().clean_email(email)
+        user = getattr(self.request, "user", None)
+        if user is not None and user.is_authenticated and email_in_use_by_another_user(email, user):
+            raise forms.ValidationError(_("This email address is already in use."))
+        return email
 
     def populate_username(self, request, user):
         # override the username population to always use the email

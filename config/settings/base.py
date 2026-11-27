@@ -253,18 +253,25 @@ ACCOUNT_SIGNUP_FORM_HONEYPOT_FIELD = "phone_number_x"
 ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_LOGOUT_ON_GET = False
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
-ACCOUNT_LOGIN_BY_CODE_ENABLED = True
 ACCOUNT_USER_DISPLAY = lambda user: user.get_display_name()  # noqa: E731
+
+# Email verification: on by default, so users must confirm their address before signing in and an
+# unconfirmed address can never be used to log in to someone else's account. Set
+# ACCOUNT_EMAIL_VERIFICATION_ENABLED=False to let users sign in without confirming.
+ACCOUNT_EMAIL_VERIFICATION_ENABLED = env.bool("ACCOUNT_EMAIL_VERIFICATION_ENABLED", default=True)
+ACCOUNT_EMAIL_VERIFICATION = "mandatory" if ACCOUNT_EMAIL_VERIFICATION_ENABLED else "none"
+# "Sign in with a code" mails a one-time code to the address. It follows the verification toggle by
+# default, because without verified addresses a code could log someone into the wrong account.
+ACCOUNT_LOGIN_BY_CODE_ENABLED = env.bool("ACCOUNT_LOGIN_BY_CODE_ENABLED", default=ACCOUNT_EMAIL_VERIFICATION_ENABLED)
 
 # >>> web
 ACCOUNT_FORMS = {
     "signup": "apps.users.forms.TermsSignupForm",
 }
+# The base of every allauth signup form, including the headless JSON API, so the Turnstile
+# captcha applies there too (ACCOUNT_FORMS only reaches the HTML signup page).
+ACCOUNT_SIGNUP_FORM_CLASS = "apps.users.signup_captcha.TurnstileFieldsForm"
 # <<< web
-
-# User signup configuration: change to "mandatory" to require users to confirm email before signing in.
-# or "optional" to send confirmation emails but not require them
-ACCOUNT_EMAIL_VERIFICATION = env("ACCOUNT_EMAIL_VERIFICATION", default="none")
 
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
