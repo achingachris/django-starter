@@ -3,17 +3,30 @@ on:
   push:
     tags:
       - "v*"
+# Least privilege by default; the publish job adds only id-token: write for PyPI trusted publishing.
+permissions:
+  contents: read
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      # Full history so the next step can check the tagged commit against main.
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+      # Only publish commits that are already on main (reviewed and tested), never a tag on a side branch.
+      - name: Check the tagged commit is on main
+        run: |
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::Tag $GITHUB_REF_NAME points at $GITHUB_SHA, which is not on main."
+            exit 1
+          fi
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5
         with:
           version: "0.9.17"
       - name: Set up Python 3.14
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: 3.14
       # The CLI downloads the release tarball of the tag matching its own version, so they must agree.
@@ -30,7 +43,7 @@ jobs:
         run: |
           uv build
       - name: Upload the distributions
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: cli-dist
           path: cli/dist
@@ -42,11 +55,11 @@ jobs:
       id-token: write
     steps:
       - name: Download the distributions
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: cli-dist
           path: cli/dist
       - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
         with:
           packages-dir: cli/dist
